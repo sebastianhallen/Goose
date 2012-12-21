@@ -56,8 +56,8 @@
                     var buildTasks = new List<Task>();
                     var projectPath = "";
                     while (this.currentBuildQueue.TryTake(out projectPath))
-                    {
-                        var onSaveAction = this.taskFactory.CreateOnSaveAction(projectPath);
+                    {                        
+																					var onSaveAction = this.taskFactory.CreateOnSaveAction(projectPath);
                         onSaveAction.Start();
                         buildTasks.Add(onSaveAction);
 

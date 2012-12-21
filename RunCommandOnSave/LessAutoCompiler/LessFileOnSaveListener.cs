@@ -111,9 +111,9 @@
                 {
                     var cookie = this.MonitorFile(projectFile);
 
-                    this.monitoredProjects.Add(new MonitoredFile<string>(cookie, projectFile, projectFile));                        
+                    this.monitoredProjects.Add(new MonitoredFile(cookie, projectFile));                        
                 }                
-            }
+            }        	
         }
 
         private void MonitorLessFileChanges()
