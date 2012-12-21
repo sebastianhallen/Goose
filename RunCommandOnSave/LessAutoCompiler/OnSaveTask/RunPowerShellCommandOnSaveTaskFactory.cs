@@ -99,7 +99,7 @@
       {
         get
         {
-          return string.Format("cd {0} ; {1}", this.BuildDirectory, this.compileCommandField);
+          return string.Format(@"cd ""{0}"" ; {1}", this.BuildDirectory, this.compileCommandField);
         }
         private set { this.compileCommandField = value; }
       }
