@@ -54,6 +54,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\v1.0\System.Management.Automation.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -126,6 +127,7 @@
     <Compile Include="LessAutoCompiler\ProjectFile.cs" />
     <Compile Include="LessAutoCompiler\SolutionFilesService.cs" />
     <Compile Include="LessAutoCompiler\SolutionProject.cs" />
+    <Compile Include="LessAutoCompiler\OutputService.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
