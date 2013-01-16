@@ -91,11 +91,8 @@ namespace tretton37.RunCommandOnSave.LessAutoCompiler
 		//       "filename": "assets/datamodelviewer/datamodelviewer.less"
 		//     },
 		//     {
-		//       "type": "error",
-		//       "message": "Syntax Error on line 6",
-		//       "excerpt": " 5:     position: absolute;\n 6:     t op: 70px;\n 7:     bottom: 0;",
-		//       "line": 6,
-		//       "filename": "assets/assets.less"
+		//       "type": "message",
+		//       "message": "This is now done."
 		//     }
 		//   ]
 		// }
