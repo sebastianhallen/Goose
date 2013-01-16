@@ -68,7 +68,7 @@
 					return buildTasks.Any();
 				}).ContinueWith(task =>
 					{
-						if (task.Result)
+						if (task.Exception != null || task.Result)
 						{
 							lock (this.syncLock)
 							{
