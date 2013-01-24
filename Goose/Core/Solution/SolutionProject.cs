@@ -1,13 +1,13 @@
-﻿namespace tretton37.RunCommandOnSave.LessAutoCompiler
+﻿namespace Goose.Core.Solution
 {
-  using System;
-  using System.Collections.Generic;
-  using System.IO;
-  using System.Linq;  
-  using Microsoft.VisualStudio;
-  using Microsoft.VisualStudio.Shell.Interop;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell.Interop;
 
-  public class SolutionProject
+    public class SolutionProject
     {
         private readonly IVsProject vsProject;
 

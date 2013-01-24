@@ -1,12 +1,12 @@
-﻿namespace tretton37.RunCommandOnSave.LessAutoCompiler
+﻿namespace Goose.Core.Dispatcher
 {
-	using System.Collections.Concurrent;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using OnSaveTask;
+    using System.Collections.Concurrent;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Goose.Core.OnSaveTask;
 
-	public class BatchOnSaveTaskDispatcher
+    public class BufferedOnSaveTaskDispatcher
 		: IOnSaveTaskDispatcher
 	{
 		private readonly IOnSaveActionTaskFactory taskFactory;
@@ -15,7 +15,7 @@
 		private readonly object syncLock = new object();
 		private bool isBuilding;
 
-		public BatchOnSaveTaskDispatcher(IOnSaveActionTaskFactory taskFactory)
+		public BufferedOnSaveTaskDispatcher(IOnSaveActionTaskFactory taskFactory)
 		{
 			this.taskFactory = taskFactory;
 			this.isBuilding = false;

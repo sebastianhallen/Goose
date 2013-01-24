@@ -1,8 +1,8 @@
-﻿namespace tretton37.RunCommandOnSave.LessAutoCompiler
+﻿namespace Goose.Core.Solution
 {
-  using System;
+    using System;
 
-  public class MonitoredFile<T>
+    public class MonitoredFile<T>
         : MonitoredFile
     {        
         public readonly T FileData;

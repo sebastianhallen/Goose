@@ -1,19 +1,19 @@
-﻿namespace tretton37.RunCommandOnSave
+﻿namespace Goose
 {
-	using System;
-	using System.Runtime.InteropServices;
-	using LessAutoCompiler;
-	using Microsoft.VisualStudio;
-	using Microsoft.VisualStudio.Shell;
-	using Microsoft.VisualStudio.Shell.Interop;
-	using tretton37.RunCommandOnSave.LessAutoCompiler.OnSaveTask;
+    using System.Runtime.InteropServices;
+    using Core;
+    using Core.Dispatcher;
+    using Core.OnSaveTask;
+    using Core.Solution;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell;
+    using Microsoft.VisualStudio.Shell.Interop;
 
-
-	[PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true)]
 	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
 	[Guid(GuidList.guidRunCommandOnSavePkgString)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-	public sealed class RunCommandOnSavePackage : Package
+	public sealed class GoosePackage : Package
 	{
 		private LessFileOnSaveListener fileChangeListener;
 
@@ -33,7 +33,7 @@
 			var solutionFilesService = new SolutionFilesService(this);
 			var outputService = new OutputService(this);
 			var onSaveTaskFactory = new RunPowerShellCommandOnSaveTaskFactory(outputService);
-			var onSaveTaskDispatcher = new BatchOnSaveTaskDispatcher(onSaveTaskFactory);
+			var onSaveTaskDispatcher = new BufferedOnSaveTaskDispatcher(onSaveTaskFactory);
 
 			this.fileChangeListener = new LessFileOnSaveListener(fileChangeService, solutionFilesService, onSaveTaskDispatcher);
 

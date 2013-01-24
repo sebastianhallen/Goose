@@ -1,10 +1,10 @@
-﻿namespace tretton37.RunCommandOnSave.LessAutoCompiler
+﻿namespace Goose.Core.Solution
 {
-	using System.Collections.Generic;
-	using Microsoft.VisualStudio;
-	using Microsoft.VisualStudio.Shell.Interop;
+    using System.Collections.Generic;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell.Interop;
 
-	public static class HierarchyTraversionExtensions
+    public static class HierarchyTraversionExtensions
     {
         public static IEnumerable<uint> GetItemIds(this IVsHierarchy hierarchy, uint rootItemId = (uint) VSConstants.VSITEMID.Root)
         {

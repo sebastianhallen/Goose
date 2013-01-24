@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunCommandOnSave", "RunCommandOnSave\RunCommandOnSave.csproj", "{F9CC9D12-ECB8-4564-97B9-4FE6FF686964}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Goose", "Goose\Goose.csproj", "{F9CC9D12-ECB8-4564-97B9-4FE6FF686964}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

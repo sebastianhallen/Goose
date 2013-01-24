@@ -1,4 +1,4 @@
-﻿namespace tretton37.RunCommandOnSave.LessAutoCompiler
+﻿namespace Goose.Core.Dispatcher
 {
     public interface IOnSaveTaskDispatcher
     {

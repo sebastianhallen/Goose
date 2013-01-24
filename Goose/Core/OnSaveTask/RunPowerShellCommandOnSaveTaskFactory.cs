@@ -1,14 +1,15 @@
-﻿namespace tretton37.RunCommandOnSave.LessAutoCompiler.OnSaveTask
+﻿namespace Goose.Core.OnSaveTask
 {
-	using System;
-	using System.IO;
-	using System.Management.Automation.Runspaces;
-	using System.Text;
-	using System.Threading.Tasks;
-	using System.Xml;
-	using tretton37.LessToCssAutoCompiler;
+    using System;
+    using System.IO;
+    using System.Management.Automation.Runspaces;
+    using System.Text;
+    using System.Threading.Tasks;
+    using System.Xml;
+    using Goose;
+    using Goose.Core;
 
-	public class RunPowerShellCommandOnSaveTaskFactory
+    public class RunPowerShellCommandOnSaveTaskFactory
 		: IOnSaveActionTaskFactory
 	{
 		private readonly OutputService outputService;
@@ -47,7 +48,7 @@
 			return;
 			try
 			{
-				var logFile = Path.Combine(buildDirectory, "less-build.log");
+				var logFile = Path.Combine(buildDirectory, "goose-log.log");
 				File.WriteAllText(logFile, log);
 			}
 			catch (Exception ex)

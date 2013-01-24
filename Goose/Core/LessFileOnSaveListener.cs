@@ -1,13 +1,15 @@
-﻿namespace tretton37.RunCommandOnSave.LessAutoCompiler
+﻿namespace Goose.Core
 {
-	using System;
-	using System.Collections.Generic;
-	using System.IO;
-	using System.Linq;
-	using Microsoft.VisualStudio;
-	using Microsoft.VisualStudio.Shell.Interop;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using Dispatcher;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell.Interop;
+    using Solution;
 
-	public class LessFileOnSaveListener
+    public class LessFileOnSaveListener
 	   : IVsFileChangeEvents, IDisposable
 	{
 		private const uint FileChangeFlags = (uint)_VSFILECHANGEFLAGS.VSFILECHG_Add | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Size | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Time;

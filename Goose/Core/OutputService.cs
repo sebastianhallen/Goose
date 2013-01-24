@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio;
-using System.Web.Script.Serialization;
-
-namespace tretton37.RunCommandOnSave.LessAutoCompiler
+﻿namespace Goose.Core
 {
-	public class OutputService
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using Microsoft.VisualStudio.Shell.Interop;
+    using System.Web.Script.Serialization;
+
+    public class OutputService
 	{
 		private readonly JavaScriptSerializer serializer;
 		private readonly IVsOutputWindow outputWindow;

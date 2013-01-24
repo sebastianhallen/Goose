@@ -1,9 +1,10 @@
 ﻿// Guids.cs
 // MUST match guids.h
-using System;
 
-namespace tretton37.RunCommandOnSave
+namespace Goose
 {
+    using System;
+
     static class GuidList
     {
         public const string guidRunCommandOnSavePkgString = "ae74cfb8-8aa8-4c87-b2f2-e54a7977739f";
