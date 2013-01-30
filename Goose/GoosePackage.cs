@@ -4,6 +4,7 @@
     using Core;
     using Core.Dispatcher;
     using Core.OnSaveTask;
+    using Core.Output;
     using Core.Solution;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell;

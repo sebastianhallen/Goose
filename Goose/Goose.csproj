@@ -116,6 +116,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\OnSaveTask\PowerShellCommandConfiguration.cs" />
+    <Compile Include="Core\Output\CommandOutput.cs" />
+    <Compile Include="Core\Output\CommandOutputItem.cs" />
+    <Compile Include="Core\Output\CommandOutputItemType.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Core\Dispatcher\BufferedOnSaveTaskDispatcher.cs" />
     <Compile Include="Core\Solution\HierarchyTraversionExtensions.cs" />
@@ -127,7 +131,7 @@
     <Compile Include="Core\Solution\ProjectFile.cs" />
     <Compile Include="Core\Solution\SolutionFilesService.cs" />
     <Compile Include="Core\Solution\SolutionProject.cs" />
-    <Compile Include="Core\OutputService.cs" />
+    <Compile Include="Core\Output\OutputService.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -151,6 +155,7 @@
   <ItemGroup>
     <None Include="goose.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
