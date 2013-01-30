@@ -41,8 +41,9 @@
             {
                 var xml = new XmlDocument();
                 xml.Load(this.ConfigPath);
-                var buildDirectory = xml.SelectSingleNode("compile-less/build-directory").InnerText;
-                var compileLessCommand = xml.SelectSingleNode("compile-less/compile-command").InnerText;
+                
+                var buildDirectory = xml.SelectSingleNode("on-save-action/working-directory").InnerText;
+                var compileLessCommand = xml.SelectSingleNode("on-save-action/powershell-command").InnerText;
 
                 this.BuildDirectory = Path.Combine(projectDirectory, buildDirectory);
                 this.CompileCommand = compileLessCommand;
