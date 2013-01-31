@@ -26,9 +26,31 @@
 
     public class CommandOutput
     {
-        public string Name = null;
-        public float Version = 0;
-        public DateTime? Time = null;
+        public string Name { get; set; }
+
+        public float Version { get; set; }
+        public DateTime? Time { get; set; }
         public IList<CommandOutputItem> Results = new List<CommandOutputItem>();
+
+        public CommandOutput()
+        {
+
+        }
+
+        public CommandOutput(string name, string message, string excerpt, CommandOutputItemType type)
+        {
+            this.Name = name;
+            this.Results = new List<CommandOutputItem>
+                           {
+                               new CommandOutputItem
+                               {
+                                   Message = message,
+                                   Excerpt = excerpt,
+                                   Type = type
+                               }
+                           };
+            this.Version = 1;
+            this.Time = DateTime.Now;        
+        }
     }
 }

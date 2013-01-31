@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Goose", "Goose\Goose.csproj", "{F9CC9D12-ECB8-4564-97B9-4FE6FF686964}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Goose.Tests", "Goose.Tests\Goose.Tests.csproj", "{7BFA8C96-9B8D-409F-B082-34E3A54E0ED9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{F9CC9D12-ECB8-4564-97B9-4FE6FF686964}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9CC9D12-ECB8-4564-97B9-4FE6FF686964}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9CC9D12-ECB8-4564-97B9-4FE6FF686964}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BFA8C96-9B8D-409F-B082-34E3A54E0ED9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BFA8C96-9B8D-409F-B082-34E3A54E0ED9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BFA8C96-9B8D-409F-B082-34E3A54E0ED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BFA8C96-9B8D-409F-B082-34E3A54E0ED9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -33,7 +33,7 @@
 
 			var solutionFilesService = new SolutionFilesService(this);
 			var outputService = new OutputService(this);
-			var onSaveTaskFactory = new RunPowerShellCommandOnSaveTaskFactory(outputService);
+			var onSaveTaskFactory = new RunPowerShellCommandOnSaveTaskFactory(outputService, new JsonCommandLogParser());
 			var onSaveTaskDispatcher = new BufferedOnSaveTaskDispatcher(onSaveTaskFactory);
 
 			this.fileChangeListener = new LessFileOnSaveListener(fileChangeService, solutionFilesService, onSaveTaskDispatcher);

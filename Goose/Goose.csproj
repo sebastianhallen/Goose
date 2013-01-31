@@ -116,10 +116,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\Output\ICommandLogParser.cs" />
     <Compile Include="Core\OnSaveTask\PowerShellCommandConfiguration.cs" />
     <Compile Include="Core\Output\CommandOutput.cs" />
     <Compile Include="Core\Output\CommandOutputItem.cs" />
     <Compile Include="Core\Output\CommandOutputItemType.cs" />
+    <Compile Include="Core\Output\JsonCommandLogParser.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Core\Dispatcher\BufferedOnSaveTaskDispatcher.cs" />
     <Compile Include="Core\Solution\HierarchyTraversionExtensions.cs" />
