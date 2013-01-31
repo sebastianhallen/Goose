@@ -26,7 +26,7 @@
 			    
 				var output = compileConfiguration.Configure() 
                     ? this.RunPowerShellCommand(compileConfiguration.CompileCommand)
-                    : new CommandOutput("goose", "Unable to configure less compiler - make sure goose.config is present", compileConfiguration.ConfigurationFailedReason, CommandOutputItemType.Error);
+                    : new CommandOutput("goose", "Unable to configure less compiler - make sure goose.config is present", compileConfiguration.ConfigurationFailedReason, CommandOutputItemType.Message);
 
                 this.outputService.Handle(output);			    
 				System.Threading.Thread.Sleep(1000);
