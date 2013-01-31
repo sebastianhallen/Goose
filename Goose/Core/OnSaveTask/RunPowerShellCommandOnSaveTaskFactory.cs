@@ -1,23 +1,21 @@
 ﻿namespace Goose.Core.OnSaveTask
 {
     using System;
-    using System.Collections.Generic;
     using System.Management.Automation.Runspaces;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Web.Script.Serialization;
     using Output;
 
     public class RunPowerShellCommandOnSaveTaskFactory
 		: IOnSaveActionTaskFactory
 	{
 		private readonly OutputService outputService;
-        private readonly JavaScriptSerializer serializer;
+        private readonly ICommandLogParser logParser;
 
-        public RunPowerShellCommandOnSaveTaskFactory(OutputService outputService)
+        public RunPowerShellCommandOnSaveTaskFactory(OutputService outputService, ICommandLogParser logParser)
 		{
 			this.outputService = outputService;
-            this.serializer = new JavaScriptSerializer();
+            this.logParser = logParser;
 		}
 
 		public Task CreateOnSaveAction(string projectDirectory)
@@ -28,7 +26,7 @@
 			    
 				var output = compileConfiguration.Configure() 
                     ? this.RunPowerShellCommand(compileConfiguration.CompileCommand)
-                    : CreateCommandOutput("Unable to configure less compiler - make sure goose.config is present", compileConfiguration.ConfigurationFailedReason, CommandOutputItemType.Error);
+                    : new CommandOutput("goose", "Unable to configure less compiler - make sure goose.config is present", compileConfiguration.ConfigurationFailedReason, CommandOutputItemType.Message);
 
                 this.outputService.Handle(output);			    
 				System.Threading.Thread.Sleep(1000);
@@ -60,45 +58,11 @@
 			}
 			catch (Exception ex)
 			{
-                return CreateCommandOutput("Failed to run compile command", ex.ToString(), CommandOutputItemType.Error);
+                return new CommandOutput("goose", "Failed to run compile command", ex.ToString(), CommandOutputItemType.Error);
 			}
 
-            return this.CreateCommandOutput(output.ToString());
-		}
-
-        private CommandOutput CreateCommandOutput(string buildLog)
-        {
-            try
-            {
-                var output = this.serializer.Deserialize<CommandOutput>(buildLog);
-                return output ?? CreateCommandOutput("on save command completed", "", CommandOutputItemType.Message);
-            }
-            catch (Exception ex)
-            {
-                return CreateCommandOutput(string.Format("unable to make sense of build log: {0}", ex), buildLog, CommandOutputItemType.Error);
-            }            
-        }
-
-
-        private static CommandOutput CreateCommandOutput(string message, string excerpt, CommandOutputItemType type)
-        {
-            return new CommandOutput
-            {
-                Name = "goose",
-                Results = new List<CommandOutputItem>
-				                                 {
-				                                     new CommandOutputItem
-				                                     {
-				                                         Message = message,
-				                                         Excerpt = excerpt,
-				                                         FileName = "goose.plugin",
-				                                         Type = type
-				                                     }
-				                                 },
-                Version = 1,
-                Time = DateTime.Now
-            };
-        }
-
+            return this.logParser.Parse(output.ToString());
+ 		}
+  
 	}    
 }
