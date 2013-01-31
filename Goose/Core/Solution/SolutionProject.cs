@@ -25,6 +25,11 @@
         {
             get
             {
+                var projectPath = this.ProjectFilePath;
+                if ( string.IsNullOrWhiteSpace( projectPath ) )
+                {
+                    return Enumerable.Empty<ProjectFile>();
+                }
                 var hierarchy = this.vsProject as IVsHierarchy;
 
                 return hierarchy.GetItemIds().Select(itemId =>
@@ -33,7 +38,7 @@
                         this.vsProject.GetMkDocument(itemId, out filePath);
                         if (!String.IsNullOrEmpty(filePath) && !Path.IsPathRooted(filePath))
                         {
-                            filePath = Path.GetFullPath(Path.Combine(this.ProjectFilePath, filePath));
+                            filePath = Path.GetFullPath(Path.Combine(projectPath, filePath));
                         }
                         return new ProjectFile(this.ProjectFilePath, filePath, itemId);
                     })
