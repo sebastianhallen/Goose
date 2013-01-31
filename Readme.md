@@ -3,8 +3,6 @@ Goose
 
 Goose is a visual studio extension that automatically runs a powershell script any time a .less file is saved. The command to run is defined in goose.config in the project root folder. You will need a separate goose.config for each project. 
 
-##Home
-http://sebastianhallen.github.com/Goose/
 
 ##Configuration
 The config file has the following structure:
