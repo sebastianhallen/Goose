@@ -4,14 +4,14 @@
     using NUnit.Framework;
 
     [TestFixture]
-    public class AggregateConfigurationParserTests
+    public class LegacyFallbackActionConfigurationParserTests
     {
-        private AggregateConfigurationParser parser;
+        private LegacyFallbackActionConfigurationParser parser;
 
         [SetUp]
         public void Before()
         {
-            this.parser = new AggregateConfigurationParser();
+            this.parser = new LegacyFallbackActionConfigurationParser();
         }
 
         [Test]

@@ -6,7 +6,7 @@
 
     public class PowerShellCommandConfiguration
     {
-        private readonly string projectDirectory;
+        private readonly string projectDirectory;        
         private string compileCommandField;
         private string ConfigPath
         {

@@ -1,6 +1,6 @@
 ﻿namespace Goose.Core.Configuration
 {
-    public class AggregateConfigurationParser
+    public class LegacyFallbackActionConfigurationParser
     {
         private readonly ActionConfigurationParser actionConfigurationParser = new ActionConfigurationParser();
         private readonly LegacyConfigurationParser legacyConfigurationParser = new LegacyConfigurationParser();
