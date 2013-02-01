@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\ActionConfigurationTests.cs" />
+    <Compile Include="Configuration\AggregateConfigurationParserTests.cs" />
     <Compile Include="Configuration\ConfigParserTests.cs" />
     <Compile Include="Configuration\LegacyConfigurationTest.cs" />
     <Compile Include="Output\JsonLogCommandOutputParserTests.cs" />

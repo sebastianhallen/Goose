@@ -13,13 +13,13 @@
             {
                 var xml = XDocument.Parse(configContent);
                 return (from action in xml.Elements("compile-less")                        
-                        let workingDirectory = action.Descendants("working-directory").SingleOrDefault()
+                        let workingDirectory = action.Descendants("build-directory").SingleOrDefault()
                         let command = action.Descendants("compile-command").SingleOrDefault()
                         select this.CreateCommandConfiguration(
                             "save",
                             workingDirectory == null ? null : workingDirectory.Value,
                             command == null ? null : command.Value))
-                        .SingleOrDefault();
+                        .Single();
             }
             catch (Exception)
             {

@@ -29,5 +29,13 @@ namespace Goose.Tests.Configuration
 
             Assert.That(config.IsValid, Is.False);
         }
+
+        [Test]
+        public void Configuration_should_not_be_valid_when_working_directory_is_not_set()
+        {
+            var config = new ActionConfiguration(Trigger.Save, null, "command");
+
+            Assert.That(config.IsValid, Is.False);
+        }
     }
 }

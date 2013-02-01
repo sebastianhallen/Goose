@@ -25,6 +25,7 @@
             {
                 return 
                     this.Trigger == Trigger.Save 
+                    && this.WorkingDirectory != null
                     && !string.IsNullOrWhiteSpace(this.Command);
 
             }

@@ -121,6 +121,20 @@
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Unknown));
         }
 
+        [Test]
+        public void Should_be_able_to_parse_a_complete_action_configuration()
+        {
+            var input = @"
+<action on=""save"">
+  <working-directory>Build</working-directory>
+  <command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</command> 
+</action>";
+
+            var config = this.Parse(input);
+
+            Assert.That(config.IsValid);
+        }
+
         private ActionConfiguration Parse(string input)
         {
             return this.parser.Parse(new MemoryStream(Encoding.UTF8.GetBytes(input)));

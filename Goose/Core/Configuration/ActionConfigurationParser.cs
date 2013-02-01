@@ -35,7 +35,7 @@
                             trigger == null ? null : trigger.Value, 
                             workingDirectory == null ? null : workingDirectory.Value, 
                             command == null ? null : command.Value))
-                        .SingleOrDefault();
+                        .Single();
             }
             catch (Exception)
             {
