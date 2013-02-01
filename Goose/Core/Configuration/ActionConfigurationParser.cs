@@ -5,7 +5,7 @@
     using System.Linq;
     using System.Xml.Linq;
 
-    public class ConfigurationParser
+    public class ActionConfigurationParser
     {
         public ActionConfiguration Parse(Stream configStream)
         {
@@ -22,7 +22,7 @@
             }
         }
 
-        public ActionConfiguration Parse(string configContent)
+        public virtual ActionConfiguration Parse(string configContent)
         {
             try
             {
@@ -43,7 +43,7 @@
             }
         }
 
-        private ActionConfiguration CreateCommandConfiguration(string triggerRaw, string workingDirectory, string command)
+        protected ActionConfiguration CreateCommandConfiguration(string triggerRaw, string workingDirectory, string command)
         {
             Trigger trigger;
             if (!Enum.TryParse(triggerRaw, true, out trigger))

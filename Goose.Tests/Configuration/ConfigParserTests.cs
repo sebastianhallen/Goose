@@ -8,12 +8,12 @@
     [TestFixture]
     public class ConfigParserTests
     {
-        private ConfigurationParser parser;
+        private ActionConfigurationParser parser;
 
         [SetUp]
         public void Before()
         {
-            this.parser = new ConfigurationParser();
+            this.parser = new ActionConfigurationParser();
         }
 
         [Test]

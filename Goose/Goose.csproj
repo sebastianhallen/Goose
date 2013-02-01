@@ -117,8 +117,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
-    <Compile Include="Core\Configuration\ConfigurationParser.cs" />
+    <Compile Include="Core\Configuration\ActionConfigurationParser.cs" />
     <Compile Include="Core\Configuration\ActionConfiguration.cs" />
+    <Compile Include="Core\Configuration\LegacyConfigurationParser.cs" />
     <Compile Include="Core\Configuration\Trigger.cs" />
     <Compile Include="Core\Configuration\Shell.cs" />
     <Compile Include="Core\Output\ICommandLogParser.cs" />
