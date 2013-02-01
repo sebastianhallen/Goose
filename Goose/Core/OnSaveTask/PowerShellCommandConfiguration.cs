@@ -2,11 +2,12 @@
 {
     using System;
     using System.IO;
-    using System.Xml;
+    using Configuration;
 
     public class PowerShellCommandConfiguration
     {
-        private readonly string projectDirectory;        
+        private readonly string projectDirectory;
+        private readonly LegacyFallbackActionConfigurationParser configParser;
         private string compileCommandField;
         private string ConfigPath
         {
@@ -27,35 +28,35 @@
         public PowerShellCommandConfiguration(string projectDirectory)
         {
             this.projectDirectory = projectDirectory;
+            this.configParser = new LegacyFallbackActionConfigurationParser();
         }
 
         public bool Configure()
         {
-            if (!File.Exists(this.ConfigPath))
-            {
-                this.ConfigurationFailedReason = string.Format("Unable to find config file @ {0}", this.ConfigPath);
-                return false;
-            }
-
+            var validConfiguration = false;
             try
             {
-                var xml = new XmlDocument();
-                xml.Load(this.ConfigPath);
-                
-                var buildDirectory = xml.SelectSingleNode("on-save-action/working-directory").InnerText;
-                var compileLessCommand = xml.SelectSingleNode("on-save-action/powershell-command").InnerText;
 
-                this.BuildDirectory = Path.Combine(projectDirectory, buildDirectory);
-                this.CompileCommand = compileLessCommand;
+                using (var fileStream = File.Open(this.ConfigPath, FileMode.Open))
+                {
+                    var config = this.configParser.Parse(fileStream);
 
+                    this.BuildDirectory = Path.Combine(projectDirectory, config.WorkingDirectory);
+                    this.CompileCommand = config.Command;
+
+                    validConfiguration = config.IsValid;
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                this.ConfigurationFailedReason = string.Format("Unable to find config file @ {0}", this.ConfigPath);
             }
             catch (Exception ex)
             {
-                this.ConfigurationFailedReason = string.Format("could not determine compile command from config: {0}", ex);
-                return false;
+                this.ConfigurationFailedReason = string.Format("could not determine compile command from config: {0}", ex);                
             }
 
-            return true;
+            return validConfiguration;
         }
     }
 }
