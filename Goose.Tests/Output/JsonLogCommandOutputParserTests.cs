@@ -1,7 +1,7 @@
-﻿namespace Goose.Tests
+﻿namespace Goose.Tests.Output
 {
     using System.Linq;
-    using Core.Output;
+    using Goose.Core.Output;
     using NUnit.Framework;
 
     [TestFixture]
@@ -49,8 +49,8 @@
 
             var result = this.logParser.Parse(log);
 
-            var message = result.Results.First().Message;
-            Assert.That(message, Is.EqualTo("Syntax Error on line 6"));
+            var message = result.Results.Last().Message;
+            Assert.That(message, Is.EqualTo("This is now done."));
         }
 
         [Test]

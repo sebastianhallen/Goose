@@ -46,7 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="JsonLogCommandOutputParserTests.cs" />
+    <Compile Include="Configuration\ActionConfigurationTests.cs" />
+    <Compile Include="Configuration\ConfigParserTests.cs" />
+    <Compile Include="Output\JsonLogCommandOutputParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

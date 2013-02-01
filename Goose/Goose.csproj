@@ -57,6 +57,7 @@
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="EnvDTE">
@@ -116,6 +117,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\Configuration\ConfigurationParser.cs" />
+    <Compile Include="Core\Configuration\ActionConfiguration.cs" />
+    <Compile Include="Core\Configuration\Trigger.cs" />
+    <Compile Include="Core\Configuration\Shell.cs" />
     <Compile Include="Core\Output\ICommandLogParser.cs" />
     <Compile Include="Core\OnSaveTask\PowerShellCommandConfiguration.cs" />
     <Compile Include="Core\Output\CommandOutput.cs" />
