@@ -1,10 +1,10 @@
-﻿namespace Goose.Tests.EventListener
+﻿namespace Goose.Tests.EventHandling
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Core.Configuration;
-    using Core.Solution;
-    using Core.Solution.EventHandling;
+    using Goose.Core.Configuration;
+    using Goose.Core.Solution;
+    using Goose.Core.Solution.EventHandling;
     using FakeItEasy;
     using NUnit.Framework;
 

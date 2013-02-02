@@ -3,6 +3,7 @@
     public enum Trigger
     {
         Unknown,
-        Save
+        Save,
+        Delete
     }
 }
