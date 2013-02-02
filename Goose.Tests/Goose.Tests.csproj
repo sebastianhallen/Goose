@@ -57,6 +57,8 @@
     <Compile Include="Configuration\LegacyFallbackActionConfigurationParserTests.cs" />
     <Compile Include="Configuration\ConfigParserTests.cs" />
     <Compile Include="Configuration\LegacyConfigurationTest.cs" />
+    <Compile Include="EventHandling\FakeProjectContext.cs" />
+    <Compile Include="EventHandling\FakeSolutionTestContext.cs" />
     <Compile Include="EventHandling\FileChangeConsumingTests.cs" />
     <Compile Include="EventHandling\FileEventListenerTests.cs" />
     <Compile Include="EventHandling\FileMonitorTests.cs" />

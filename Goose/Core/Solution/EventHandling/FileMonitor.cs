@@ -74,7 +74,7 @@
         public int FilesChanged(uint cChanges, string[] rgpszFile, uint[] rggrfChange)
         {
             var deleteMask = (uint) _VSFILECHANGEFLAGS.VSFILECHG_Del;
-            var changeMask = (uint) _VSFILECHANGEFLAGS.VSFILECHG_Add | (uint) _VSFILECHANGEFLAGS.VSFILECHG_Size | (uint) _VSFILECHANGEFLAGS.VSFILECHG_Time;
+            var changeMask = (uint)_VSFILECHANGEFLAGS.VSFILECHG_Add | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Size | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Time;
             if (rggrfChange.Any(change => (change & deleteMask) == deleteMask))
             {
                 this.ActOn(rgpszFile, Trigger.Delete);

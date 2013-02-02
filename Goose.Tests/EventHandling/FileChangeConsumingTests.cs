@@ -23,7 +23,6 @@
         }
 
         [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Add)]
-        [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Attr)]
         [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Size)]
         [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Time)]        
         public void Should_trigger_save_action_when_a_watched_file_is_saved(_VSFILECHANGEFLAGS changeFlag)
