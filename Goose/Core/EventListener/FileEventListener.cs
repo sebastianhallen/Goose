@@ -1,7 +1,7 @@
-﻿
-namespace Goose.Core.EventListener
+﻿namespace Goose.Core.EventListener
 {
     using System.Linq;
+    using Configuration;    
     using Solution;
 
     public class FileEventListener
@@ -17,22 +17,22 @@ namespace Goose.Core.EventListener
             this.globMatcher = globMatcher;
         }
 
-        public void Initialize(string glob)
+        public void Initialize(ActionConfiguration watchConfiguration)
         {
-            this.MonitorFileChanges(glob);
+            this.MonitorFileChanges(watchConfiguration);
         }
 
-        private void MonitorFileChanges(string glob)
+        private void MonitorFileChanges(ActionConfiguration watchConfiguration)
         {
             var matchingFilesInProject = 
                 from project in this.solutionFilesService.Projects
                 from file in project.Files
-				where this.globMatcher.Matches(file.FilePath, glob)
+				where this.globMatcher.Matches(file.FilePath, watchConfiguration.Glob)
 				select file;
 
             foreach (var file in matchingFilesInProject)
             {
-                this.fileMonitor.MonitorFile(file);
+                this.fileMonitor.MonitorFile(file, watchConfiguration.Trigger);
             }
 
             foreach (var project in this.solutionFilesService.Projects)

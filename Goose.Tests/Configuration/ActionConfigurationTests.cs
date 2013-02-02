@@ -37,5 +37,13 @@ namespace Goose.Tests.Configuration
 
             Assert.That(config.IsValid, Is.False);
         }
+
+        [Test]
+        public void Glob_should_be_less()
+        {
+            var config = new ActionConfiguration();
+
+            Assert.That(config.Glob, Is.EqualTo("*.less"));
+        }
     }
 }

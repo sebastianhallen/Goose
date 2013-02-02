@@ -36,5 +36,9 @@
             get { return Shell.PowerShell; }
         }
 
+        public string Glob
+        {
+            get { return "*.less"; }
+        }
     }
 }

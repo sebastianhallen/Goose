@@ -1,5 +1,6 @@
 ﻿namespace Goose.Tests.EventListener
 {
+    using Core.Configuration;
     using Core.EventListener;
     using Core.Solution;
     using FakeItEasy;
@@ -28,9 +29,9 @@
             A.CallTo(() => project.Files).Returns(new[] {A.Dummy<FileInProject>(), A.Dummy<FileInProject>()});
             A.CallTo(() => this.solutionFilesService.Projects).Returns(new[] { project });
 
-            this.eventListener.Initialize("");
+            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
 
-            A.CallTo(() => this.fileMonitor.MonitorFile(A<FileInProject>._)).MustHaveHappened(Repeated.Exactly.Twice);
+            A.CallTo(() => this.fileMonitor.MonitorFile(A<FileInProject>._, A<Trigger>._)).MustHaveHappened(Repeated.Exactly.Twice);
         }
 
         [Test]
@@ -39,7 +40,7 @@
             var projects = new[] {A.Dummy<ISolutionProject>(), A.Dummy<ISolutionProject>()};
             A.CallTo(() => this.solutionFilesService.Projects).Returns(projects);
 
-            this.eventListener.Initialize("");
+            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
 
             A.CallTo(() => this.fileMonitor.MonitorProject(A<string>._)).MustHaveHappened(Repeated.Exactly.Twice);
         }
