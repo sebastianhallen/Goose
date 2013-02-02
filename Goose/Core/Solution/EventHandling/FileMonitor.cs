@@ -26,11 +26,6 @@
             this.fileChangeSubscriber.Attach(this);
         }
 
-        public void MonitorFile(FileInProject file, Trigger trigger)
-        {
-            this.monitoredFilesField.Add(this.fileChangeSubscriber.Watch(file.FilePath));
-        }
-
         public void MonitorProject(string path, ActionConfiguration watchConfiguration)
         {
             var matchingFilesInProject = 
@@ -42,28 +37,8 @@
             this.monitoredProjectsField.Add(this.fileChangeSubscriber.Watch(path));
             foreach (var file in matchingFilesInProject)
             {
-                this.MonitorFile(file, watchConfiguration.Trigger);
+                this.monitoredFilesField.Add(this.fileChangeSubscriber.Watch(file.FilePath));
             }
-        }
-
-        public bool IsMonitoredProject(string projectCandidate)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void UpdateFileMonitorsForProject(string path)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEnumerable<MonitoredFile> MonitoredFiles
-        {
-            get { return this.monitoredFilesField; }
-        }
-
-        public IEnumerable<MonitoredFile> MonitoredProjects
-        {
-            get { return this.monitoredProjectsField; }
         }
 
         public void ActOn(IEnumerable<string> files, Trigger trigger)
