@@ -142,7 +142,7 @@
     <Compile Include="Core\Solution\MonitoredFile.cs" />
     <Compile Include="Core\OnSaveTask\IOnSaveActionTaskFactory.cs" />
     <Compile Include="Core\OnSaveTask\RunPowerShellCommandOnSaveTaskFactory.cs" />
-    <Compile Include="Core\Solution\ProjectFile.cs" />
+    <Compile Include="Core\Solution\FileInProject.cs" />
     <Compile Include="Core\Solution\SolutionFilesService.cs" />
     <Compile Include="Core\Solution\SolutionProject.cs" />
     <Compile Include="Core\Output\OutputService.cs" />

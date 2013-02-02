@@ -22,14 +22,14 @@
             }
         }
 
-        public IEnumerable<ProjectFile> Files
+        public IEnumerable<FileInProject> Files
         {
             get
             {
                 var projectPath = this.ProjectFilePath;
                 if ( string.IsNullOrWhiteSpace( projectPath ) )
                 {
-                    return Enumerable.Empty<ProjectFile>();
+                    return Enumerable.Empty<FileInProject>();
                 }
                 var hierarchy = this.vsProject as IVsHierarchy;
 
@@ -41,7 +41,7 @@
                         {
                             filePath = Path.GetFullPath(Path.Combine(projectPath, filePath));
                         }
-                        return new ProjectFile(this.ProjectFilePath, filePath, itemId);
+                        return new FileInProject(this.ProjectFilePath, filePath, itemId);
                     })
                                 .Where(file => !String.IsNullOrEmpty(file.ProjectPath))
                                 .Where(file => File.Exists(file.FilePath));

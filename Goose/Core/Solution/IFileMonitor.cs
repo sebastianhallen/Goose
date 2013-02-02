@@ -2,6 +2,7 @@
 {    
     public interface IFileMonitor
     {
-        void MonitorFile(ProjectFile file);
+        void MonitorFile(FileInProject file);
+        void MonitorProject(string path);
     }
 }

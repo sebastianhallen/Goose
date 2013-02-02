@@ -16,7 +16,7 @@
 		private readonly ISolutionFilesService solutionFilesService;
 		private readonly IOnSaveTaskDispatcher onSaveTaskDispatcher;
 		private readonly IVsFileChangeEx fileChangeService;
-		private readonly IList<MonitoredFile<ProjectFile>> monitoredLessFiles = new List<MonitoredFile<ProjectFile>>();
+		private readonly IList<MonitoredFile<FileInProject>> monitoredLessFiles = new List<MonitoredFile<FileInProject>>();
 		private readonly IList<MonitoredFile> monitoredProjects = new List<MonitoredFile>();
 
 		public LessFileOnSaveListener(IVsFileChangeEx fileChangeService, ISolutionFilesService solutionFilesService, IOnSaveTaskDispatcher onSaveTaskDispatcher)
@@ -131,7 +131,7 @@
 				if (!this.LessFileIsMonitored(lessFile))
 				{
 					var cookie = this.MonitorFile(lessFile.FilePath);
-					this.monitoredLessFiles.Add(new MonitoredFile<ProjectFile>(cookie, lessFile.FilePath, lessFile));
+					this.monitoredLessFiles.Add(new MonitoredFile<FileInProject>(cookie, lessFile.FilePath, lessFile));
 				}
 			}
 		}
@@ -163,7 +163,7 @@
 
 
 
-		private ProjectFile FindMonitoredLessFile(string filePath)
+		private FileInProject FindMonitoredLessFile(string filePath)
 		{
 			var monitoredFile = this.monitoredLessFiles.SingleOrDefault(lessFile => lessFile.PathMatches(filePath));
 			if (monitoredFile == null)
@@ -183,7 +183,7 @@
 			return this.monitoredProjects.Any(watchedFile => watchedFile.PathMatches(filePath));
 		}
 
-		private bool LessFileIsMonitored(ProjectFile file)
+		private bool LessFileIsMonitored(FileInProject file)
 		{
 			return this.LessFileIsMonitored(file.FilePath);
 		}

@@ -34,6 +34,11 @@ namespace Goose.Core.EventListener
             {
                 this.fileMonitor.MonitorFile(file);
             }
+
+            foreach (var project in this.solutionFilesService.Projects)
+            {
+                this.fileMonitor.MonitorProject(project.ProjectFilePath);
+            }
         }
     }
 }
