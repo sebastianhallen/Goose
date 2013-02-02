@@ -13,13 +13,13 @@
 	   : IVsFileChangeEvents, IDisposable
 	{
 		private const uint FileChangeFlags = (uint)_VSFILECHANGEFLAGS.VSFILECHG_Add | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Size | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Time;
-		private readonly SolutionFilesService solutionFilesService;
+		private readonly ISolutionFilesService solutionFilesService;
 		private readonly IOnSaveTaskDispatcher onSaveTaskDispatcher;
 		private readonly IVsFileChangeEx fileChangeService;
 		private readonly IList<MonitoredFile<ProjectFile>> monitoredLessFiles = new List<MonitoredFile<ProjectFile>>();
 		private readonly IList<MonitoredFile> monitoredProjects = new List<MonitoredFile>();
 
-		public LessFileOnSaveListener(IVsFileChangeEx fileChangeService, SolutionFilesService solutionFilesService, IOnSaveTaskDispatcher onSaveTaskDispatcher)
+		public LessFileOnSaveListener(IVsFileChangeEx fileChangeService, ISolutionFilesService solutionFilesService, IOnSaveTaskDispatcher onSaveTaskDispatcher)
 		{
 			this.solutionFilesService = solutionFilesService;
 			this.onSaveTaskDispatcher = onSaveTaskDispatcher;

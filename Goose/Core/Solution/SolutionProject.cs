@@ -7,7 +7,8 @@
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
 
-    public class SolutionProject
+    public class SolutionProject 
+        : ISolutionProject
     {
         private readonly IVsProject vsProject;
 

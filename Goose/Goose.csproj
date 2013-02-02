@@ -123,12 +123,17 @@
     <Compile Include="Core\Configuration\LegacyConfigurationParser.cs" />
     <Compile Include="Core\Configuration\Trigger.cs" />
     <Compile Include="Core\Configuration\Shell.cs" />
+    <Compile Include="Core\EventListener\FileEventListener.cs" />
     <Compile Include="Core\Output\ICommandLogParser.cs" />
     <Compile Include="Core\OnSaveTask\PowerShellCommandConfiguration.cs" />
     <Compile Include="Core\Output\CommandOutput.cs" />
     <Compile Include="Core\Output\CommandOutputItem.cs" />
     <Compile Include="Core\Output\CommandOutputItemType.cs" />
     <Compile Include="Core\Output\JsonCommandLogParser.cs" />
+    <Compile Include="Core\Solution\IFileMonitor.cs" />
+    <Compile Include="Core\Solution\IGlobMatcher.cs" />
+    <Compile Include="Core\Solution\ISolutionFilesService.cs" />
+    <Compile Include="Core\Solution\ISolutionProject.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Core\Dispatcher\BufferedOnSaveTaskDispatcher.cs" />
     <Compile Include="Core\Solution\HierarchyTraversionExtensions.cs" />

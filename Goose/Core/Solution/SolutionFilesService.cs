@@ -6,7 +6,8 @@
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
 
-    public class SolutionFilesService
+    public class SolutionFilesService 
+        : ISolutionFilesService
     {
         private readonly IServiceProvider serviceProvider;
         private IVsSolution Solution
@@ -22,7 +23,7 @@
             this.serviceProvider = serviceProvider;            
         }
 
-        public IEnumerable<SolutionProject> Projects
+        public IEnumerable<ISolutionProject> Projects
         {
             get
             {
