@@ -1,29 +1,11 @@
-﻿namespace Goose.Core.Solution
+﻿namespace Goose.Core.Solution.EventHandling
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Configuration;
-    using Microsoft.VisualStudio.Shell.Interop;
-
-    public interface IFileChangeSubscriber
-    {
-        MonitoredFile Watch(string file);
-        void Attach(FileMonitor fileMonitor);
-    }
-
-    public class FileChangeMonitor
-        
-    {
-        private readonly IVsFileChangeEx fileChangeEx;
-
-        public FileChangeMonitor(IVsFileChangeEx fileChangeEx)
-        {
-            this.fileChangeEx = fileChangeEx;
-        }
-    }
+    using Goose.Core.Configuration;
 
     public class FileMonitor
-        : IFileMonitor
+        : IFileMonitor, IFileChangeConsumer
     {
         private readonly ISolutionFilesService solutionFilesService;
         private readonly IGlobMatcher globMatcher;
@@ -80,6 +62,11 @@
         public IEnumerable<MonitoredFile> MonitoredProjects
         {
             get { return this.monitoredProjectsField; }
+        }
+
+        public void ActOn(IEnumerable<uint> cookies, Trigger trigger)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

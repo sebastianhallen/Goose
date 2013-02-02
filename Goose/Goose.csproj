@@ -130,9 +130,12 @@
     <Compile Include="Core\Output\CommandOutputItem.cs" />
     <Compile Include="Core\Output\CommandOutputItemType.cs" />
     <Compile Include="Core\Output\JsonCommandLogParser.cs" />
-    <Compile Include="Core\Solution\FileMonitor.cs" />
-    <Compile Include="Core\Solution\IFileMonitor.cs" />
-    <Compile Include="Core\Solution\IGlobMatcher.cs" />
+    <Compile Include="Core\Solution\EventHandling\FileChangeSubscriber.cs" />
+    <Compile Include="Core\Solution\EventHandling\FileMonitor.cs" />
+    <Compile Include="Core\Solution\EventHandling\IFileChangeConsumer.cs" />
+    <Compile Include="Core\Solution\EventHandling\IFileChangeSubscriber.cs" />
+    <Compile Include="Core\Solution\EventHandling\IFileMonitor.cs" />
+    <Compile Include="Core\Solution\EventHandling\IGlobMatcher.cs" />
     <Compile Include="Core\Solution\ISolutionFilesService.cs" />
     <Compile Include="Core\Solution\ISolutionProject.cs" />
     <Compile Include="Guids.cs" />
@@ -140,7 +143,7 @@
     <Compile Include="Core\Solution\HierarchyTraversionExtensions.cs" />
     <Compile Include="Core\Dispatcher\IOnSaveTaskDispatcher.cs" />
     <Compile Include="Core\LessFileOnSaveListener.cs" />
-    <Compile Include="Core\Solution\MonitoredFile.cs" />
+    <Compile Include="Core\Solution\EventHandling\MonitoredFile.cs" />
     <Compile Include="Core\OnSaveTask\IOnSaveActionTaskFactory.cs" />
     <Compile Include="Core\OnSaveTask\RunPowerShellCommandOnSaveTaskFactory.cs" />
     <Compile Include="Core\Solution\FileInProject.cs" />

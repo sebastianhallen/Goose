@@ -1,4 +1,4 @@
-﻿namespace Goose.Core.Solution
+﻿namespace Goose.Core.Solution.EventHandling
 {
     using System;
 

@@ -5,6 +5,7 @@
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
     using Solution;
+    using Solution.EventHandling;
 
     public class FileEventListener
         : IVsFileChangeEvents

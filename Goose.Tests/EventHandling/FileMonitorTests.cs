@@ -4,6 +4,7 @@
     using System.Linq;
     using Core.Configuration;
     using Core.Solution;
+    using Core.Solution.EventHandling;
     using FakeItEasy;
     using NUnit.Framework;
 
@@ -52,8 +53,6 @@
         [Test]
         public void File_change_subscriber_should_be_attached_to_monitor()
         {
-            new FileMonitor(this.solutionFilesService, this.globMatcher, this.fileChangeSubscriber);
-
             A.CallTo(() => this.fileChangeSubscriber.Attach(this.fileMonitor)).MustHaveHappened();
         }
 

@@ -1,6 +1,6 @@
-﻿namespace Goose.Core.Solution
+﻿namespace Goose.Core.Solution.EventHandling
 {
-    using Configuration;
+    using Goose.Core.Configuration;
 
     public interface IFileMonitor
     {

@@ -57,8 +57,8 @@
     <Compile Include="Configuration\LegacyFallbackActionConfigurationParserTests.cs" />
     <Compile Include="Configuration\ConfigParserTests.cs" />
     <Compile Include="Configuration\LegacyConfigurationTest.cs" />
-    <Compile Include="EventListener\FileEventListenerTests.cs" />
-    <Compile Include="EventListener\FileMonitorTests.cs" />
+    <Compile Include="EventHandling\FileEventListenerTests.cs" />
+    <Compile Include="EventHandling\FileMonitorTests.cs" />
     <Compile Include="Output\JsonLogCommandOutputParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
