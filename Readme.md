@@ -8,12 +8,15 @@ Goose is a visual studio extension that automatically runs a powershell script a
 The config file has the following structure:
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
-<action on="save">
-  <!-- relative path from the project directory to the working directory of the command -->
-  <working-directory>Build</working-directory>
-  <command>$now = Get-Date ; Add-Content build.log "Last build: $now"</command> 
-</action>
+<goose version="1">
+  <action on="save">
+    <!-- relative path from the project directory to the working directory of the command -->
+    <working-directory>Build</working-directory>
+    <command>$now = Get-Date ; Add-Content build.log "Last build: $now"</command> 
+  </action>
+</goose>
 ```
+
 **working-directory**: specifies the build directory relative to the project root folder. The on save command will be run in this directory.
 **command**: the command that will be run whenever a less file is saved.
 
