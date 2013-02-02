@@ -32,10 +32,12 @@
         public void Should_be_able_to_parse_a_complete_action_configuration()
         {
             var input = @"
-<action on=""save"">
-  <working-directory>Build</working-directory>
-  <command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</command> 
-</action>";
+<goose version=""1.0"">
+    <action on=""save"">
+        <working-directory>Build</working-directory>
+        <command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</command> 
+    </action>
+</goose>";
 
             var config = this.parser.Parse(input);
 
@@ -46,9 +48,11 @@
         public void Should_favor_result_from_action_config_over_legacy_config_when_parsing_uncomplete_config()
         {
             var input = @"
-<action on=""save"">
-  <command>command</command> 
-</action>";
+<goose version=""1.0"">
+    <action on=""save"">
+        <command>command</command> 
+    </action>
+</goose>";
 
             var config = this.parser.Parse(input);
 

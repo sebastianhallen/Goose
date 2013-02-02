@@ -27,7 +27,7 @@
             try
             {
                 var xml = XDocument.Parse(configContent);
-                return (from action in xml.Elements("action")
+                return (from action in xml.Element("goose").Elements("action")
                         let trigger = action.Attribute("on")
                         let workingDirectory = action.Descendants("working-directory").SingleOrDefault()
                         let command = action.Descendants("command").SingleOrDefault()
