@@ -17,18 +17,18 @@
 
     public class MonitoredFile
     {
-        public readonly uint MonitorCookie;
-        protected readonly string filePath;
+        public uint MonitorCookie { get; private set; }
+        public string FilePath { get; private set; }
 
         public MonitoredFile(uint monitorCookie, string filePath)
         {
             this.MonitorCookie = monitorCookie;
-            this.filePath = filePath;
+            this.FilePath = filePath;
         }
-
+       
         public bool PathMatches(string candidate)
         {
-            return String.Equals(candidate, this.filePath);
+            return String.Equals(candidate, this.FilePath);
         }
     }
 }

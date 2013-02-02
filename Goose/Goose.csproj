@@ -130,6 +130,7 @@
     <Compile Include="Core\Output\CommandOutputItem.cs" />
     <Compile Include="Core\Output\CommandOutputItemType.cs" />
     <Compile Include="Core\Output\JsonCommandLogParser.cs" />
+    <Compile Include="Core\Solution\FileMonitor.cs" />
     <Compile Include="Core\Solution\IFileMonitor.cs" />
     <Compile Include="Core\Solution\IGlobMatcher.cs" />
     <Compile Include="Core\Solution\ISolutionFilesService.cs" />

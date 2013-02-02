@@ -1,10 +1,13 @@
 ﻿namespace Goose.Core.EventListener
 {
     using System.Linq;
-    using Configuration;    
+    using Configuration;
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell.Interop;
     using Solution;
 
     public class FileEventListener
+        : IVsFileChangeEvents
     {
         private readonly ISolutionFilesService solutionFilesService;
         private readonly IFileMonitor fileMonitor;
@@ -37,8 +40,25 @@
 
             foreach (var project in this.solutionFilesService.Projects)
             {
-                this.fileMonitor.MonitorProject(project.ProjectFilePath);
+                this.fileMonitor.MonitorProject(project.ProjectFilePath, watchConfiguration);
             }
+        }
+
+        public int FilesChanged(uint cChanges, string[] rgpszFile, uint[] rggrfChange)
+        {
+            foreach (var file in rgpszFile)
+            {
+                if (this.fileMonitor.IsMonitoredProject(file))
+                {
+                    this.fileMonitor.UpdateFileMonitorsForProject(file);
+                }
+            }
+            return VSConstants.S_OK;
+        }
+
+        public int DirectoryChanged(string pszDirectory)
+        {
+            return VSConstants.S_OK;
         }
     }
 }
