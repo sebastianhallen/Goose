@@ -1,8 +1,8 @@
-﻿namespace Goose.Core.OnSaveTask
+﻿namespace Goose.Core.Action
 {
     using System;
     using System.IO;
-    using Configuration;
+    using Goose.Core.Configuration;
 
     public class PowerShellCommandConfiguration
     {

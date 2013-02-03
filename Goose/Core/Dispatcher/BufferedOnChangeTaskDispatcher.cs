@@ -4,7 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Goose.Core.OnSaveTask;
+    using Action;
 
     public class BufferedOnChangeTaskDispatcher
 		: IOnChangeTaskDispatcher
@@ -32,11 +32,6 @@
 		}
 
         public void QueueOnChangeTask(GooseAction task)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void QueueOnChangeTask(string projectPath, Task task)
         {
             throw new System.NotImplementedException();
         }

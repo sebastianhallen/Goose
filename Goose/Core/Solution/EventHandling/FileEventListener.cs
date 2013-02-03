@@ -2,12 +2,12 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Action;
     using Dispatcher;
     using Goose.Core.Configuration;
     using Goose.Core.Solution;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
-    using OnSaveTask;
 
     public class FileEventListener
         : IFileChangeConsumer

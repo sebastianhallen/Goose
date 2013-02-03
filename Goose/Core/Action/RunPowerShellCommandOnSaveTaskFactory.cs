@@ -1,10 +1,10 @@
-﻿namespace Goose.Core.OnSaveTask
+﻿namespace Goose.Core.Action
 {
     using System;
     using System.Management.Automation.Runspaces;
     using System.Text;
     using System.Threading.Tasks;
-    using Output;
+    using Goose.Core.Output;
 
     public class RunPowerShellCommandOnSaveTaskFactory
 		: IOnSaveActionTaskFactory

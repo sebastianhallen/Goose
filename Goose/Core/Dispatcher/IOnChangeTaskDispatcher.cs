@@ -1,6 +1,6 @@
 ﻿namespace Goose.Core.Dispatcher
 {
-    using OnSaveTask;
+    using Action;
 
     public interface IOnChangeTaskDispatcher
     {

@@ -1,8 +1,7 @@
 ﻿namespace Goose.Tests.EventHandling
 {
-    using System;
+    using Core.Action;
     using Core.Dispatcher;
-    using Core.OnSaveTask;
     using FakeItEasy;
     using Goose.Core.Configuration;
     using Goose.Core.Solution;

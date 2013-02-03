@@ -1,4 +1,4 @@
-﻿namespace Goose.Core.OnSaveTask
+﻿namespace Goose.Core.Action
 {
     public class GooseAction
     {
