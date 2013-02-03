@@ -1,8 +1,13 @@
 Goose
 =====
 
-Goose is a visual studio extension that automatically runs a powershell script any time a file matching a specified glob is saved. The command to run is defined in goose.config in the project root folder. You will need a separate goose.config for each project. 
+Goose is a visual studio extension that automatically runs a powershell script any time a file matching a specified glob is saved.
 
+##Usage
+Install the plugin and place a goose.config file in the project folder. The goose.config does not have to be included in the project.
+Each project should have it's own goose.config. 
+
+Note that the extension will run anything you put in compile-command with the same priviliges as visual studio. You have been warned.
 
 ##Configuration
 The config file has the following structure:
@@ -39,11 +44,3 @@ Don't use it. No new features will be supported for this format. The plugin was 
 **build-directory**: specifies the build directory relative to the project root folder. The on save command will be run in this directory.
 **compile-command**: the command that will be run whenever a less file is saved.
 
-Note that the extension will run anything you put in compile-command with the same priviliges as visual studio. You have been warned.
-
-
-
-
-#####KTHXBAI
-We hope this helps you shave of a few seconds in your daily work. 
-Let us know of any issues/bugs/feature requests.
