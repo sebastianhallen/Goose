@@ -1,9 +1,11 @@
 ﻿namespace Goose.Tests.EventHandling
 {
+    using System;
     using FakeItEasy;
     using Goose.Core.Configuration;
     using Goose.Core.Solution;
     using Goose.Core.Solution.EventHandling;
+    using Microsoft.VisualStudio.Shell.Interop;
     using NUnit.Framework;
 
     [TestFixture]
@@ -79,9 +81,31 @@
         [Test]
         public void Should_not_monitor_files_when_configuration_is_not_valid()
         {
-            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
+            this.eventListener.Initialize(new ActionConfiguration());
 
             A.CallTo(() => this.solutionFilesService.Projects).MustNotHaveHappened();
+        }
+
+        [Test]
+        public void Should_trigger_deletion_action_when_a_watched_file_is_deleted()
+        {
+            var file = new[] { "file" };
+
+            this.eventListener.FilesChanged(1, file, new [] { (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del });
+
+            A.CallTo(() => this.fileMonitor.UnMonitor(file)).MustHaveHappened();
+        }
+
+        [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Add)]
+        [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Size)]
+        [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Time)]
+        public void Should_trigger_save_action_when_a_watched_file_is_saved(_VSFILECHANGEFLAGS changeFlag)
+        {
+            var file = new[] {"file"};
+
+            this.eventListener.FilesChanged(1, file, new [] { (uint)changeFlag });
+
+            throw new NotImplementedException();
         }
     }
 }

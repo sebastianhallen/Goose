@@ -38,6 +38,11 @@
 
         public void ActOn(IEnumerable<string> files, Trigger trigger)
         {
+            this.UpdateMonitors(files, trigger);
+        }
+
+        private void UpdateMonitors(IEnumerable<string> files, Trigger trigger)
+        {
             if (Trigger.Delete.Equals(trigger))
             {
                 this.fileMonitor.UnMonitor(files);
@@ -51,7 +56,6 @@
                 {
                     this.fileMonitor.MonitorProject(project, this.configuration.Glob);
                 }
-                
             }
         }
 
