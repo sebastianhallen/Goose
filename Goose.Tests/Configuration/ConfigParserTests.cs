@@ -122,11 +122,21 @@
         }
 
         [Test]
+        public void Should_set_glob_to_default_value_when_no_glob_is_present()
+        {
+            var input = @"<goose version=""1.0""><action glob=""*.ext""></action></goose>";
+
+            var config = this.Parse(input);
+
+            Assert.That(config.Glob, Is.EqualTo("*.ext"));
+        }
+
+        [Test]
         public void Should_be_able_to_parse_a_complete_action_configuration()
         {
             var input = @"
 <goose version=""1.0"">
-    <action on=""save"">
+    <action on=""save"" glob=""*.ext"">
         <working-directory>Build</working-directory>
         <command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</command> 
     </action>
@@ -135,11 +145,17 @@
             var config = this.Parse(input);
 
             Assert.That(config.IsValid);
+            Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
+            Assert.That(config.Glob, Is.EqualTo("*.ext"));
+            Assert.That(config.WorkingDirectory, Is.EqualTo("Build"));
+            Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last build: $now"""));
+            Assert.That(config.ProjectRoot, Is.EqualTo("root"));
+            Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
         }
 
         private ActionConfiguration Parse(string input)
         {
-            return this.parser.Parse("", new MemoryStream(Encoding.UTF8.GetBytes(input)));
+            return this.parser.Parse("root", new MemoryStream(Encoding.UTF8.GetBytes(input)));
         }
     }
 }

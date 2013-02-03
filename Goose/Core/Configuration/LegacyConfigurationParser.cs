@@ -16,8 +16,9 @@
                         let workingDirectory = action.Descendants("build-directory").SingleOrDefault()
                         let command = action.Descendants("compile-command").SingleOrDefault()
                         select this.CreateCommandConfiguration(
-                            projectRoot,
+                            projectRoot,                            
                             "save",
+                            "*.less",
                             workingDirectory == null ? null : workingDirectory.Value,
                             command == null ? null : command.Value))
                         .Single();

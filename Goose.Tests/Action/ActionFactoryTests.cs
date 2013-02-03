@@ -27,7 +27,7 @@
         [Test]
         public void Should_return_power_shell_action_when_configuration_is_valid()
         {
-            var action = this.actionFactory.Create(new ActionConfiguration(Trigger.Save, "", "ls", "root-directory"));
+            var action = this.actionFactory.Create(new ActionConfiguration(Trigger.Save, "glob", "", "ls", "root-directory"));
 
             Assert.That(action is PowerShellGooseAction);
         }

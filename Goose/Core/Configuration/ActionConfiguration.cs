@@ -11,12 +11,14 @@
         public ActionConfiguration(string projectPath)
         {
             this.ProjectRoot = projectPath;
-            this.Trigger = Trigger.Unknown;            
+            this.Trigger = Trigger.Unknown;
+            this.Glob = "*.less";
         }
 
-        public ActionConfiguration(Trigger trigger, string workingDirectory, string command, string projectRoot)
+        public ActionConfiguration(Trigger trigger, string glob, string workingDirectory, string command, string projectRoot)
         {
             this.Trigger = trigger;
+            this.Glob = glob;
             this.WorkingDirectory = workingDirectory;
             this.Command = command;
             this.ProjectRoot = projectRoot;
@@ -28,6 +30,7 @@
             {
                 return 
                     this.Trigger == Trigger.Save 
+                    && !string.IsNullOrWhiteSpace(this.Glob)
                     && this.WorkingDirectory != null
                     && !string.IsNullOrWhiteSpace(this.Command);
 
@@ -39,9 +42,6 @@
             get { return Shell.PowerShell; }
         }
 
-        public string Glob
-        {
-            get { return "*.less"; }
-        }
+        public string Glob { get; private set; }
     }
 }

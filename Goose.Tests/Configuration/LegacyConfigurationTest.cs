@@ -23,9 +23,15 @@
   <compile-command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</compile-command> 
 </compile-less>";
 
-            var config = this.parser.Parse("", input);
+            var config = this.parser.Parse("root", input);
 
             Assert.That(config.IsValid);
+            Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last build: $now"""));
+            Assert.That(config.Glob, Is.EqualTo("*.less"));
+            Assert.That(config.ProjectRoot, Is.EqualTo("root"));
+            Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
+            Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
+            Assert.That(config.WorkingDirectory, Is.EqualTo("Build"));
         }
     }
 }

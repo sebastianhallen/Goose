@@ -8,7 +8,7 @@
     {
         protected override ActionConfiguration CreateDummy()
         {
-            return new ActionConfiguration(Trigger.Save, "", "command", "root");
+            return new ActionConfiguration(Trigger.Save, "*.less", "", "command", "root");
         }
     }
 }

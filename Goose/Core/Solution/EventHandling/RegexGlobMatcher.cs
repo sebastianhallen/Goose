@@ -7,6 +7,11 @@
     {
         public bool Matches(string fileName, string glob)
         {
+            if (string.IsNullOrWhiteSpace(glob) || string.IsNullOrWhiteSpace(fileName))
+            {
+                return false;
+            }
+
             var regexGlob = string.Format("^{0}$", glob
                                                        .Replace("*", ".*")
                                                        .Replace("?", "."));

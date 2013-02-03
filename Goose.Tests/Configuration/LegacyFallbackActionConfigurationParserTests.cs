@@ -33,7 +33,7 @@
         {
             var input = @"
 <goose version=""1.0"">
-    <action on=""save"">
+    <action on=""save"" glob=""glob"">
         <working-directory>Build</working-directory>
         <command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</command> 
     </action>
