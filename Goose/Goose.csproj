@@ -131,7 +131,6 @@
     <Compile Include="Core\Output\IOutputService.cs" />
     <Compile Include="Core\Solution\EventHandling\FileEventListener.cs" />
     <Compile Include="Core\Output\ICommandLogParser.cs" />
-    <Compile Include="Core\Action\PowerShellCommandConfiguration.cs" />
     <Compile Include="Core\Output\CommandOutput.cs" />
     <Compile Include="Core\Output\CommandOutputItem.cs" />
     <Compile Include="Core\Output\CommandOutputItemType.cs" />
@@ -148,10 +147,7 @@
     <Compile Include="Core\Dispatcher\BufferedOnChangeTaskDispatcher.cs" />
     <Compile Include="Core\Solution\HierarchyTraversionExtensions.cs" />
     <Compile Include="Core\Dispatcher\IOnChangeTaskDispatcher.cs" />
-    <Compile Include="Core\LessFileOnSaveListener.cs" />
     <Compile Include="Core\Solution\EventHandling\MonitoredFile.cs" />
-    <Compile Include="Core\Action\IOnSaveActionTaskFactory.cs" />
-    <Compile Include="Core\Action\RunPowerShellCommandOnSaveTaskFactory.cs" />
     <Compile Include="Core\Solution\FileInProject.cs" />
     <Compile Include="Core\Solution\SolutionFilesService.cs" />
     <Compile Include="Core\Solution\SolutionProject.cs" />

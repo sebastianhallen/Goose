@@ -29,8 +29,34 @@
             get
             {
                 var workingDirectoryAbsolutePath = Path.Combine(this.rootPath, this.workingDirectory);
-                var command = string.Format(@"cd ""{0}"" ; {1}", workingDirectoryAbsolutePath, this.command);
-                return this.powershellTaskFactory.Create(command);
+                var powerShellCommand = string.Format(@"cd ""{0}"" ; {1}", workingDirectoryAbsolutePath, this.command);
+                return this.powershellTaskFactory.Create(powerShellCommand);
+            }
+        }
+
+        protected bool Equals(PowerShellGooseAction other)
+        {
+            return string.Equals(rootPath, other.rootPath) && 
+                   string.Equals(workingDirectory, other.workingDirectory) && 
+                   string.Equals(command, other.command);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((PowerShellGooseAction) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = (rootPath != null ? rootPath.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (workingDirectory != null ? workingDirectory.GetHashCode() : 0);
+                hashCode = (hashCode*397) ^ (command != null ? command.GetHashCode() : 0);
+                return hashCode;
             }
         }
     }
@@ -39,5 +65,10 @@
         : IGooseAction
     {
         public Task Work { get { return new Task(() => { });} }
+
+        public override int GetHashCode()
+        {
+            return 0;
+        }
     }
 }

@@ -4,7 +4,6 @@
 
     public interface IOnChangeTaskDispatcher
     {
-        void QueueOnChangeTaskFor(string filePath);
         void QueueOnChangeTask(IGooseAction task);
     }
 }

@@ -16,14 +16,14 @@
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
 	public sealed class GoosePackage : Package
 	{
-		private LessFileOnSaveListener fileChangeListener;
+//		private LessFileOnSaveListener fileChangeListener;
 
 		protected override void Dispose(bool disposing)
 		{
-			if (!disposing && this.fileChangeListener != null)
-			{
-				this.fileChangeListener.Dispose();
-			}
+            //if (!disposing && this.fileChangeListener != null)
+            //{
+            //    this.fileChangeListener.Dispose();
+            //}
 			base.Dispose(disposing);
 		}
 
@@ -33,10 +33,10 @@
 
 			var solutionFilesService = new SolutionFilesService(this);
 			var outputService = new OutputService(this);
-			var onSaveTaskFactory = new RunPowerShellCommandOnSaveTaskFactory(outputService, new JsonCommandLogParser());
-			var onSaveTaskDispatcher = new BufferedOnChangeTaskDispatcher(onSaveTaskFactory);
+			var onSaveTaskDispatcher = new BufferedOnChangeTaskDispatcher();
 
-			this.fileChangeListener = new LessFileOnSaveListener(fileChangeService, solutionFilesService, onSaveTaskDispatcher);
+			//this.fileChangeListener = new LessFileOnSaveListener(fileChangeService, solutionFilesService, onSaveTaskDispatcher);
+
 
 			base.Initialize();
 

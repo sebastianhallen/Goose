@@ -31,5 +31,7 @@
 
             Assert.That(action is PowerShellGooseAction);
         }
+
+
     }
 }

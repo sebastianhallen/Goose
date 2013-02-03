@@ -9,31 +9,24 @@
     public class BufferedOnChangeTaskDispatcher
 		: IOnChangeTaskDispatcher
 	{
-		private readonly IOnSaveActionTaskFactory taskFactory;
-		private readonly BlockingCollection<string> mainQueue = new BlockingCollection<string>();
-		private readonly BlockingCollection<string> currentBuildQueue = new BlockingCollection<string>();
+		private readonly BlockingCollection<IGooseAction> mainQueue = new BlockingCollection<IGooseAction>();
+        private readonly BlockingCollection<IGooseAction> currentBuildQueue = new BlockingCollection<IGooseAction>();
 		private readonly object syncLock = new object();
 		private bool isBuilding;
 
-		public BufferedOnChangeTaskDispatcher(IOnSaveActionTaskFactory taskFactory)
+		public BufferedOnChangeTaskDispatcher()
 		{
-			this.taskFactory = taskFactory;
 			this.isBuilding = false;
 		}
 
-		public void QueueOnChangeTaskFor(string filePath)
-		{
-			if (!this.mainQueue.Contains(filePath))
-			{
-				this.mainQueue.TryAdd(filePath);
-			}
-
-			TriggerBuild();
-		}
-
-        public void QueueOnChangeTask(IGooseAction task)
+        public void QueueOnChangeTask(IGooseAction action)
         {
-            throw new System.NotImplementedException();
+            if (!this.mainQueue.Contains(action))
+            {
+                this.mainQueue.TryAdd(action);
+            }
+
+            TriggerBuild();
         }
 
         private void TriggerBuild()
@@ -59,12 +52,11 @@
 			Task.Factory.StartNew(() =>
 				{
 					var buildTasks = new List<Task>();
-					var projectPath = "";
-					while (this.currentBuildQueue.TryTake(out projectPath))
+				    IGooseAction workItem;
+                    while (this.currentBuildQueue.TryTake(out workItem))
 					{
-						var onSaveAction = this.taskFactory.CreateOnSaveAction(projectPath);
-						onSaveAction.Start();
-						buildTasks.Add(onSaveAction);
+						workItem.Work.Start();
+                        buildTasks.Add(workItem.Work);
 
 					}
 
@@ -90,10 +82,10 @@
 				if (!this.isBuilding)
 				{
 					this.isBuilding = true;
-					var projectPath = "";
-					while (this.mainQueue.TryTake(out projectPath))
+                    IGooseAction workItem;
+					while (this.mainQueue.TryTake(out workItem))
 					{
-						this.currentBuildQueue.TryAdd(projectPath);
+						this.currentBuildQueue.TryAdd(workItem);
 					}
 				}
 			}
