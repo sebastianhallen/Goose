@@ -9,7 +9,7 @@ The config file has the following structure:
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <goose version="1">
-  <action on="save">
+  <action on="save" glob="*.less">
     <!-- relative path from the project directory to the working directory of the command -->
     <working-directory>Build</working-directory>
     <command>$now = Get-Date ; Add-Content build.log "Last build: $now"</command> 
@@ -17,6 +17,8 @@ The config file has the following structure:
 </goose>
 ```
 
+**action.on**: when the action should be triggered. on="save" is currently the only supported action
+**action.glob**: file pattern to monitor for changes
 **working-directory**: specifies the build directory relative to the project root folder. The on save command will be run in this directory.
 **command**: the command that will be run whenever a less file is saved.
 
