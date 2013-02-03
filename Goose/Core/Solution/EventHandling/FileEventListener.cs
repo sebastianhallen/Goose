@@ -12,15 +12,13 @@
     public class FileEventListener
         : IFileChangeConsumer
     {
-        private readonly ISolutionFilesService solutionFilesService;
         private readonly IFileMonitor fileMonitor;
         private readonly IOnChangeTaskDispatcher taskDispatcher;
         private readonly IGooseActionFactory actionFactory;
         private ActionConfiguration configuration;
 
-        public FileEventListener(ISolutionFilesService solutionFilesService, IFileMonitor fileMonitor, IOnChangeTaskDispatcher taskDispatcher, IGooseActionFactory actionFactory, IFileChangeSubscriber fileChangeSubscriber)
+        public FileEventListener(IFileMonitor fileMonitor, IOnChangeTaskDispatcher taskDispatcher, IGooseActionFactory actionFactory, IFileChangeSubscriber fileChangeSubscriber)
         {
-            this.solutionFilesService = solutionFilesService;
             this.fileMonitor = fileMonitor;
             this.taskDispatcher = taskDispatcher;
             this.actionFactory = actionFactory;
@@ -33,17 +31,14 @@
             get { return this.taskDispatcher; }
         }
 
-        public void Initialize(ActionConfiguration watchConfiguration)
+        public void Initialize(ISolutionProject project, ActionConfiguration watchConfiguration)
         {
             this.configuration = watchConfiguration;
 
             if (this.configuration.IsValid)
             {
                 this.configuration = watchConfiguration;
-                foreach (var project in this.solutionFilesService.Projects)
-                {
-                    this.fileMonitor.MonitorProject(project.ProjectFilePath, watchConfiguration.Glob);
-                }
+                this.fileMonitor.MonitorProject(project.ProjectFilePath, watchConfiguration.Glob);
             } 
         }
 

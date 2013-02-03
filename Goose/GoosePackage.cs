@@ -1,8 +1,8 @@
 ﻿namespace Goose
 {
+    using System.Collections.Generic;
     using System.IO;
-    using System.Runtime.InteropServices;
-    using Core;
+    using System.Runtime.InteropServices;    
     using Core.Action;
     using Core.Configuration;
     using Core.Dispatcher;
@@ -19,7 +19,7 @@
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
 	public sealed class GoosePackage : Package
 	{
-        private FileEventListener fileEventListener;
+        private IList<FileEventListener> fileEventListeners;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -35,9 +35,7 @@
 			var fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
 
 			var solutionFilesService = new SolutionFilesService(this);
-		    var fileChangeSubscriber = new FileChangeSubscriber(fileChangeService);
-		    var globMatcher = new RegexGlobMatcher();
-            var fileMonitor = new FileMonitor(solutionFilesService, globMatcher, fileChangeSubscriber);
+		    var globMatcher = new RegexGlobMatcher();            
 			var onChangeTaskDispatcher = new BufferedOnChangeTaskDispatcher();
 
             var outputService = new OutputService(this);
@@ -45,7 +43,7 @@
 		    var powerShellTaskFactory = new PowerShellTaskFactory(outputService, logParser);
 		    var actionFactory = new GooseActionFactory(powerShellTaskFactory);
 
-            this.fileEventListener = new FileEventListener(solutionFilesService, fileMonitor, onChangeTaskDispatcher, actionFactory, fileChangeSubscriber);
+            this.fileEventListeners = new List<FileEventListener>();            
 
 		    var configParser = new LegacyFallbackActionConfigurationParser();
 		    foreach (var project in solutionFilesService.Projects)
@@ -54,15 +52,17 @@
 		        var configPath = Path.Combine(projectRoot, "goose.config");
 		        if (File.Exists(configPath))
 		        {
-		            var config = configParser.Parse(projectRoot, File.OpenRead(configPath));
+                    var fileChangeSubscriber = new FileChangeSubscriber(fileChangeService);
+                    var fileMonitor = new FileMonitor(solutionFilesService, globMatcher, fileChangeSubscriber);
 
-                    this.fileEventListener.Initialize(config);
+		            var config = configParser.Parse(projectRoot, File.OpenRead(configPath));
+                    var eventListener = new FileEventListener(fileMonitor, onChangeTaskDispatcher, actionFactory, fileChangeSubscriber);
+                    eventListener.Initialize(project, config);
+                    this.fileEventListeners.Add(eventListener);                    
                 }
 		    }
 			
             base.Initialize();
-
-
 		}
 
 	}

@@ -17,27 +17,12 @@
         [Fake] private IFileMonitor fileMonitor;
         [Fake] private IGooseActionFactory actionFactory;
         [Fake] private IOnChangeTaskDispatcher taskDispatcher;
-        [Fake] private IFileChangeSubscriber fileChangeSubscriber;
-        private FakeSolutionTestContext solution;
+        [Fake] private IFileChangeSubscriber fileChangeSubscriber;        
         
         [SetUp]
         public void Before()
         {
             Fake.InitializeFixture(this);
-            this.solution = new FakeSolutionTestContext(this.solutionFilesService, this.fileChangeSubscriber);
-        }
-
-        [Test]
-        public void Should_monitor_all_project_files_in_solution_when_initialized()
-        {
-            this.solution.HasProject("web.csproj");
-            this.solution.HasProject("business.csproj");
-            this.solution.Construct();
-
-            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
-
-            A.CallTo(() => this.fileMonitor.MonitorProject("web.csproj", A<string>._)).MustHaveHappened();
-            A.CallTo(() => this.fileMonitor.MonitorProject("business.csproj", A<string>._)).MustHaveHappened();
         }
 
         [Test]
@@ -61,7 +46,7 @@
         {
             var project = new[] {"project.csproj"};
             A.CallTo(() => this.fileMonitor.IsMonitoredProject(project[0])).Returns(true);
-            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
+            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), A.Dummy<ActionConfiguration>());
 
             this.eventListener.ActOn(project, Trigger.Save);
 
@@ -73,8 +58,8 @@
         public void Should_use_glob_from_configuration_used_when_initializing_when_refreshing_project_monitors()
         {
             var config = new ActionConfiguration("");
-            A.CallTo(() => this.fileMonitor.IsMonitoredProject(A<string>._)).Returns(true);            
-            this.eventListener.Initialize(config);
+            A.CallTo(() => this.fileMonitor.IsMonitoredProject(A<string>._)).Returns(true);
+            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), config);
             
             this.eventListener.ActOn(new [] {"project.csproj"}, Trigger.Save);
 
@@ -84,7 +69,7 @@
         [Test]
         public void Should_not_monitor_files_when_configuration_is_not_valid()
         {
-            this.eventListener.Initialize(new ActionConfiguration(""));
+            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), new ActionConfiguration(""));
 
             A.CallTo(() => this.solutionFilesService.Projects).MustNotHaveHappened();
         }
