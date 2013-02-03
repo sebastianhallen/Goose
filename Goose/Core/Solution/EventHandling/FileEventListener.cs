@@ -12,7 +12,8 @@
     {
         private readonly ISolutionFilesService solutionFilesService;
         private readonly IFileMonitor fileMonitor;
-        
+        private ActionConfiguration configuration;
+
         public FileEventListener(ISolutionFilesService solutionFilesService, IFileMonitor fileMonitor, IFileChangeSubscriber fileChangeSubscriber)
         {
             this.solutionFilesService = solutionFilesService;
@@ -23,10 +24,16 @@
 
         public void Initialize(ActionConfiguration watchConfiguration)
         {
-            foreach (var project in this.solutionFilesService.Projects)
+            this.configuration = watchConfiguration;
+
+            if (this.configuration.IsValid)
             {
-                this.fileMonitor.MonitorProject(project.ProjectFilePath, watchConfiguration.Glob);
-            }
+                this.configuration = watchConfiguration;
+                foreach (var project in this.solutionFilesService.Projects)
+                {
+                    this.fileMonitor.MonitorProject(project.ProjectFilePath, watchConfiguration.Glob);
+                }
+            } 
         }
 
         public void ActOn(IEnumerable<string> files, Trigger trigger)
@@ -34,6 +41,17 @@
             if (Trigger.Delete.Equals(trigger))
             {
                 this.fileMonitor.UnMonitor(files);
+            }
+
+            if (Trigger.Save.Equals(trigger))
+            {
+                var monitoredProjects = files.Where(this.fileMonitor.IsMonitoredProject).ToArray();
+                this.fileMonitor.UnMonitor(monitoredProjects);
+                foreach (var project in monitoredProjects)
+                {
+                    this.fileMonitor.MonitorProject(project, this.configuration.Glob);
+                }
+                
             }
         }
 

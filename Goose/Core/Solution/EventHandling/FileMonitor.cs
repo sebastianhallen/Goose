@@ -57,6 +57,11 @@
             {
                 this.fileChangeSubscriber.UnSubscribe(cookie);
             }
-        }       
+        }
+
+        public bool IsMonitoredProject(string project)
+        {
+            return this.monitoredProjectsField.Any(monitored => monitored.ProjectPath.Equals(project));
+        }
     }
 }

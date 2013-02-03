@@ -50,5 +50,38 @@
 
             A.CallTo(() => this.fileMonitor.UnMonitor(files)).MustHaveHappened();
         }
+
+        [Test]
+        public void Should_update_file_monitors_when_a_project_is_updated()
+        {
+            var project = new[] {"project.csproj"};
+            A.CallTo(() => this.fileMonitor.IsMonitoredProject(project[0])).Returns(true);
+            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
+
+            this.eventListener.ActOn(project, Trigger.Save);
+
+            A.CallTo(() => this.fileMonitor.UnMonitor(A<string[]>._)).MustHaveHappened();
+            A.CallTo(() => this.fileMonitor.MonitorProject(project[0], A<string>._)).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_use_glob_from_configuration_used_when_initializing_when_refreshing_project_monitors()
+        {
+            var config = new ActionConfiguration();
+            A.CallTo(() => this.fileMonitor.IsMonitoredProject(A<string>._)).Returns(true);            
+            this.eventListener.Initialize(config);
+            
+            this.eventListener.ActOn(new [] {"project.csproj"}, Trigger.Save);
+
+            A.CallTo(() => this.fileMonitor.MonitorProject(A<string>._, config.Glob)).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_not_monitor_files_when_configuration_is_not_valid()
+        {
+            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
+
+            A.CallTo(() => this.solutionFilesService.Projects).MustNotHaveHappened();
+        }
     }
 }
