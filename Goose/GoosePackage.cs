@@ -23,10 +23,13 @@
 
 		protected override void Dispose(bool disposing)
 		{
-            //if (!disposing && this.fileEventListener != null)
-            //{
-            //    this.fileChangeListener.Dispose();
-            //}
+            if (!disposing)
+            {
+                foreach (var listener in this.fileEventListeners)
+                {
+                    listener.Dispose();   
+                }                
+            }
 			base.Dispose(disposing);
 		}
 

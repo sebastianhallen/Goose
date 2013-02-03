@@ -38,24 +38,36 @@
 
         public void UnMonitor(IEnumerable<string> files)
         {
-            var projectCookies = this.monitoredProjectsField
-                         .Where(project => files.Contains(project.FilePath))
-                         .SelectMany(project =>
-                         {
-                             var cookies = new[] { project.MonitorCookie };
-                             return cookies.Concat(
-                                 this.monitoredFilesField
-                                     .Where(file => file.ProjectPath.Equals(project.FilePath))
-                                     .Select(file => file.MonitorCookie));
-                         });
+            UnMonitorProject(files);
+            UnMonitorFile(files);
+        }
 
-            var fileCookies = this.monitoredFilesField
-                                  .Where(file => files.Contains(file.FilePath))
-                                  .Select(file => file.MonitorCookie);
-
-            foreach (var cookie in projectCookies.Concat(fileCookies))
+        private void UnMonitorProject(IEnumerable<string> files)
+        {
+            var matchingProjects = this.monitoredProjectsField.Where(project => files.Contains(project.FilePath));
+            var filesInProjects = this.monitoredFilesField.Where(file =>
             {
-                this.fileChangeSubscriber.UnSubscribe(cookie);
+                var projectFiles = matchingProjects.Select(project => project.FilePath);
+                return projectFiles.Contains(file.ProjectPath);
+            });
+
+            this.UnMonitorFile(filesInProjects.Select(file => file.FilePath));            
+            foreach (var project in matchingProjects.ToArray())
+            {
+                this.fileChangeSubscriber.UnSubscribe(project.MonitorCookie);
+                this.monitoredProjectsField.Remove(project);
+            }
+        }
+
+        private void UnMonitorFile(IEnumerable<string> files)
+        {
+            var matchingFiles = this.monitoredFilesField
+                                  .Where(file => files.Contains(file.FilePath));
+
+            foreach (var file in matchingFiles.ToArray())
+            {
+                this.fileChangeSubscriber.UnSubscribe(file.MonitorCookie);
+                this.monitoredFilesField.Remove(file);
             }
         }
 
@@ -67,6 +79,14 @@
         public bool IsMonitoredFile(string file)
         {
             return this.monitoredFilesField.Any(monitored => monitored.FilePath.Equals(file));
+        }
+
+        public void Dispose()
+        {
+            var files = this.monitoredFilesField.Select(file => file.FilePath);
+            var projects = this.monitoredProjectsField.Select(project => project.FilePath);
+            this.UnMonitor(files);
+            this.UnMonitor(projects);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Goose.Core.Solution.EventHandling
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Action;
@@ -10,7 +11,7 @@
     using Microsoft.VisualStudio.Shell.Interop;
 
     public class FileEventListener
-        : IFileChangeConsumer
+        : IFileChangeConsumer, IDisposable
     {
         private readonly IFileMonitor fileMonitor;
         private readonly IOnChangeTaskDispatcher taskDispatcher;
@@ -94,6 +95,11 @@
         public int DirectoryChanged(string pszDirectory)
         {
             return VSConstants.S_OK;
+        }
+
+        public void Dispose()
+        {
+            this.fileMonitor.Dispose();
         }
     }
 }

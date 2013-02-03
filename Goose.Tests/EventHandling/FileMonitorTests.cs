@@ -77,5 +77,48 @@
                 A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(subscription)).MustHaveHappened();
             }
         }
+
+        [Test]
+        public void Should_unsubscribe_to_all_files_in_project_when_disposing()
+        {
+            var subscriptions = this.solution.HasProject("project.csproj").WithFiles("file", "other file");
+            this.solution.Construct();
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
+
+            this.fileMonitor.Dispose();
+
+            foreach (var cookie in subscriptions)
+            {
+                A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(cookie)).MustHaveHappened();
+            }            
+        }
+
+        [Test]
+        public void Should_unsubscribe_to_project_file_when_disposing()
+        {
+            this.solution.HasProject("project.csproj").WithFiles("file", "other file");
+            var subscriptions = this.solution.Construct();
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
+
+            this.fileMonitor.Dispose();
+
+            foreach (var cookie in subscriptions)
+            {
+                A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(cookie)).MustHaveHappened();
+            }
+        }
+
+        [Test]
+        public void Should_not_call_unsubscribe_on_a_file_twice()
+        {
+            this.solution.HasProject("project.csproj").WithFiles("file");
+            this.solution.Construct();
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
+
+            this.fileMonitor.UnMonitor(new [] { "project.csproj", "file"});
+            this.fileMonitor.UnMonitor(new[] { "project.csproj", "file" });
+
+            A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(A<uint>._)).MustHaveHappened(Repeated.Exactly.Twice);
+        }
     }
 }

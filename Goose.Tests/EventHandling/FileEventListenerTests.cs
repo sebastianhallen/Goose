@@ -123,5 +123,13 @@
 
             A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._)).MustHaveHappened();
         }
+
+        [Test]
+        public void Should_dispose_file_monitor_when_disposing()
+        {
+            this.eventListener.Dispose();
+
+            A.CallTo(() => this.fileMonitor.Dispose()).MustHaveHappened();
+        }
     }
 }
