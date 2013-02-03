@@ -24,9 +24,8 @@
             if (!this.mainQueue.Contains(action))
             {
                 this.mainQueue.TryAdd(action);
+                TriggerBuild();
             }
-
-            TriggerBuild();
         }
 
         private void TriggerBuild()
@@ -55,9 +54,9 @@
 				    IGooseAction workItem;
                     while (this.currentBuildQueue.TryTake(out workItem))
 					{
-						workItem.Work.Start();
-                        buildTasks.Add(workItem.Work);
-
+                        var work = workItem.Work;
+						work.Start();
+                        buildTasks.Add(work);
 					}
 
 					Task.WaitAll(buildTasks.ToArray());

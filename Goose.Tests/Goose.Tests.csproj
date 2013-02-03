@@ -63,6 +63,7 @@
     <Compile Include="EventHandling\FakeSolutionTestContext.cs" />
     <Compile Include="EventHandling\FileEventListenerTests.cs" />
     <Compile Include="EventHandling\FileMonitorTests.cs" />
+    <Compile Include="EventHandling\GlobMatcherTests.cs" />
     <Compile Include="Output\JsonLogCommandOutputParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

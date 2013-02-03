@@ -1,11 +1,14 @@
 ﻿namespace Goose
 {
+    using System.IO;
     using System.Runtime.InteropServices;
     using Core;
     using Core.Action;
+    using Core.Configuration;
     using Core.Dispatcher;
     using Core.Output;
     using Core.Solution;
+    using Core.Solution.EventHandling;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
@@ -16,11 +19,11 @@
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
 	public sealed class GoosePackage : Package
 	{
-//		private LessFileOnSaveListener fileChangeListener;
+        private FileEventListener fileEventListener;
 
 		protected override void Dispose(bool disposing)
 		{
-            //if (!disposing && this.fileChangeListener != null)
+            //if (!disposing && this.fileEventListener != null)
             //{
             //    this.fileChangeListener.Dispose();
             //}
@@ -32,13 +35,32 @@
 			var fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
 
 			var solutionFilesService = new SolutionFilesService(this);
-			var outputService = new OutputService(this);
-			var onSaveTaskDispatcher = new BufferedOnChangeTaskDispatcher();
+		    var fileChangeSubscriber = new FileChangeSubscriber(fileChangeService);
+		    var globMatcher = new RegexGlobMatcher();
+            var fileMonitor = new FileMonitor(solutionFilesService, globMatcher, fileChangeSubscriber);
+			var onChangeTaskDispatcher = new BufferedOnChangeTaskDispatcher();
 
-			//this.fileChangeListener = new LessFileOnSaveListener(fileChangeService, solutionFilesService, onSaveTaskDispatcher);
+            var outputService = new OutputService(this);
+		    var logParser = new JsonCommandLogParser();
+		    var powerShellTaskFactory = new PowerShellTaskFactory(outputService, logParser);
+		    var actionFactory = new GooseActionFactory(powerShellTaskFactory);
 
+            this.fileEventListener = new FileEventListener(solutionFilesService, fileMonitor, onChangeTaskDispatcher, actionFactory, fileChangeSubscriber);
 
-			base.Initialize();
+		    var configParser = new LegacyFallbackActionConfigurationParser();
+		    foreach (var project in solutionFilesService.Projects)
+		    {
+		        var projectRoot = Path.GetDirectoryName(project.ProjectFilePath);
+		        var configPath = Path.Combine(projectRoot, "goose.config");
+		        if (File.Exists(configPath))
+		        {
+		            var config = configParser.Parse(projectRoot, File.OpenRead(configPath));
+
+                    this.fileEventListener.Initialize(config);
+                }
+		    }
+			
+            base.Initialize();
 
 
 		}
