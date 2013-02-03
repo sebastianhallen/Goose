@@ -1,11 +1,10 @@
 ﻿namespace Goose.Tests.EventHandling
 {
-    using System.Threading.Tasks;
+    using System.Linq;
+    using FakeItEasy;
     using Goose.Core.Configuration;
-    using Goose.Core.EventListener;
     using Goose.Core.Solution;
     using Goose.Core.Solution.EventHandling;
-    using FakeItEasy;
     using NUnit.Framework;
 
     [TestFixture]
@@ -47,6 +46,22 @@
             this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
 
             A.CallTo(() => this.taskFactory.CreateTask(A<ActionConfiguration>._)).MustHaveHappened();
+        }
+
+        [Test]
+        public void File_change_subscriber_should_be_attached_to_monitor()
+        {
+            A.CallTo(() => this.fileChangeSubscriber.Attach(this.eventListener)).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_unmonitor_file_when_file_is_deleted()
+        {
+            var files = new[] {"file"};
+
+            this.eventListener.ActOn(files, Trigger.Delete);
+
+            A.CallTo(() => this.fileMonitor.UnMonitor(files)).MustHaveHappened();
         }
     }
 }

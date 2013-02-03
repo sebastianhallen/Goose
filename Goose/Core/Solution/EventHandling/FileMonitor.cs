@@ -2,13 +2,12 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Dispatcher;
     using Goose.Core.Configuration;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
 
     public class FileMonitor
-        : IFileMonitor, IFileChangeConsumer
+        : IFileMonitor
     {
         private readonly ISolutionFilesService solutionFilesService;
         private readonly IGlobMatcher globMatcher;
@@ -23,8 +22,6 @@
             this.fileChangeSubscriber = fileChangeSubscriber;
             this.monitoredFilesField = new List<MonitoredFile>();
             this.monitoredProjectsField = new List<MonitoredFile>();
-
-            this.fileChangeSubscriber.Attach(this);
         }
 
         public void MonitorProject(string path, IGooseAction triggeredAction)
@@ -42,52 +39,27 @@
             }
         }
 
-        public void ActOn(IEnumerable<string> files, Trigger trigger)
+        public void UnMonitor(IEnumerable<string> files)
         {
-            if (Trigger.Delete.Equals(trigger))
-            {
-                var projectCookies = this.monitoredProjectsField
-                                         .Where(project => files.Contains(project.FilePath))
-                                         .SelectMany(project =>
-                                         {
-                                             var cookies = new[] {project.MonitorCookie};
-                                             return cookies.Concat(
-                                                 this.monitoredFilesField
-                                                     .Where(file => file.ProjectPath.Equals(project.FilePath))
-                                                     .Select(file => file.MonitorCookie));
-                                         });
+            var projectCookies = this.monitoredProjectsField
+                         .Where(project => files.Contains(project.FilePath))
+                         .SelectMany(project =>
+                         {
+                             var cookies = new[] { project.MonitorCookie };
+                             return cookies.Concat(
+                                 this.monitoredFilesField
+                                     .Where(file => file.ProjectPath.Equals(project.FilePath))
+                                     .Select(file => file.MonitorCookie));
+                         });
 
-                var fileCookies = this.monitoredFilesField
+            var fileCookies = this.monitoredFilesField
                                   .Where(file => files.Contains(file.FilePath))
                                   .Select(file => file.MonitorCookie);
 
-                foreach (var cookie in projectCookies.Concat(fileCookies))
-                {
-                    this.fileChangeSubscriber.UnSubscribe(cookie);
-                }                
-            }
-        }
-
-        public int FilesChanged(uint cChanges, string[] rgpszFile, uint[] rggrfChange)
-        {
-            var deleteMask = (uint) _VSFILECHANGEFLAGS.VSFILECHG_Del;
-            var changeMask = (uint)_VSFILECHANGEFLAGS.VSFILECHG_Add | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Size | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Time;
-            if (rggrfChange.Any(change => (change & deleteMask) == deleteMask))
+            foreach (var cookie in projectCookies.Concat(fileCookies))
             {
-                this.ActOn(rgpszFile, Trigger.Delete);
+                this.fileChangeSubscriber.UnSubscribe(cookie);
             }
-
-            if (rggrfChange.Any(change => (change & changeMask) != 0x00))
-            {
-                this.ActOn(rgpszFile, Trigger.Save);
-            }
-
-            return VSConstants.S_OK;
-        }
-
-        public int DirectoryChanged(string pszDirectory)
-        {
-            return VSConstants.S_OK;
-        }
+        }       
     }
 }

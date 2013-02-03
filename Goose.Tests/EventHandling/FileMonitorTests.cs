@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using FakeItEasy;
-    using Goose.Core.Configuration;
     using Goose.Core.Solution;
     using Goose.Core.Solution.EventHandling;
     using NUnit.Framework;
@@ -50,24 +49,18 @@
         }
 
         [Test]
-        public void File_change_subscriber_should_be_attached_to_monitor()
-        {
-            A.CallTo(() => this.fileChangeSubscriber.Attach(this.fileMonitor)).MustHaveHappened();
-        }
-
-        [Test]
         public void Should_cancel_subscription_when_file_is_deleted()
         {
             var subscriptions = this.solution.HasProject("project.csproj").WithFiles("file");
             this.solution.Construct();
             this.fileMonitor.MonitorProject("project.csproj", A.Dummy<IGooseAction>());
 
-            this.fileMonitor.ActOn(new [] {"file"}, Trigger.Delete);
+            this.fileMonitor.UnMonitor(new[] { "file" });
 
             foreach (var subscription in subscriptions)
             {
-                A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(subscription)).MustHaveHappened();   
-            }            
+                A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(subscription)).MustHaveHappened();
+            }
         }
 
         [Test]
@@ -77,12 +70,12 @@
             subscriptions = subscriptions.Concat(this.solution.Construct());
             this.fileMonitor.MonitorProject("project.csproj", A.Dummy<IGooseAction>());
 
-            this.fileMonitor.ActOn(new[] { "project.csproj" }, Trigger.Delete);
+            this.fileMonitor.UnMonitor(new[] { "project.csproj" });
 
             foreach (var subscription in subscriptions)
             {
                 A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(subscription)).MustHaveHappened();
-            }   
+            }
         }
     }
 }

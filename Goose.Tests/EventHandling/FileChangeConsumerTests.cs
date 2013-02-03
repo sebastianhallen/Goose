@@ -9,7 +9,7 @@
     [TestFixture]
     public class FileChangeConsumerTests
     {
-        [UnderTest] private FileMonitor fileChangeConsumer;
+        [UnderTest] private FileEventListener fileChangeConsumer;
 
         [SetUp]        
         public void Before()
