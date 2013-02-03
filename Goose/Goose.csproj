@@ -117,6 +117,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\Action\GooseActionFactory.cs" />
+    <Compile Include="Core\Action\IPowerShellTaskFactory.cs" />
+    <Compile Include="Core\Action\PowerShellTaskFactory.cs" />
     <Compile Include="Core\Configuration\ActionConfigurationParser.cs" />
     <Compile Include="Core\Configuration\ActionConfiguration.cs" />
     <Compile Include="Core\Configuration\LegacyFallbackActionConfigurationParser.cs" />

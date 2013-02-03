@@ -94,7 +94,7 @@
         {
             this.eventListener.ActOn(new [] { "project.csproj"}, Trigger.Save);
 
-            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<GooseAction>._)).MustHaveHappened();
+            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustHaveHappened();
         }
 
         [Test]
@@ -104,7 +104,7 @@
 
             this.eventListener.ActOn(new[] { "file.less" }, Trigger.Delete);
 
-            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<GooseAction>._)).MustHaveHappened();
+            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustHaveHappened();
         }
 
         [Test]
@@ -114,7 +114,7 @@
 
             this.eventListener.ActOn(new string[] { "project"}, Trigger.Delete);
 
-            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<GooseAction>._)).MustNotHaveHappened();
+            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustNotHaveHappened();
         }
 
         [Test]

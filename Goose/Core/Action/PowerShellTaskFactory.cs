@@ -1,0 +1,61 @@
+﻿namespace Goose.Core.Action
+{
+    using System;
+    using System.Management.Automation.Runspaces;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Output;
+
+    public class PowerShellTaskFactory
+        : IPowerShellTaskFactory
+    {
+        private readonly OutputService outputService;
+        private readonly ICommandLogParser logParser;
+
+        public PowerShellTaskFactory(OutputService outputService, ICommandLogParser logParser)
+        {
+            this.outputService = outputService;
+            this.logParser = logParser;
+        }
+
+        public Task Create(string command)
+        {
+            return new Task(() =>
+            {
+                var output = this.RunPowerShellCommand(command);
+                this.outputService.Handle(output);
+            });
+        }
+
+        private CommandOutput RunPowerShellCommand(string rawCommand)
+        {
+            var output = new StringBuilder();
+            try
+            {
+                System.Diagnostics.Debug.WriteLine(rawCommand);
+                using (var runspace = RunspaceFactory.CreateRunspace())
+                {
+                    var command = new Command(rawCommand, isScript: true);
+
+                    runspace.Open();
+                    var pipeline = runspace.CreatePipeline();
+                    pipeline.Commands.Add(command);
+                    pipeline.Commands.Add("Out-String");
+                    foreach (var result in pipeline.Invoke())
+                    {
+                        output.AppendFormat("{0}", result);
+                        System.Diagnostics.Debug.WriteLine(result);
+                    }
+
+                    runspace.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                return new CommandOutput("goose", "Failed to run compile command", ex.ToString(), CommandOutputItemType.Error);
+            }
+
+            return this.logParser.Parse(output.ToString());
+        }
+    }
+}

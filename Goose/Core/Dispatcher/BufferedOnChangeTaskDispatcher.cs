@@ -31,7 +31,7 @@
 			TriggerBuild();
 		}
 
-        public void QueueOnChangeTask(GooseAction task)
+        public void QueueOnChangeTask(IGooseAction task)
         {
             throw new System.NotImplementedException();
         }

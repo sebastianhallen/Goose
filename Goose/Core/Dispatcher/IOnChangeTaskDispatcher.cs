@@ -5,6 +5,6 @@
     public interface IOnChangeTaskDispatcher
     {
         void QueueOnChangeTaskFor(string filePath);
-        void QueueOnChangeTask(GooseAction task);
+        void QueueOnChangeTask(IGooseAction task);
     }
 }
