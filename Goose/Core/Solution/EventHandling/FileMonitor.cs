@@ -63,5 +63,10 @@
         {
             return this.monitoredProjectsField.Any(monitored => monitored.ProjectPath.Equals(project));
         }
+
+        public bool IsMonitoredFile(string file)
+        {
+            return this.monitoredFilesField.Any(monitored => monitored.FilePath.Equals(file));
+        }
     }
 }

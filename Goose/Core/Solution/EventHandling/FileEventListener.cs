@@ -2,24 +2,35 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Dispatcher;
     using Goose.Core.Configuration;
     using Goose.Core.Solution;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
+    using OnSaveTask;
 
     public class FileEventListener
         : IFileChangeConsumer
     {
         private readonly ISolutionFilesService solutionFilesService;
         private readonly IFileMonitor fileMonitor;
+        private readonly IOnChangeTaskDispatcher taskDispatcher;
+        private readonly IGooseActionFactory actionFactory;
         private ActionConfiguration configuration;
 
-        public FileEventListener(ISolutionFilesService solutionFilesService, IFileMonitor fileMonitor, IFileChangeSubscriber fileChangeSubscriber)
+        public FileEventListener(ISolutionFilesService solutionFilesService, IFileMonitor fileMonitor, IOnChangeTaskDispatcher taskDispatcher, IGooseActionFactory actionFactory, IFileChangeSubscriber fileChangeSubscriber)
         {
             this.solutionFilesService = solutionFilesService;
             this.fileMonitor = fileMonitor;
-            
+            this.taskDispatcher = taskDispatcher;
+            this.actionFactory = actionFactory;
+
             fileChangeSubscriber.Attach(this);
+        }
+
+        public IOnChangeTaskDispatcher TaskDispatcher
+        {
+            get { return this.taskDispatcher; }
         }
 
         public void Initialize(ActionConfiguration watchConfiguration)
@@ -38,7 +49,16 @@
 
         public void ActOn(IEnumerable<string> files, Trigger trigger)
         {
+            var isFileUpdate = files.Any(this.fileMonitor.IsMonitoredFile);
+
             this.UpdateMonitors(files, trigger);
+
+            if ((Trigger.Save.Equals(trigger)) ||
+                (Trigger.Delete.Equals(trigger) && isFileUpdate))
+            {
+                var action = this.actionFactory.Create(this.configuration);
+                this.taskDispatcher.QueueOnChangeTask(action);
+            }
         }
 
         private void UpdateMonitors(IEnumerable<string> files, Trigger trigger)

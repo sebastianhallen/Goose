@@ -7,22 +7,22 @@
 
     public class ActionConfigurationParser
     {
-        public ActionConfiguration Parse(Stream configStream)
+        public ActionConfiguration Parse(string projectRoot, Stream configStream)
         {
             try
             {
                 using (var reader = new StreamReader(configStream))
                 {
-                    return this.Parse(reader.ReadToEnd());
+                    return this.Parse(projectRoot, reader.ReadToEnd());
                 }
             }
             catch (Exception)
             {
-                return new ActionConfiguration();
+                return new ActionConfiguration(projectRoot);
             }
         }
 
-        public virtual ActionConfiguration Parse(string configContent)
+        public virtual ActionConfiguration Parse(string projectRoot, string configContent)
         {
             try
             {
@@ -32,6 +32,7 @@
                         let workingDirectory = action.Descendants("working-directory").SingleOrDefault()
                         let command = action.Descendants("command").SingleOrDefault()
                         select this.CreateCommandConfiguration(
+                            projectRoot,
                             trigger == null ? null : trigger.Value, 
                             workingDirectory == null ? null : workingDirectory.Value, 
                             command == null ? null : command.Value))
@@ -39,11 +40,11 @@
             }
             catch (Exception)
             {
-                return new ActionConfiguration();
+                return new ActionConfiguration(projectRoot);
             }
         }
 
-        protected ActionConfiguration CreateCommandConfiguration(string triggerRaw, string workingDirectory, string command)
+        protected ActionConfiguration CreateCommandConfiguration(string projectRoot, string triggerRaw, string workingDirectory, string command)
         {
             Trigger trigger;
             if (!Enum.TryParse(triggerRaw, true, out trigger))
@@ -51,7 +52,7 @@
                 trigger = Trigger.Unknown;
             }
 
-            return new ActionConfiguration(trigger, workingDirectory, command);
+            return new ActionConfiguration(trigger, workingDirectory, command, projectRoot);
         }
     }
 }

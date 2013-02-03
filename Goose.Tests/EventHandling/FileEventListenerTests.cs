@@ -1,6 +1,8 @@
 ﻿namespace Goose.Tests.EventHandling
 {
     using System;
+    using Core.Dispatcher;
+    using Core.OnSaveTask;
     using FakeItEasy;
     using Goose.Core.Configuration;
     using Goose.Core.Solution;
@@ -14,6 +16,8 @@
         [UnderTest] private FileEventListener eventListener;
         [Fake] private ISolutionFilesService solutionFilesService;
         [Fake] private IFileMonitor fileMonitor;
+        [Fake] private IGooseActionFactory actionFactory;
+        [Fake] private IOnChangeTaskDispatcher taskDispatcher;
         [Fake] private IFileChangeSubscriber fileChangeSubscriber;
         private FakeSolutionTestContext solution;
         
@@ -69,7 +73,7 @@
         [Test]
         public void Should_use_glob_from_configuration_used_when_initializing_when_refreshing_project_monitors()
         {
-            var config = new ActionConfiguration();
+            var config = new ActionConfiguration("");
             A.CallTo(() => this.fileMonitor.IsMonitoredProject(A<string>._)).Returns(true);            
             this.eventListener.Initialize(config);
             
@@ -81,9 +85,37 @@
         [Test]
         public void Should_not_monitor_files_when_configuration_is_not_valid()
         {
-            this.eventListener.Initialize(new ActionConfiguration());
+            this.eventListener.Initialize(new ActionConfiguration(""));
 
             A.CallTo(() => this.solutionFilesService.Projects).MustNotHaveHappened();
+        }
+
+        [Test]
+        public void Should_queue_on_save_task_when_a_monitored_file_is_triggered_by_save()
+        {
+            this.eventListener.ActOn(new [] { "project.csproj"}, Trigger.Save);
+
+            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<GooseAction>._)).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_queue_configured_action_when_a_monitored_non_project_file_is_deleted()
+        {
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("file.less")).Returns(true);
+
+            this.eventListener.ActOn(new[] { "file.less" }, Trigger.Delete);
+
+            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<GooseAction>._)).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_not_queue_action_when_a_project_file_is_deleted()
+        {
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("project")).Returns(false);
+
+            this.eventListener.ActOn(new string[] { "project"}, Trigger.Delete);
+
+            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<GooseAction>._)).MustNotHaveHappened();
         }
 
         [Test]
@@ -105,7 +137,7 @@
 
             this.eventListener.FilesChanged(1, file, new [] { (uint)changeFlag });
 
-            throw new NotImplementedException();
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._)).MustHaveHappened();
         }
     }
 }

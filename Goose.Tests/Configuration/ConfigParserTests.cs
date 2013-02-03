@@ -30,7 +30,7 @@
         [TestCase("     ")]
         public void Should_not_explode_when_unable_to_read_config(string input)
         {
-            this.parser.Parse(input);
+            this.parser.Parse("", input);
         }
 
         [Test]
@@ -38,7 +38,7 @@
         {
             Stream stream = null;
 
-            this.parser.Parse(stream);
+            this.parser.Parse("", stream);
         }
 
         [Test]
@@ -139,7 +139,7 @@
 
         private ActionConfiguration Parse(string input)
         {
-            return this.parser.Parse(new MemoryStream(Encoding.UTF8.GetBytes(input)));
+            return this.parser.Parse("", new MemoryStream(Encoding.UTF8.GetBytes(input)));
         }
     }
 }

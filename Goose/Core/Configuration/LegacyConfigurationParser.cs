@@ -7,7 +7,7 @@
     public class LegacyConfigurationParser
         : ActionConfigurationParser
     {
-        public override ActionConfiguration Parse(string configContent)
+        public override ActionConfiguration Parse(string projectRoot, string configContent)
         {
             try
             {
@@ -16,6 +16,7 @@
                         let workingDirectory = action.Descendants("build-directory").SingleOrDefault()
                         let command = action.Descendants("compile-command").SingleOrDefault()
                         select this.CreateCommandConfiguration(
+                            projectRoot,
                             "save",
                             workingDirectory == null ? null : workingDirectory.Value,
                             command == null ? null : command.Value))
@@ -23,7 +24,7 @@
             }
             catch (Exception)
             {
-                return new ActionConfiguration();
+                return new ActionConfiguration(projectRoot);
             }
         }
     }

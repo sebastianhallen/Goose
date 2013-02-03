@@ -39,7 +39,7 @@
 
                 using (var fileStream = File.Open(this.ConfigPath, FileMode.Open))
                 {
-                    var config = this.configParser.Parse(fileStream);
+                    var config = this.configParser.Parse(projectDirectory, fileStream);
 
                     this.BuildDirectory = Path.Combine(projectDirectory, config.WorkingDirectory);
                     this.CompileCommand = config.Command;

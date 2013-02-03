@@ -23,7 +23,7 @@
   <compile-command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</compile-command> 
 </compile-less>";
 
-            var config = this.parser.Parse(input);
+            var config = this.parser.Parse("", input);
 
             Assert.That(config.IsValid);
         }

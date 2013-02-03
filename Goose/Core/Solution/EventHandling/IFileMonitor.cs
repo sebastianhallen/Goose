@@ -7,5 +7,6 @@
         void MonitorProject(string projectPath, string glob);
         void UnMonitor(IEnumerable<string> file);
         bool IsMonitoredProject(string project);
+        bool IsMonitoredFile(string file);
     }
 }

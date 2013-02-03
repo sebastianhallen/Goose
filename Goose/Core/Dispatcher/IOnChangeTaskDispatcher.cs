@@ -1,10 +1,10 @@
 ﻿namespace Goose.Core.Dispatcher
 {
-    using System.Threading.Tasks;
+    using OnSaveTask;
 
     public interface IOnChangeTaskDispatcher
     {
         void QueueOnChangeTaskFor(string filePath);
-        void QueueOnChangeTask(string projectPath, Task task);
+        void QueueOnChangeTask(GooseAction task);
     }
 }

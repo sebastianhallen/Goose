@@ -8,30 +8,30 @@
         private readonly ActionConfigurationParser actionConfigurationParser = new ActionConfigurationParser();
         private readonly LegacyConfigurationParser legacyConfigurationParser = new LegacyConfigurationParser();
 
-        public ActionConfiguration Parse(Stream configStream)
+        public ActionConfiguration Parse(string projectRoot, Stream configStream)
         {
             try
             {
                 using (var reader = new StreamReader(configStream))
                 {
-                    return this.Parse(reader.ReadToEnd());
+                    return this.Parse(projectRoot, reader.ReadToEnd());
                 }
             }
             catch (Exception)
             {
-                return new ActionConfiguration();
+                return new ActionConfiguration(projectRoot);
             }
         }
 
-        public ActionConfiguration Parse(string input)
+        public ActionConfiguration Parse(string projectRoot, string input)
         {
-            var config = this.actionConfigurationParser.Parse(input);
+            var config = this.actionConfigurationParser.Parse(projectRoot, input);
             if (config.IsValid)
             {
                 return config;
             }
 
-            var legacyConfig = this.legacyConfigurationParser.Parse(input);
+            var legacyConfig = this.legacyConfigurationParser.Parse(projectRoot, input);
             return legacyConfig.IsValid ? legacyConfig : config;
         }
     }
