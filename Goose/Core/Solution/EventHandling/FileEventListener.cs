@@ -12,14 +12,12 @@
     {
         private readonly ISolutionFilesService solutionFilesService;
         private readonly IFileMonitor fileMonitor;
-        private readonly IGooseTaskFactory taskFactory;
-
-        public FileEventListener(ISolutionFilesService solutionFilesService, IFileMonitor fileMonitor, IGooseTaskFactory taskFactory, IFileChangeSubscriber fileChangeSubscriber)
+        
+        public FileEventListener(ISolutionFilesService solutionFilesService, IFileMonitor fileMonitor, IFileChangeSubscriber fileChangeSubscriber)
         {
             this.solutionFilesService = solutionFilesService;
             this.fileMonitor = fileMonitor;
-            this.taskFactory = taskFactory;
-
+            
             fileChangeSubscriber.Attach(this);
         }
 
@@ -27,8 +25,7 @@
         {
             foreach (var project in this.solutionFilesService.Projects)
             {
-                var triggeredTask = this.taskFactory.CreateTask(watchConfiguration);
-                this.fileMonitor.MonitorProject(project.ProjectFilePath, triggeredTask);
+                this.fileMonitor.MonitorProject(project.ProjectFilePath, watchConfiguration.Glob);
             }
         }
 
@@ -61,10 +58,5 @@
         {
             return VSConstants.S_OK;
         }
-    }
-
-    public interface IGooseTaskFactory
-    {
-        IGooseAction CreateTask(ActionConfiguration actionConfiguration);
     }
 }

@@ -2,9 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Goose.Core.Configuration;
-    using Microsoft.VisualStudio;
-    using Microsoft.VisualStudio.Shell.Interop;
 
     public class FileMonitor
         : IFileMonitor
@@ -24,12 +21,12 @@
             this.monitoredProjectsField = new List<MonitoredFile>();
         }
 
-        public void MonitorProject(string path, IGooseAction triggeredAction)
+        public void MonitorProject(string path, string glob)
         {
             var matchingFilesInProject = 
                 from project in this.solutionFilesService.Projects.Where(project => project.ProjectFilePath.Equals(path))
                 from file in project.Files
-                where this.globMatcher.Matches(file.FilePath, triggeredAction.Glob)
+                where this.globMatcher.Matches(file.FilePath, glob)
                 select file;
 
             this.monitoredProjectsField.Add(this.fileChangeSubscriber.Subscribe(path, path));

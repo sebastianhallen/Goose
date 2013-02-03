@@ -1,6 +1,5 @@
 ﻿namespace Goose.Tests.EventHandling
 {
-    using System.Linq;
     using FakeItEasy;
     using Goose.Core.Configuration;
     using Goose.Core.Solution;
@@ -13,7 +12,6 @@
         [UnderTest] private FileEventListener eventListener;
         [Fake] private ISolutionFilesService solutionFilesService;
         [Fake] private IFileMonitor fileMonitor;
-        [Fake] private IGooseTaskFactory taskFactory;
         [Fake] private IFileChangeSubscriber fileChangeSubscriber;
         private FakeSolutionTestContext solution;
         
@@ -33,19 +31,8 @@
 
             this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
 
-            A.CallTo(() => this.fileMonitor.MonitorProject("web.csproj", A<IGooseAction>._)).MustHaveHappened();
-            A.CallTo(() => this.fileMonitor.MonitorProject("business.csproj", A<IGooseAction>._)).MustHaveHappened();
-        }
-
-        [Test]
-        public void Should_create_task_from_configuration_when_initializing()
-        {
-            this.solution.HasProject("project.csproj");
-            this.solution.Construct();
-
-            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
-
-            A.CallTo(() => this.taskFactory.CreateTask(A<ActionConfiguration>._)).MustHaveHappened();
+            A.CallTo(() => this.fileMonitor.MonitorProject("web.csproj", A<string>._)).MustHaveHappened();
+            A.CallTo(() => this.fileMonitor.MonitorProject("business.csproj", A<string>._)).MustHaveHappened();
         }
 
         [Test]

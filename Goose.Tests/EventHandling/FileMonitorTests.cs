@@ -31,7 +31,7 @@
             this.solution.HasProject("project.csproj").WithFiles("file.less", "other.less");
             this.solution.Construct();
 
-            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<IGooseAction>());
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
 
             A.CallTo(() => this.fileChangeSubscriber.Subscribe("project.csproj", "file.less")).MustHaveHappened();
             A.CallTo(() => this.fileChangeSubscriber.Subscribe("project.csproj", "other.less")).MustHaveHappened();
@@ -43,7 +43,7 @@
             this.solution.HasProject("project.csproj");
             this.solution.Construct();
 
-            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<IGooseAction>());
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
 
             A.CallTo(() => this.fileChangeSubscriber.Subscribe("project.csproj", "project.csproj")).MustHaveHappened();
         }
@@ -53,7 +53,7 @@
         {
             var subscriptions = this.solution.HasProject("project.csproj").WithFiles("file");
             this.solution.Construct();
-            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<IGooseAction>());
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
 
             this.fileMonitor.UnMonitor(new[] { "file" });
 
@@ -68,7 +68,7 @@
         {
             var subscriptions = this.solution.HasProject("project.csproj").WithFiles("file", "another");
             subscriptions = subscriptions.Concat(this.solution.Construct());
-            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<IGooseAction>());
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
 
             this.fileMonitor.UnMonitor(new[] { "project.csproj" });
 
