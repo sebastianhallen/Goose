@@ -14,12 +14,17 @@ namespace Goose.Core.Solution.EventHandling
             this.fileChangeEx = fileChangeEx;
         }
 
-        public MonitoredFile Watch(string file)
+        public MonitoredFile Subscribe(string project, string file)
         {
             uint cookie;
             this.fileChangeEx.AdviseFileChange(file, FileChangeFlags, this.fileChangeConsumer, out cookie);
 
-            return new MonitoredFile(cookie, file);
+            return new MonitoredFile(cookie, project, file);
+        }
+
+        public void UnSubscribe(uint cookie)
+        {
+            this.fileChangeEx.UnadviseFileChange(cookie);
         }
 
         public void Attach(IFileChangeConsumer fileChangeConsumer)

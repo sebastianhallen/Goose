@@ -1,12 +1,13 @@
 ﻿namespace Goose.Tests.EventHandling
 {
+    using System;
     using Core.Solution.EventHandling;
     using FakeItEasy;
     using Microsoft.VisualStudio.Shell.Interop;
     using NUnit.Framework;
 
     [TestFixture]
-    public class FileChangeConsumingTests
+    public class FileChangeConsumerTests
     {
         [UnderTest] private FileMonitor fileChangeConsumer;
 
@@ -20,6 +21,8 @@
         public void Should_trigger_deletion_action_when_a_watched_file_is_deleted()
         {
             this.fileChangeConsumer.FilesChanged(1, new[] {"file"}, new uint[] {(uint) _VSFILECHANGEFLAGS.VSFILECHG_Del});
+
+            throw new NotImplementedException();
         }
 
         [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Add)]
@@ -29,6 +32,7 @@
         {
             this.fileChangeConsumer.FilesChanged(1, new[] { "file" }, new uint[] { (uint)changeFlag});
 
+            throw new NotImplementedException();
         }
     }
 }

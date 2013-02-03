@@ -15,12 +15,12 @@
 	{
 		private const uint FileChangeFlags = (uint)_VSFILECHANGEFLAGS.VSFILECHG_Add | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Size | (uint)_VSFILECHANGEFLAGS.VSFILECHG_Time;
 		private readonly ISolutionFilesService solutionFilesService;
-		private readonly IOnSaveTaskDispatcher onSaveTaskDispatcher;
+		private readonly IOnChangeTaskDispatcher onSaveTaskDispatcher;
 		private readonly IVsFileChangeEx fileChangeService;
 		private readonly IList<MonitoredFile<FileInProject>> monitoredLessFiles = new List<MonitoredFile<FileInProject>>();
 		private readonly IList<MonitoredFile> monitoredProjects = new List<MonitoredFile>();
 
-		public LessFileOnSaveListener(IVsFileChangeEx fileChangeService, ISolutionFilesService solutionFilesService, IOnSaveTaskDispatcher onSaveTaskDispatcher)
+		public LessFileOnSaveListener(IVsFileChangeEx fileChangeService, ISolutionFilesService solutionFilesService, IOnChangeTaskDispatcher onSaveTaskDispatcher)
 		{
 			this.solutionFilesService = solutionFilesService;
 			this.onSaveTaskDispatcher = onSaveTaskDispatcher;
@@ -114,7 +114,7 @@
 				{
 					var cookie = this.MonitorFile(projectFile);
 
-					this.monitoredProjects.Add(new MonitoredFile(cookie, projectFile));
+					this.monitoredProjects.Add(new MonitoredFile(cookie, projectFile, projectFile));
 				}
 			}
 		}
@@ -125,14 +125,18 @@
 									 from file in project.Files
 									 where file.FilePath.EndsWith(".less")
 									 where !this.LessFileIsMonitored(file)
-									 select file;
+									 select new
+									        {
+									            ProjectPath = project.ProjectFilePath,
+                                                File = file
+									        };
 
 			foreach (var lessFile in unwatchedLessFiles)
 			{
-				if (!this.LessFileIsMonitored(lessFile))
+				if (!this.LessFileIsMonitored(lessFile.File))
 				{
-					var cookie = this.MonitorFile(lessFile.FilePath);
-					this.monitoredLessFiles.Add(new MonitoredFile<FileInProject>(cookie, lessFile.FilePath, lessFile));
+					var cookie = this.MonitorFile(lessFile.File.FilePath);
+				    this.monitoredLessFiles.Add(new MonitoredFile<FileInProject>(cookie, lessFile.ProjectPath, lessFile.File.FilePath, lessFile.File));
 				}
 			}
 		}

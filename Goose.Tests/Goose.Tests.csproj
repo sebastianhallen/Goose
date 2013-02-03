@@ -59,7 +59,7 @@
     <Compile Include="Configuration\LegacyConfigurationTest.cs" />
     <Compile Include="EventHandling\FakeProjectContext.cs" />
     <Compile Include="EventHandling\FakeSolutionTestContext.cs" />
-    <Compile Include="EventHandling\FileChangeConsumingTests.cs" />
+    <Compile Include="EventHandling\FileChangeConsumerTests.cs" />
     <Compile Include="EventHandling\FileEventListenerTests.cs" />
     <Compile Include="EventHandling\FileMonitorTests.cs" />
     <Compile Include="Output\JsonLogCommandOutputParserTests.cs" />

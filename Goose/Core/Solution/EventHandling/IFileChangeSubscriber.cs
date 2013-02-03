@@ -2,7 +2,8 @@ namespace Goose.Core.Solution.EventHandling
 {
     public interface IFileChangeSubscriber
     {
-        MonitoredFile Watch(string file);
+        MonitoredFile Subscribe(string project, string file);
+        void UnSubscribe(uint cookie);
         void Attach(IFileChangeConsumer fileMonitor);
     }
 }

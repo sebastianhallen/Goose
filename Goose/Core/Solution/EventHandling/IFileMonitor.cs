@@ -1,9 +1,15 @@
 ﻿namespace Goose.Core.Solution.EventHandling
 {
-    using Goose.Core.Configuration;
+    using System.Threading.Tasks;
 
     public interface IFileMonitor
     {
-        void MonitorProject(string path, ActionConfiguration watchConfiguration);
+        void MonitorProject(string projectPath, IGooseAction triggeredAction);
+    }
+
+    public interface IGooseAction
+    {
+        string Glob { get; }
+        Task Work { get; }
     }
 }

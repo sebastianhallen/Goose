@@ -1,5 +1,6 @@
 ﻿namespace Goose.Tests.EventHandling
 {
+    using System.Threading.Tasks;
     using Goose.Core.Configuration;
     using Goose.Core.EventListener;
     using Goose.Core.Solution;
@@ -13,13 +14,15 @@
         [UnderTest] private FileEventListener eventListener;
         [Fake] private ISolutionFilesService solutionFilesService;
         [Fake] private IFileMonitor fileMonitor;
+        [Fake] private IGooseTaskFactory taskFactory;
+        [Fake] private IFileChangeSubscriber fileChangeSubscriber;
         private FakeSolutionTestContext solution;
         
         [SetUp]
         public void Before()
         {
             Fake.InitializeFixture(this);
-            this.solution = new FakeSolutionTestContext(this.solutionFilesService);
+            this.solution = new FakeSolutionTestContext(this.solutionFilesService, this.fileChangeSubscriber);
         }
 
         [Test]
@@ -31,8 +34,19 @@
 
             this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
 
-            A.CallTo(() => this.fileMonitor.MonitorProject("web.csproj", A<ActionConfiguration>._)).MustHaveHappened();
-            A.CallTo(() => this.fileMonitor.MonitorProject("business.csproj", A<ActionConfiguration>._)).MustHaveHappened();
+            A.CallTo(() => this.fileMonitor.MonitorProject("web.csproj", A<IGooseAction>._)).MustHaveHappened();
+            A.CallTo(() => this.fileMonitor.MonitorProject("business.csproj", A<IGooseAction>._)).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_create_task_from_configuration_when_initializing()
+        {
+            this.solution.HasProject("project.csproj");
+            this.solution.Construct();
+
+            this.eventListener.Initialize(A.Dummy<ActionConfiguration>());
+
+            A.CallTo(() => this.taskFactory.CreateTask(A<ActionConfiguration>._)).MustHaveHappened();
         }
     }
 }

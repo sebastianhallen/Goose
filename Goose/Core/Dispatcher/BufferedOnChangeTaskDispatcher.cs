@@ -6,8 +6,8 @@
     using System.Threading.Tasks;
     using Goose.Core.OnSaveTask;
 
-    public class BufferedOnSaveTaskDispatcher
-		: IOnSaveTaskDispatcher
+    public class BufferedOnChangeTaskDispatcher
+		: IOnChangeTaskDispatcher
 	{
 		private readonly IOnSaveActionTaskFactory taskFactory;
 		private readonly BlockingCollection<string> mainQueue = new BlockingCollection<string>();
@@ -15,7 +15,7 @@
 		private readonly object syncLock = new object();
 		private bool isBuilding;
 
-		public BufferedOnSaveTaskDispatcher(IOnSaveActionTaskFactory taskFactory)
+		public BufferedOnChangeTaskDispatcher(IOnSaveActionTaskFactory taskFactory)
 		{
 			this.taskFactory = taskFactory;
 			this.isBuilding = false;
@@ -31,7 +31,12 @@
 			TriggerBuild();
 		}
 
-		private void TriggerBuild()
+        public void QueueOnChangeTask(string projectPath, Task task)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void TriggerBuild()
 		{
 			Task.Factory.StartNew(() =>
 				{
