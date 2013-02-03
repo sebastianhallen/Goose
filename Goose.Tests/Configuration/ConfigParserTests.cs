@@ -1,6 +1,8 @@
 ﻿namespace Goose.Tests.Configuration
 {
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Goose.Core.Configuration;
     using NUnit.Framework;
@@ -21,7 +23,7 @@
         {
             var input = @"<goose version=""1.0""><action></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.IsValid, Is.False);
         }
@@ -46,7 +48,7 @@
         {
             var input = @"<goose version=""1.0""><action><working-directory>Build</working-directory></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.WorkingDirectory, Is.EqualTo("Build"));
         }
@@ -56,7 +58,7 @@
         {
             var input = @"<goose version=""1.0""><action><working-directory>Build</working-directory></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.IsValid, Is.False);
         }
@@ -66,7 +68,7 @@
         {
             var input = @"<goose version=""1.0""><action><command>some command</command></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.Command, Is.EqualTo("some command"));
         }
@@ -76,7 +78,7 @@
         {
             var input = @"<goose version=""1.0""><action><command>some command</command></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.IsValid, Is.False);
         }
@@ -86,7 +88,7 @@
         {
             var input = @"<goose version=""1.0""><action><command>some command</command></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
         }
@@ -96,7 +98,7 @@
         {
             var input = @"<goose version=""1.0""><action on=""save""></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
         }
@@ -106,7 +108,7 @@
         {
             var input = @"<goose version=""1.0""><action></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Unknown));
         }
@@ -116,7 +118,7 @@
         {
             var input = @"<goose version=""1.0""><action on=""never""></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Unknown));
         }
@@ -126,7 +128,7 @@
         {
             var input = @"<goose version=""1.0""><action glob=""*.ext""></action></goose>";
 
-            var config = this.Parse(input);
+            var config = this.Parse(input).Single();
 
             Assert.That(config.Glob, Is.EqualTo("*.ext"));
         }
@@ -137,23 +139,37 @@
             var input = @"
 <goose version=""1.0"">
     <action on=""save"" glob=""*.ext"">
-        <working-directory>Build</working-directory>
-        <command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</command> 
+        <working-directory>BuildLess</working-directory>
+        <command>$now = Get-Date ; Add-Content build.log ""Last ext build: $now""</command> 
+    </action>
+    <action on=""save"" glob=""*.css"">
+        <working-directory>MinifyCss</working-directory>
+        <command>$now = Get-Date ; Add-Content build.log ""Last css build: $now""</command> 
     </action>
 </goose>";
 
-            var config = this.Parse(input);
+            var configs = this.Parse(input);
 
+            var config = configs.First();
             Assert.That(config.IsValid);
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
             Assert.That(config.Glob, Is.EqualTo("*.ext"));
-            Assert.That(config.WorkingDirectory, Is.EqualTo("Build"));
-            Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last build: $now"""));
+            Assert.That(config.WorkingDirectory, Is.EqualTo("BuildLess"));
+            Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last ext build: $now"""));
+            Assert.That(config.ProjectRoot, Is.EqualTo("root"));
+            Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
+
+            config = configs.Last();
+            Assert.That(config.IsValid);
+            Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
+            Assert.That(config.Glob, Is.EqualTo("*.css"));
+            Assert.That(config.WorkingDirectory, Is.EqualTo("MinifyCss"));
+            Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last css build: $now"""));
             Assert.That(config.ProjectRoot, Is.EqualTo("root"));
             Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
         }
 
-        private ActionConfiguration Parse(string input)
+        private IEnumerable<ActionConfiguration> Parse(string input)
         {
             return this.parser.Parse("root", new MemoryStream(Encoding.UTF8.GetBytes(input)));
         }

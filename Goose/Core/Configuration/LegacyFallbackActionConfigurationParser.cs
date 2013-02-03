@@ -1,14 +1,16 @@
 ﻿namespace Goose.Core.Configuration
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
 
     public class LegacyFallbackActionConfigurationParser
     {
         private readonly ActionConfigurationParser actionConfigurationParser = new ActionConfigurationParser();
         private readonly LegacyConfigurationParser legacyConfigurationParser = new LegacyConfigurationParser();
 
-        public ActionConfiguration Parse(string projectRoot, Stream configStream)
+        public IEnumerable<ActionConfiguration> Parse(string projectRoot, Stream configStream)
         {
             try
             {
@@ -19,20 +21,20 @@
             }
             catch (Exception)
             {
-                return new ActionConfiguration(projectRoot);
+                return new [] { new ActionConfiguration(projectRoot) };
             }
         }
 
-        public ActionConfiguration Parse(string projectRoot, string input)
+        public IEnumerable<ActionConfiguration> Parse(string projectRoot, string input)
         {
-            var config = this.actionConfigurationParser.Parse(projectRoot, input);
-            if (config.IsValid)
+            var actions = this.actionConfigurationParser.Parse(projectRoot, input);
+            if (actions.Any(action => action.IsValid))
             {
-                return config;
+                return actions.Where(action => action.IsValid);
             }
 
             var legacyConfig = this.legacyConfigurationParser.Parse(projectRoot, input);
-            return legacyConfig.IsValid ? legacyConfig : config;
+            return legacyConfig.Any(config => config.IsValid) ? legacyConfig.Where(config => config.IsValid) : actions;
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿namespace Goose.Core.Configuration
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Xml.Linq;
 
     public class ActionConfigurationParser
     {
-        public ActionConfiguration Parse(string projectRoot, Stream configStream)
+        public IEnumerable<ActionConfiguration> Parse(string projectRoot, Stream configStream)
         {
             try
             {
@@ -18,11 +19,11 @@
             }
             catch (Exception)
             {
-                return new ActionConfiguration(projectRoot);
+                return new[] { new ActionConfiguration(projectRoot) };
             }
         }
 
-        public virtual ActionConfiguration Parse(string projectRoot, string configContent)
+        public virtual IEnumerable<ActionConfiguration> Parse(string projectRoot, string configContent)
         {
             try
             {
@@ -36,13 +37,12 @@
                             projectRoot,
                             trigger == null ? null : trigger.Value,
                             glob == null ? null : glob.Value,
-                            workingDirectory == null ? null : workingDirectory.Value, 
-                            command == null ? null : command.Value))
-                        .Single();
+                            workingDirectory == null ? null : workingDirectory.Value,
+                            command == null ? null : command.Value));
             }
             catch (Exception)
             {
-                return new ActionConfiguration(projectRoot);
+                return new[] { new ActionConfiguration(projectRoot) };
             }
         }
 

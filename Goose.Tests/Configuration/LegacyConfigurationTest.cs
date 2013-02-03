@@ -1,5 +1,6 @@
 ﻿namespace Goose.Tests.Configuration
 {
+    using System.Linq;
     using Core.Configuration;
     using NUnit.Framework;
 
@@ -23,7 +24,7 @@
   <compile-command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</compile-command> 
 </compile-less>";
 
-            var config = this.parser.Parse("root", input);
+            var config = this.parser.Parse("root", input).Single();
 
             Assert.That(config.IsValid);
             Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last build: $now"""));

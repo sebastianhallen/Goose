@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.InteropServices;    
     using Core.Action;
     using Core.Configuration;
@@ -67,7 +68,7 @@
 
 		            var config = configParser.Parse(projectRoot, File.OpenRead(configPath));
                     var eventListener = new FileEventListener(fileMonitor, onChangeTaskDispatcher, actionFactory, fileChangeSubscriber);
-                    eventListener.Initialize(project, config);
+                    eventListener.Initialize(project, config.First());
                     this.fileEventListeners.Add(eventListener);                    
                 }
 		    }
