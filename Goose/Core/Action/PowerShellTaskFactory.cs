@@ -9,10 +9,10 @@
     public class PowerShellTaskFactory
         : IPowerShellTaskFactory
     {
-        private readonly OutputService outputService;
+        private readonly IOutputService outputService;
         private readonly ICommandLogParser logParser;
 
-        public PowerShellTaskFactory(OutputService outputService, ICommandLogParser logParser)
+        public PowerShellTaskFactory(IOutputService outputService, ICommandLogParser logParser)
         {
             this.outputService = outputService;
             this.logParser = logParser;

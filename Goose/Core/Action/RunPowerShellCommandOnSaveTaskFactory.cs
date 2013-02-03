@@ -9,10 +9,10 @@
     public class RunPowerShellCommandOnSaveTaskFactory
 		: IOnSaveActionTaskFactory
 	{
-		private readonly OutputService outputService;
+		private readonly IOutputService outputService;
         private readonly ICommandLogParser logParser;
 
-        public RunPowerShellCommandOnSaveTaskFactory(OutputService outputService, ICommandLogParser logParser)
+        public RunPowerShellCommandOnSaveTaskFactory(IOutputService outputService, ICommandLogParser logParser)
 		{
 			this.outputService = outputService;
             this.logParser = logParser;

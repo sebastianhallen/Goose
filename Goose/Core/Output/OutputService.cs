@@ -4,9 +4,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.VisualStudio.Shell.Interop;
-    
+
     public class OutputService
-	{
+        : IOutputService
+    {
 		private readonly IVsOutputWindow outputWindow;
 		private IDictionary<string, IVsOutputWindowPane> panes = new Dictionary<string, IVsOutputWindowPane>();
         

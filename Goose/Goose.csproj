@@ -128,6 +128,7 @@
     <Compile Include="Core\Configuration\Shell.cs" />
     <Compile Include="Core\Action\GooseAction.cs" />
     <Compile Include="Core\Action\IGooseActionFactory.cs" />
+    <Compile Include="Core\Output\IOutputService.cs" />
     <Compile Include="Core\Solution\EventHandling\FileEventListener.cs" />
     <Compile Include="Core\Output\ICommandLogParser.cs" />
     <Compile Include="Core\Action\PowerShellCommandConfiguration.cs" />
