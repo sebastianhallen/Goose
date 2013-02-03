@@ -1,7 +1,7 @@
 Goose
 =====
 
-Goose is a visual studio extension that automatically runs a powershell script any time a .less file is saved. The command to run is defined in goose.config in the project root folder. You will need a separate goose.config for each project. 
+Goose is a visual studio extension that automatically runs a powershell script any time a file matching a specified glob is saved. The command to run is defined in goose.config in the project root folder. You will need a separate goose.config for each project. 
 
 
 ##Configuration
@@ -17,14 +17,17 @@ The config file has the following structure:
 </goose>
 ```
 
-**action.on**: when the action should be triggered. on="save" is currently the only supported action
-**action.glob**: file pattern to monitor for changes
+**action.on**: when the action should be triggered. on="save" is currently the only supported action.
+
+**action.glob**: file pattern to monitor for changes.
+
 **working-directory**: specifies the build directory relative to the project root folder. The on save command will be run in this directory.
+
 **command**: the command that will be run whenever a less file is saved.
 
 
 ###Old configuration format
-Don't use it. No new features will be supported for this format.
+Don't use it. No new features will be supported for this format. The plugin was initially hard coded to only monitor changes to *.less files.
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <compile-less>
