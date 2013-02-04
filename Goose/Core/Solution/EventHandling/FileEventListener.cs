@@ -36,7 +36,8 @@
         {
             this.configuration = watchConfiguration;
 
-            if (this.configuration.IsValid)
+            var projectPath = project.ProjectFilePath;
+            if (this.configuration.IsValid && !string.IsNullOrWhiteSpace(projectPath))
             {
                 this.configuration = watchConfiguration;
                 this.fileMonitor.MonitorProject(project.ProjectFilePath, watchConfiguration.Glob);
