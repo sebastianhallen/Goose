@@ -26,12 +26,7 @@
         {
             if (!this.mainQueue.Contains(action) && this.mainQueue.TryAdd(action))
             {
-                this.outputService.Handle(new CommandOutput("goose", "adding to queue", "", CommandOutputItemType.Message));
                 this.TriggerBuild();
-            }
-            else
-            {
-                this.outputService.Handle(new CommandOutput("goose", "action already queued - skipping", "", CommandOutputItemType.Message));
             }
         }
 
@@ -74,8 +69,7 @@
                     }
                     if (this.mainQueue.Any())
                     {
-                        this.outputService.Handle(new CommandOutput("goose", "still a queue", "", CommandOutputItemType.Message));
-                        TriggerBuild();
+                        this.TriggerBuild();
                     }
                 }               
             });
