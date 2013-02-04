@@ -24,7 +24,9 @@
         public void MonitorProject(string path, string glob)
         {
             var matchingFilesInProject = 
-                from project in this.solutionFilesService.Projects.Where(project => project.ProjectFilePath.Equals(path))
+                from project in this.solutionFilesService.Projects
+                let projectPath = project.ProjectFilePath
+                where !string.IsNullOrWhiteSpace(projectPath) && path.Equals(projectPath)
                 from file in project.Files
                 where this.globMatcher.Matches(file.FilePath, glob)
                 select file;
