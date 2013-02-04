@@ -26,6 +26,17 @@
         }
 
         [Test]
+        public void Should_not_monitor_project_when_project_path_is_empty()
+        {
+            var project = A.Fake<ISolutionProject>();
+            A.CallTo(() => project.ProjectFilePath).Returns(null);
+
+            this.eventListener.Initialize(project, A.Dummy<ActionConfiguration>());
+
+            A.CallTo(() => this.fileMonitor.MonitorProject(A<string>._, A<string>._)).MustNotHaveHappened();
+        }
+
+        [Test]
         public void File_change_subscriber_should_be_attached_to_monitor()
         {
             A.CallTo(() => this.fileChangeSubscriber.Attach(this.eventListener)).MustHaveHappened();
