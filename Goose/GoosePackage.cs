@@ -51,7 +51,13 @@
 		    var configParser = new LegacyFallbackActionConfigurationParser();
 		    foreach (var project in solutionFilesService.Projects)
 		    {
-		        var projectRoot = Path.GetDirectoryName(project.ProjectFilePath);
+                var projectPath = project.ProjectFilePath;
+                if (string.IsNullOrWhiteSpace(projectPath))
+                {
+                    outputService.Handle(new CommandOutput("goose", "project path was null, skipping", "", CommandOutputItemType.Message));
+                    continue;
+                }
+                var projectRoot = Path.GetDirectoryName(projectPath);
 		        var configPath = Path.Combine(projectRoot, "goose.config");
 		        if (File.Exists(configPath))
 		        {
