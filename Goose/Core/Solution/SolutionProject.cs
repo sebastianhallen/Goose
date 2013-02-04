@@ -41,7 +41,7 @@
                         {
                             filePath = Path.GetFullPath(Path.Combine(projectPath, filePath));
                         }
-                        return new FileInProject(this.ProjectFilePath, filePath, itemId);
+                        return new FileInProject(projectPath, filePath, itemId);
                     })
                                 .Where(file => !String.IsNullOrEmpty(file.ProjectPath))
                                 .Where(file => File.Exists(file.FilePath));
