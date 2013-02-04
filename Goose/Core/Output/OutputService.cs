@@ -20,8 +20,7 @@
 		{
             if (output.Version == 1)
 			{
-                var pane = GetPane(output.Name);
-                pane.Clear();
+                var pane = GetPane(output.Name);                
 
                 if (output.Time.HasValue)
 				{
@@ -32,6 +31,7 @@
 				{
 				    if (item.Type == CommandOutputItemType.Error)
 				    {
+				        pane.Clear();
 				        var outputText = CreateErrorOutput(item);
                         pane.OutputTaskItemString(outputText + Environment.NewLine, VSTASKPRIORITY.TP_NORMAL, VSTASKCATEGORY.CAT_CODESENSE, "", 0, item.FileName ?? "", item.Line, string.Format("{0}: {1}", item.Message, outputText));
 				    }

@@ -5,6 +5,7 @@
 
     public interface IGooseAction
     {
+        string StartMessage { get; }
         Task Work { get; }
     }
 
@@ -22,6 +23,21 @@
             this.rootPath = rootPath;
             this.workingDirectory = workingDirectory;
             this.command = command;                        
+        }
+
+        private string Command
+        {
+            get
+            {
+                var workingDirectoryAbsolutePath = Path.Combine(this.rootPath, this.workingDirectory);
+                var powerShellCommand = string.Format(@"cd ""{0}"" ; {1}", workingDirectoryAbsolutePath, this.command);
+                return powerShellCommand;
+            }
+        }
+
+        public string StartMessage
+        {
+            get { return this.Command; }
         }
 
         public Task Work 
@@ -64,6 +80,7 @@
     public class VoidGooseAction
         : IGooseAction
     {
+        public string StartMessage { get { return "nothing to do"; } }
         public Task Work { get { return new Task(() => { });} }
 
         public override int GetHashCode()

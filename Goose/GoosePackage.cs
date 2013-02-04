@@ -22,14 +22,14 @@
 	public sealed class GoosePackage : Package
 	{
         private IList<FileEventListener> fileEventListeners;
-        private BufferedOnChangeTaskDispatcher onChangeTaskDispatcher;
-        private RegexGlobMatcher globMatcher;
-        private SolutionFilesService solutionFilesService;
+        private IOnChangeTaskDispatcher onChangeTaskDispatcher;
+        private IGlobMatcher globMatcher;
+        private ISolutionFilesService solutionFilesService;
         private IVsFileChangeEx fileChangeService;
-        private OutputService outputService;
-        private JsonCommandLogParser logParser;
-        private PowerShellTaskFactory powerShellTaskFactory;
-        private GooseActionFactory actionFactory;
+        private IOutputService outputService;
+        private ICommandLogParser logParser;
+        private IPowerShellTaskFactory powerShellTaskFactory;
+        private IGooseActionFactory actionFactory;
         private LegacyFallbackActionConfigurationParser configParser;
 
         protected override void Dispose(bool disposing)
@@ -48,9 +48,10 @@
 		{
 			this.fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
 			this.solutionFilesService = new SolutionFilesService(this);
-		    this.globMatcher = new RegexGlobMatcher();            
-			this.onChangeTaskDispatcher = new BufferedOnChangeTaskDispatcher();
+		    this.globMatcher = new RegexGlobMatcher();
             this.outputService = new OutputService(this);
+			//this.onChangeTaskDispatcher = new BufferedOnChangeTaskDispatcher();
+            this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);            
 		    this.logParser = new JsonCommandLogParser();
 		    this.powerShellTaskFactory = new PowerShellTaskFactory(this.outputService, this.logParser);
 		    this.actionFactory = new GooseActionFactory(this.powerShellTaskFactory);
