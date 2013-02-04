@@ -1,6 +1,7 @@
 ﻿namespace Goose.Tests.EventHandling
 {
     using System.Linq;
+    using Castle.Components.DictionaryAdapter;
     using FakeItEasy;
     using Goose.Core.Solution;
     using Goose.Core.Solution.EventHandling;
@@ -24,6 +25,17 @@
             this.solution = new FakeSolutionTestContext(this.solutionFilesService, this.fileChangeSubscriber);
 
         }
+
+        [Test]
+        public void Should_not_explode_when_getting_a_null_project_path()
+        {
+            var project = A.Fake<ISolutionProject>();
+            A.CallTo(() => project.ProjectFilePath).Returns(null);
+            A.CallTo(() => this.solutionFilesService.Projects).Returns(new [] { project });
+
+            this.fileMonitor.MonitorProject(A.Dummy<string>(), A.Dummy<string>());            
+        }
+
 
         [Test]
         public void Should_monitor_matching_files_in_project_when_monitoring_project()
