@@ -24,8 +24,8 @@
             if (!this.mainQueue.Contains(action))
             {
                 this.mainQueue.TryAdd(action);
-                TriggerBuild();
             }
+            TriggerBuild();
         }
 
         private void TriggerBuild()
