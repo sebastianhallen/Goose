@@ -20,8 +20,8 @@
 		{
             if (output.Version == 1)
 			{
-                var pane = GetPane(output.Name);                
-
+                var pane = GetPane(output.Name);
+                pane.Clear();
                 if (output.Time.HasValue)
 				{
                     pane.OutputString("\nInvoked @ " + output.Time.Value.ToString("s") + ":\n");
@@ -30,8 +30,7 @@
                 foreach (var item in output.Results)
 				{
 				    if (item.Type == CommandOutputItemType.Error)
-				    {
-				        pane.Clear();
+				    {				        
 				        var outputText = CreateErrorOutput(item);
                         pane.OutputTaskItemString(outputText + Environment.NewLine, VSTASKPRIORITY.TP_NORMAL, VSTASKCATEGORY.CAT_CODESENSE, "", 0, item.FileName ?? "", item.Line, string.Format("{0}: {1}", item.Message, outputText));
 				    }
