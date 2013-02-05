@@ -43,10 +43,8 @@
         public Task Work 
         {
             get
-            {
-                var workingDirectoryAbsolutePath = Path.Combine(this.rootPath, this.workingDirectory);
-                var powerShellCommand = string.Format(@"cd ""{0}"" ; {1}", workingDirectoryAbsolutePath, this.command);
-                return this.powershellTaskFactory.Create(powerShellCommand);
+            {                
+                return this.powershellTaskFactory.Create(this.Command);
             }
         }
 
