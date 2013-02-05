@@ -30,11 +30,6 @@
                 result = new CommandOutput("goose", "unable to make sense of build log", ex.ToString(), CommandOutputItemType.Error);
             }
 
-            result.Results.Insert(0, new CommandOutputItem
-                               {
-                                   Type = CommandOutputItemType.Message,
-                                   Message = buildLog
-                               });
             return result;
         }
     }

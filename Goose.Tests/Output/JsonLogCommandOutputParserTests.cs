@@ -61,24 +61,6 @@
             var result = this.logParser.Parse(log);
 
             Assert.That(result.Results.Last().Message, Is.EqualTo("unable to make sense of build log"));
-        }
-
-        [Test]
-        public void Should_include_raw_build_log_as_first_message()
-        {
-            var log = @"
-{
-    ""results"": 		     
-    [{
-	    ""type"": ""message"",
-		""message"": ""This is now done.""
-    }]
-}";
-
-            var result = this.logParser.Parse(log);
-
-            Assert.That(result.Results.First().Message, Is.EqualTo(log));
-            Assert.That(result.Results.Last().Message, Is.EqualTo("This is now done."));
-        }
+        }     
     }
 }
