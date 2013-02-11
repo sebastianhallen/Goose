@@ -12,10 +12,10 @@
 		<author>
 			<name>Sebastian Hallén</name>
 		</author>
-		<content type="octet/stream" src="installer/Goose-v1.4.1.vsix" />
+		<content type="octet/stream" src="installer/Goose-v1.4.3.vsix" />
 		<Vsix xmlns="http://schemas.microsoft.com/developer/vsx-syndication-schema/2010">
 			<Id>ae74cfb8-8aa8-4c87-b2f2-e54a7977739f</Id>
-			<Version>1.4.1</Version>
+			<Version>1.4.3</Version>
 		</Vsix>
 	</entry>
 </feed>
