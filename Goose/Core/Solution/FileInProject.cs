@@ -11,6 +11,11 @@
             this.ProjectPath = projectPath;
             this.FilePath = filePath;
             this.ItemId = itemId;
-        }      
+        }
+
+        public override string ToString()
+        {
+            return this.FilePath;
+        }
     }
 }

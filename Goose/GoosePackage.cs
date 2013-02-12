@@ -10,6 +10,7 @@
     using Core.Output;
     using Core.Solution;
     using Core.Solution.EventHandling;
+    using Debugging;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell;
     using Microsoft.VisualStudio.Shell.Interop;
@@ -46,10 +47,11 @@
 
 		protected override void Initialize()
 		{
-			this.fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
-			this.solutionFilesService = new SolutionFilesService(this);
-		    this.globMatcher = new RegexGlobMatcher();
             this.outputService = new OutputService(this);
+			this.fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
+            this.solutionFilesService = new SolutionFilesService(this, this.outputService);
+		    this.globMatcher = new RegexGlobMatcher();
+            
 			//this.onChangeTaskDispatcher = new BufferedOnChangeTaskDispatcher();
             this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);            
 		    this.logParser = new JsonCommandLogParser();
@@ -62,8 +64,9 @@
 		    {
                 var projectPath = project.ProjectFilePath;
                 if (string.IsNullOrWhiteSpace(projectPath))
-                {
+                {                    
                     this.outputService.Handle(new CommandOutput("goose", "project path was null, skipping", "", CommandOutputItemType.Message));
+                    this.outputService.Debug<GoosePackage>("project path null in Initialize");
                     continue;
                 }
 
@@ -93,7 +96,7 @@
             foreach (var action in actionConfigurations)
             {
                 var fileChangeSubscriber = new FileChangeSubscriber(this.fileChangeService);
-                var fileMonitor = new FileMonitor(this.solutionFilesService, this.globMatcher, fileChangeSubscriber);
+                var fileMonitor = new FileMonitor(this.solutionFilesService, this.globMatcher, fileChangeSubscriber, this.outputService);
                 var eventListener = new FileEventListener(fileMonitor, this.onChangeTaskDispatcher, this.actionFactory, fileChangeSubscriber);
                 eventListener.Initialize(project, action);
                 this.fileEventListeners.Add(eventListener);

@@ -4,13 +4,16 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using Debugging;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
+    using Output;
 
     public class SolutionProject 
         : ISolutionProject
     {
         private readonly IVsProject vsProject;
+        private readonly IOutputService outputService;
 
         public string ProjectFilePath
         {
@@ -29,6 +32,7 @@
                 var projectPath = this.ProjectFilePath;
                 if ( string.IsNullOrWhiteSpace( projectPath ) )
                 {
+                    this.outputService.Debug<SolutionProject>("project path empty in Files { get; }");
                     return Enumerable.Empty<FileInProject>();
                 }
                 var hierarchy = this.vsProject as IVsHierarchy;
@@ -48,9 +52,10 @@
             }
         }
 
-        public SolutionProject(IVsProject vsProject)
+        public SolutionProject(IVsProject vsProject, IOutputService outputService)
         {
             this.vsProject = vsProject;
+            this.outputService = outputService;
         }
     }
 }

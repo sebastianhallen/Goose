@@ -146,6 +146,7 @@
     <Compile Include="Core\Solution\EventHandling\RegexGlobMatcher.cs" />
     <Compile Include="Core\Solution\ISolutionFilesService.cs" />
     <Compile Include="Core\Solution\ISolutionProject.cs" />
+    <Compile Include="Debugging\IOutputServiceExtensions.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Core\Dispatcher\BufferedOnChangeTaskDispatcher.cs" />
     <Compile Include="Core\Solution\HierarchyTraversionExtensions.cs" />

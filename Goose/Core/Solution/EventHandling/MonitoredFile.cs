@@ -32,5 +32,10 @@
         {
             return String.Equals(candidate, this.FilePath);
         }
+
+        public override string ToString()
+        {
+            return FilePath;
+        }
     }
 }

@@ -3,6 +3,7 @@
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using Debugging;
 	using Microsoft.VisualStudio.Shell.Interop;
 
 	public class OutputService
@@ -16,16 +17,18 @@
 			this.outputWindow = serviceProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
 		}
 
-		public void Handle(CommandOutput output)
+		public void Handle(CommandOutput output, bool clear = true)
 		{
 			if (output.Version == 1)
 			{
+                if (!"goose.debug".Equals(output.Name))
+                {
+                    this.Debug<OutputService>(string.Join(Environment.NewLine, output.Results));
+                }
 				var pane = GetPane(output.Name);
-				pane.Clear();
-				if (output.Time.HasValue)
-				{
-					pane.OutputString("\nInvoked @ " + output.Time.Value.ToString("s") + ":\n");
-				}
+
+                if (clear) pane.Clear();
+                if (output.Time.HasValue) pane.OutputString("\nInvoked @ " + output.Time.Value.ToString("s") + ":\n");				
 
 				foreach (var item in output.Results)
 				{

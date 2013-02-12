@@ -1,7 +1,10 @@
 ﻿namespace Goose.Core.Solution.EventHandling
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Debugging;
+    using Output;
 
     public class FileMonitor
         : IFileMonitor
@@ -9,14 +12,15 @@
         private readonly ISolutionFilesService solutionFilesService;
         private readonly IGlobMatcher globMatcher;
         private readonly IFileChangeSubscriber fileChangeSubscriber;
+        private readonly IOutputService outputService;
         private readonly IList<MonitoredFile> monitoredFilesField;
         private readonly IList<MonitoredFile> monitoredProjectsField;
         
-        public FileMonitor(ISolutionFilesService solutionFilesService, IGlobMatcher globMatcher, IFileChangeSubscriber fileChangeSubscriber)
-        {
+        public FileMonitor(ISolutionFilesService solutionFilesService, IGlobMatcher globMatcher, IFileChangeSubscriber fileChangeSubscriber, IOutputService outputService){
             this.solutionFilesService = solutionFilesService;
             this.globMatcher = globMatcher;
             this.fileChangeSubscriber = fileChangeSubscriber;
+            this.outputService = outputService;
             this.monitoredFilesField = new List<MonitoredFile>();
             this.monitoredProjectsField = new List<MonitoredFile>();
         }
@@ -32,10 +36,12 @@
                 select file;
 
             this.monitoredProjectsField.Add(this.fileChangeSubscriber.Subscribe(path, path));
+            this.outputService.Debug<FileMonitor>("MonitorProject: project: " + path);
             foreach (var file in matchingFilesInProject)
-            {
+            {                
                 this.monitoredFilesField.Add(this.fileChangeSubscriber.Subscribe(path, file.FilePath));
             }
+            this.outputService.Debug<FileMonitor>("Monitored files in project: " + string.Join(Environment.NewLine, matchingFilesInProject));
         }
 
         public void UnMonitor(IEnumerable<string> files)
@@ -55,7 +61,8 @@
 
             this.UnMonitorFile(filesInProjects.Select(file => file.FilePath));            
             foreach (var project in matchingProjects.ToArray())
-            {
+            {                
+                this.outputService.Debug<FileMonitor>("Unsubscring from project: " + project);
                 this.fileChangeSubscriber.UnSubscribe(project.MonitorCookie);
                 this.monitoredProjectsField.Remove(project);
             }
@@ -67,10 +74,12 @@
                                   .Where(file => files.Contains(file.FilePath));
 
             foreach (var file in matchingFiles.ToArray())
-            {
+            {                
                 this.fileChangeSubscriber.UnSubscribe(file.MonitorCookie);
                 this.monitoredFilesField.Remove(file);
             }
+
+            this.outputService.Debug<FileMonitor>("Unsubscribed from files: " + string.Join(Environment.NewLine, matchingFiles));
         }
 
         public bool IsMonitoredProject(string project)
