@@ -1,9 +1,7 @@
 ﻿namespace Goose.Core.Dispatcher
 {
     using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Action;
     using Output;
 
@@ -13,8 +11,7 @@
         private readonly IOutputService outputService;
         protected readonly BlockingCollection<IGooseAction> mainQueue = new BlockingCollection<IGooseAction>();
         protected readonly BlockingCollection<IGooseAction> currentBuildQueue = new BlockingCollection<IGooseAction>();
-        protected readonly object syncLock = new object();
-        protected bool isBuilding;
+        protected volatile bool isBuilding;
 
         protected OnChangeTaskDispatcher(IOutputService outputService)
         {
@@ -34,45 +31,30 @@
 
         private void TriggerBuild()
         {
-            Task.Factory.StartNew(() =>
-            {
-                this.CreateBuildQueue();
+            this.CreateBuildQueue();
 
-                this.StartOnSaveActions();
-            });
+            this.ActOnChange();
         }
 
-        private void StartOnSaveActions()
+        private void ActOnChange()
         {
-            Task.Factory.StartNew(() =>
+            IGooseAction workItem;
+            while (this.currentBuildQueue.TryTake(out workItem))
             {
-                var buildTasks = new List<Task>();
-                IGooseAction workItem;
-                while (this.currentBuildQueue.TryTake(out workItem))
+                var work = workItem.Work;
+                var nextItem = work.ContinueWith(task =>
                 {
-                    var work = workItem.Work;
-                    this.outputService.Handle(new CommandOutput("goose", string.Format("running action: {0}", workItem.StartMessage), "", CommandOutputItemType.Message));
-                    work.Start();
-                    buildTasks.Add(work);
-                }
+                    this.isBuilding = false;
 
-                Task.WaitAll(buildTasks.ToArray());
-
-                return buildTasks.Any();
-            }).ContinueWith(task =>
-            {
-                if (task.Exception != null || task.Result)
-                {
-                    lock (this.syncLock)
-                    {
-                        this.isBuilding = false;
-                    }
                     if (this.mainQueue.Any())
                     {
                         this.TriggerBuild();
                     }
-                }               
-            });
+                });
+
+                this.outputService.Handle(new CommandOutput("goose", string.Format("running action: {0}", workItem.StartMessage), "", CommandOutputItemType.Message));
+                work.Start();
+            }
         }     
     }
 }

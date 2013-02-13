@@ -28,26 +28,29 @@
         public void MonitorProject(string path, string glob)
         {
             var matchingFilesInProject = 
-                from project in this.solutionFilesService.Projects
+                (from project in this.solutionFilesService.Projects
                 let projectPath = project.ProjectFilePath
                 where !string.IsNullOrWhiteSpace(projectPath) && path.Equals(projectPath)
                 from file in project.Files
                 where this.globMatcher.Matches(file.FilePath, glob)
-                select file;
+                select file).ToArray();
 
             this.monitoredProjectsField.Add(this.fileChangeSubscriber.Subscribe(path, path));
             this.outputService.Debug<FileMonitor>("MonitorProject: project: " + path);
             foreach (var file in matchingFilesInProject)
-            {                
+            {
                 this.monitoredFilesField.Add(this.fileChangeSubscriber.Subscribe(path, file.FilePath));
             }
-            this.outputService.Debug<FileMonitor>("Monitored files in project: " + string.Join(Environment.NewLine, matchingFilesInProject));
+            this.outputService.Debug<FileMonitor>("Monitored files in project: " + string.Join(Environment.NewLine, matchingFilesInProject.Select(file => file.ToString())));
         }
 
         public void UnMonitor(IEnumerable<string> files)
         {
-            UnMonitorProject(files);
-            UnMonitorFile(files);
+            var filesToUnMonitor = files.ToArray();
+            if (!filesToUnMonitor.Any()) return;
+
+            UnMonitorProject(filesToUnMonitor);
+            UnMonitorFile(filesToUnMonitor);
         }
 
         private void UnMonitorProject(IEnumerable<string> files)
@@ -57,9 +60,13 @@
             {
                 var projectFiles = matchingProjects.Select(project => project.FilePath);
                 return projectFiles.Contains(file.ProjectPath);
-            });
+            }).ToArray();
 
-            this.UnMonitorFile(filesInProjects.Select(file => file.FilePath));            
+            if (filesInProjects.Any())
+            {
+                this.UnMonitorFile(filesInProjects.Select(file => file.FilePath));
+            }
+                        
             foreach (var project in matchingProjects.ToArray())
             {                
                 this.outputService.Debug<FileMonitor>("Unsubscring from project: " + project);
@@ -70,6 +77,7 @@
 
         private void UnMonitorFile(IEnumerable<string> files)
         {
+            this.outputService.Debug<FileMonitor>("unmonitor called for: " + string.Join(Environment.NewLine, files));
             var matchingFiles = this.monitoredFilesField
                                   .Where(file => files.Contains(file.FilePath));
 

@@ -1,5 +1,7 @@
 ﻿namespace Goose.Tests.EventHandling
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using Core.Action;
     using Core.Dispatcher;
     using FakeItEasy;
@@ -46,10 +48,12 @@
         public void Should_unmonitor_file_when_file_is_deleted()
         {
             var files = new[] {"file"};
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile(A<string>._)).Returns(true);
 
             this.eventListener.ActOn(files, Trigger.Delete);
 
-            A.CallTo(() => this.fileMonitor.UnMonitor(files)).MustHaveHappened();
+            A.CallTo(() => this.fileMonitor.UnMonitor(A<IEnumerable<string>>.That.Matches(actual => actual.Single().Equals("file"))))
+                .MustHaveHappened();
         }
 
         [Test]
@@ -88,6 +92,9 @@
         [Test]
         public void Should_queue_on_save_task_when_a_monitored_file_is_triggered_by_save()
         {
+            A.CallTo(() => this.fileMonitor.IsMonitoredProject("project.csproj")).Returns(true);
+            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), new ActionConfiguration(""));
+
             this.eventListener.ActOn(new [] { "project.csproj"}, Trigger.Save);
 
             A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustHaveHappened();
@@ -117,10 +124,21 @@
         public void Should_trigger_deletion_action_when_a_watched_file_is_deleted()
         {
             var file = new[] { "file" };
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
 
             this.eventListener.FilesChanged(1, file, new [] { (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del });
 
-            A.CallTo(() => this.fileMonitor.UnMonitor(file)).MustHaveHappened();
+            A.CallTo(() => this.fileMonitor.UnMonitor(A<IEnumerable<string>>.That.Matches(actual => actual.Single().Equals("file")))).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_not_unmonitor_file_when_an_unwatched_file_is_deleted()
+        {
+            var file = new[] { "file" };
+
+            this.eventListener.FilesChanged(1, file, new[] { (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del });
+
+            A.CallTo(() => this.fileMonitor.UnMonitor(A<IEnumerable<string>>._)).MustNotHaveHappened();
         }
 
         [TestCase(_VSFILECHANGEFLAGS.VSFILECHG_Add)]
@@ -129,6 +147,7 @@
         public void Should_trigger_save_action_when_a_watched_file_is_saved(_VSFILECHANGEFLAGS changeFlag)
         {
             var file = new[] {"file"};
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
 
             this.eventListener.FilesChanged(1, file, new [] { (uint)changeFlag });
 

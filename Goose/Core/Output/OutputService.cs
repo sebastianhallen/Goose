@@ -1,6 +1,7 @@
 ﻿namespace Goose.Core.Output
 {
 	using System;
+	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 	using System.Linq;
 	using Debugging;
@@ -10,7 +11,7 @@
 		: IOutputService
 	{
 		private readonly IVsOutputWindow outputWindow;
-		private IDictionary<string, IVsOutputWindowPane> panes = new Dictionary<string, IVsOutputWindowPane>();
+        private ConcurrentDictionary<string, IVsOutputWindowPane> panes = new ConcurrentDictionary<string, IVsOutputWindowPane>();
 
 		public OutputService(IServiceProvider serviceProvider)
 		{
@@ -20,12 +21,9 @@
 		public void Handle(CommandOutput output, bool clear = true)
 		{
 			if (output.Version == 1)
-			{
-                if (!"goose.debug".Equals(output.Name))
-                {
-                    this.Debug<OutputService>(string.Join(Environment.NewLine, output.Results));
-                }
+			{                
 				var pane = GetPane(output.Name);
+			    if (pane == null) throw new Exception("no pane no log");
 
                 if (clear) pane.Clear();
                 if (output.Time.HasValue) pane.OutputString("\nInvoked @ " + output.Time.Value.ToString("s") + ":\n");				
@@ -44,6 +42,12 @@
 				}
 
 				pane.FlushToTaskList();
+
+
+                if (!"goose.debug".Equals(output.Name))
+                {
+                    this.Debug<OutputService>(string.Join(Environment.NewLine, output.Results));
+                }
 			}
 		}
 
@@ -62,15 +66,21 @@
 
 		private IVsOutputWindowPane GetPane(string name)
 		{
-			if (!panes.ContainsKey(name))
-			{
-				var paneGuid = Guid.NewGuid();
-				IVsOutputWindowPane pane;
-				outputWindow.CreatePane(paneGuid, name, 1, 1);
-				outputWindow.GetPane(paneGuid, out pane);
-				panes[name] = pane;
-			}
-			return panes[name];
+		    IVsOutputWindowPane pane;
+		    if (this.panes.TryGetValue(name, out pane))
+		    {
+		        return pane;
+		    }
+
+		    this.panes.AddOrUpdate(name, addKey =>
+		    {
+		        var paneId = Guid.NewGuid();
+                outputWindow.CreatePane(paneId, addKey, 1, 1);
+		        outputWindow.GetPane(paneId, out pane);
+		        return pane;
+		    }, (updateKey, existing) => existing ?? pane);
+		    
+			return pane;
 		}
 	}
 }

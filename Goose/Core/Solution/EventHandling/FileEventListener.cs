@@ -46,19 +46,23 @@
 
         public void ActOn(IEnumerable<string> files, Trigger trigger)
         {
-            var isFileUpdate = files.Any(this.fileMonitor.IsMonitoredFile);
+            var filesToActOn = files.ToArray();
+            var isFileUpdate = filesToActOn.Any(this.fileMonitor.IsMonitoredFile);
+            var isProjectUpdate = filesToActOn.Any(this.fileMonitor.IsMonitoredProject);
 
-            this.UpdateMonitors(files, trigger);
-
-            if ((Trigger.Save.Equals(trigger)) ||
-                (Trigger.Delete.Equals(trigger) && isFileUpdate))
+            if (isFileUpdate || isProjectUpdate)
             {
-                var action = this.actionFactory.Create(this.configuration);
-                this.taskDispatcher.QueueOnChangeTask(action);
+                this.UpdateMonitors(filesToActOn, trigger);
+
+                if (Trigger.Save.Equals(trigger) || Trigger.Delete.Equals(trigger))
+                {
+                    var action = this.actionFactory.Create(this.configuration);
+                    this.taskDispatcher.QueueOnChangeTask(action);
+                }
             }
         }
 
-        private void UpdateMonitors(IEnumerable<string> files, Trigger trigger)
+        private void UpdateMonitors(string[] files, Trigger trigger)
         {
             if (Trigger.Delete.Equals(trigger))
             {
@@ -68,7 +72,10 @@
             if (Trigger.Save.Equals(trigger))
             {
                 var monitoredProjects = files.Where(this.fileMonitor.IsMonitoredProject).ToArray();
-                this.fileMonitor.UnMonitor(monitoredProjects);
+                if (monitoredProjects.Any())
+                {
+                    this.fileMonitor.UnMonitor(monitoredProjects); 
+                }
                 foreach (var project in monitoredProjects)
                 {
                     this.fileMonitor.MonitorProject(project, this.configuration.Glob);

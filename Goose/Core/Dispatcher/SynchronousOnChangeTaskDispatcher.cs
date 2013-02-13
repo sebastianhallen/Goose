@@ -14,18 +14,15 @@
 
         protected override void CreateBuildQueue()
         {
-            lock (this.syncLock)
+            if (!this.isBuilding)
             {
-                if (!this.isBuilding)
+                this.isBuilding = true;
+                IGooseAction workItem;
+                if (this.mainQueue.TryTake(out workItem))
                 {
-                    this.isBuilding = true;
-                    IGooseAction workItem;
-                    if (this.mainQueue.TryTake(out workItem))
-                    {
-                        this.currentBuildQueue.TryAdd(workItem);
-                    }
+                    this.currentBuildQueue.TryAdd(workItem);
                 }
-            }
+            }            
         }
     }
 }
