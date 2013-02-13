@@ -128,7 +128,6 @@
     <Compile Include="Core\Configuration\Shell.cs" />
     <Compile Include="Core\Action\GooseAction.cs" />
     <Compile Include="Core\Action\IGooseActionFactory.cs" />
-    <Compile Include="Core\Dispatcher\OnChangeTaskDispatcher.cs" />
     <Compile Include="Core\Dispatcher\SynchronousOnChangeTaskDispatcher.cs" />
     <Compile Include="Core\Output\IOutputService.cs" />
     <Compile Include="Core\Solution\EventHandling\FileEventListener.cs" />
@@ -148,7 +147,6 @@
     <Compile Include="Core\Solution\ISolutionProject.cs" />
     <Compile Include="Debugging\IOutputServiceExtensions.cs" />
     <Compile Include="Guids.cs" />
-    <Compile Include="Core\Dispatcher\BufferedOnChangeTaskDispatcher.cs" />
     <Compile Include="Core\Solution\HierarchyTraversionExtensions.cs" />
     <Compile Include="Core\Dispatcher\IOnChangeTaskDispatcher.cs" />
     <Compile Include="Core\Solution\EventHandling\MonitoredFile.cs" />

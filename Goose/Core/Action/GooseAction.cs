@@ -40,12 +40,10 @@
             get { return this.Command; }
         }
 
+        private Task workField;
         public Task Work 
         {
-            get
-            {                
-                return this.powershellTaskFactory.Create(this.Command);
-            }
+            get { return this.workField ?? (this.workField = this.powershellTaskFactory.Create(this.Command)); }
         }
 
         protected bool Equals(PowerShellGooseAction other)

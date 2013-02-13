@@ -1,6 +1,5 @@
 ﻿namespace Goose.Core.Solution.EventHandling
 {
-    using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
@@ -43,14 +42,16 @@
             this.monitoredProjectsField.AddOrUpdate(path,
                 projectPath => this.fileChangeSubscriber.Subscribe(projectPath, projectPath),
                 (projectPath, existing) => existing);
-            this.outputService.Debug<FileMonitor>("MonitorProject: project: " + path);
+            this.outputService.Debug<FileMonitor>("subscribed to project: " + path);
+
             foreach (var file in matchingFilesInProject)
             {                
                 this.monitoredFilesField.AddOrUpdate(file.FilePath, 
                     filePath => this.fileChangeSubscriber.Subscribe(path, filePath), 
                     (filePath, existing) => existing);
+                this.outputService.Debug<FileMonitor>("subscribed to file: " + file);
+
             }
-            this.outputService.Debug<FileMonitor>("Monitored files in project: " + string.Join(Environment.NewLine, matchingFilesInProject.Select(file => file.ToString())));
         }
 
         public void UnMonitor(IEnumerable<string> files)
@@ -73,22 +74,22 @@
                                              .Where(monitoredFile => monitoredFile.Value.ProjectPath.Equals(monitoredProject.ProjectPath))
                                              .Select(monitoredFile => monitoredFile.Key);
                     this.UnMonitorFile(filesInProject);
-                    this.outputService.Debug<FileMonitor>("Unsubscring from project: " + file);
                     this.fileChangeSubscriber.UnSubscribe(monitoredProject.MonitorCookie);
+                    this.outputService.Debug<FileMonitor>("Unsubscribed from project: " + file);
+
                 }
             }
         }
 
         private void UnMonitorFile(IEnumerable<string> files)
         {
-            this.outputService.Debug<FileMonitor>("unmonitor called for: " + string.Join(Environment.NewLine, files));            
             foreach (var file in files)
             {
                 MonitoredFile monitoredFile;
                 if (this.monitoredFilesField.TryRemove(file, out monitoredFile))
                 {
                     this.fileChangeSubscriber.UnSubscribe(monitoredFile.MonitorCookie);
-                    this.outputService.Debug<FileMonitor>("Unsubscribed from: " + file);
+                    this.outputService.Debug<FileMonitor>("Unsubscribed from file: " + file);
                 }                
             }                                    
         }
