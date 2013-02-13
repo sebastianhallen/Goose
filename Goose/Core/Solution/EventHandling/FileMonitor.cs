@@ -1,6 +1,7 @@
 ﻿namespace Goose.Core.Solution.EventHandling
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Linq;
     using Debugging;
@@ -13,7 +14,7 @@
         private readonly IGlobMatcher globMatcher;
         private readonly IFileChangeSubscriber fileChangeSubscriber;
         private readonly IOutputService outputService;
-        private readonly IList<MonitoredFile> monitoredFilesField;
+        private readonly ConcurrentDictionary<string, MonitoredFile> monitoredFilesField;
         private readonly IList<MonitoredFile> monitoredProjectsField;
         
         public FileMonitor(ISolutionFilesService solutionFilesService, IGlobMatcher globMatcher, IFileChangeSubscriber fileChangeSubscriber, IOutputService outputService){
@@ -21,7 +22,7 @@
             this.globMatcher = globMatcher;
             this.fileChangeSubscriber = fileChangeSubscriber;
             this.outputService = outputService;
-            this.monitoredFilesField = new List<MonitoredFile>();
+            this.monitoredFilesField = new ConcurrentDictionary<string, MonitoredFile>();
             this.monitoredProjectsField = new List<MonitoredFile>();
         }
 
@@ -39,7 +40,9 @@
             this.outputService.Debug<FileMonitor>("MonitorProject: project: " + path);
             foreach (var file in matchingFilesInProject)
             {
-                this.monitoredFilesField.Add(this.fileChangeSubscriber.Subscribe(path, file.FilePath));
+                this.monitoredFilesField.AddOrUpdate(file.FilePath, 
+                    filePath => this.fileChangeSubscriber.Subscribe(path, filePath), 
+                    (filePath, existing) => existing);
             }
             this.outputService.Debug<FileMonitor>("Monitored files in project: " + string.Join(Environment.NewLine, matchingFilesInProject.Select(file => file.ToString())));
         }
@@ -59,12 +62,13 @@
             var filesInProjects = this.monitoredFilesField.Where(file =>
             {
                 var projectFiles = matchingProjects.Select(project => project.FilePath);
-                return projectFiles.Contains(file.ProjectPath);
+
+                return projectFiles.Contains(file.Value.ProjectPath);
             }).ToArray();
 
             if (filesInProjects.Any())
             {
-                this.UnMonitorFile(filesInProjects.Select(file => file.FilePath));
+                this.UnMonitorFile(filesInProjects.Select(file => file.Key));
             }
                         
             foreach (var project in matchingProjects.ToArray())
@@ -77,17 +81,16 @@
 
         private void UnMonitorFile(IEnumerable<string> files)
         {
-            this.outputService.Debug<FileMonitor>("unmonitor called for: " + string.Join(Environment.NewLine, files));
-            var matchingFiles = this.monitoredFilesField
-                                  .Where(file => files.Contains(file.FilePath));
-
-            foreach (var file in matchingFiles.ToArray())
-            {                
-                this.fileChangeSubscriber.UnSubscribe(file.MonitorCookie);
-                this.monitoredFilesField.Remove(file);
-            }
-
-            this.outputService.Debug<FileMonitor>("Unsubscribed from files: " + string.Join(Environment.NewLine, matchingFiles));
+            this.outputService.Debug<FileMonitor>("unmonitor called for: " + string.Join(Environment.NewLine, files));            
+            foreach (var file in files)
+            {
+                MonitoredFile monitoredFile;
+                if (this.monitoredFilesField.TryRemove(file, out monitoredFile))
+                {
+                    this.fileChangeSubscriber.UnSubscribe(monitoredFile.MonitorCookie);
+                    this.outputService.Debug<FileMonitor>("Unsubscribed from: " + file);
+                }                
+            }                                    
         }
 
         public bool IsMonitoredProject(string project)
@@ -97,14 +100,15 @@
 
         public bool IsMonitoredFile(string file)
         {
-            return this.monitoredFilesField.Any(monitored => monitored.FilePath.Equals(file));
+            return this.monitoredFilesField.ContainsKey(file);
         }
 
         public void Dispose()
         {
-            var files = this.monitoredFilesField.Select(file => file.FilePath);
+            var monitoredFiles = this.monitoredFilesField.Keys;
+            
             var projects = this.monitoredProjectsField.Select(project => project.FilePath);
-            this.UnMonitor(files);
+            this.UnMonitor(monitoredFiles);
             this.UnMonitor(projects);
         }
     }

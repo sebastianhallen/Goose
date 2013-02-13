@@ -84,10 +84,10 @@
 
             this.fileMonitor.UnMonitor(new[] { "project.csproj" });
 
-            foreach (var subscription in subscriptions)
-            {
-                A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(subscription)).MustHaveHappened();
-            }
+            A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(101)).MustHaveHappened();
+            A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(1)).MustHaveHappened();
+            A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(2)).MustHaveHappened();
+
         }
 
         [Test]
@@ -131,6 +131,18 @@
             this.fileMonitor.UnMonitor(new[] { "project.csproj", "file" });
 
             A.CallTo(() => this.fileChangeSubscriber.UnSubscribe(A<uint>._)).MustHaveHappened(Repeated.Exactly.Twice);
+        }
+
+        [Test]
+        public void Should_not_subscribe_to_an_already_monitored_file()
+        {
+            this.solution.HasProject("project.csproj").WithFiles("file");
+            this.solution.Construct();
+
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
+
+            A.CallTo(() => this.fileChangeSubscriber.Subscribe("project.csproj", "file")).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 }
