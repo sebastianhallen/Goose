@@ -15,7 +15,7 @@
         private readonly IFileChangeSubscriber fileChangeSubscriber;
         private readonly IOutputService outputService;
         private readonly ConcurrentDictionary<string, MonitoredFile> monitoredFilesField;
-        private readonly IList<MonitoredFile> monitoredProjectsField;
+        private readonly ConcurrentDictionary<string, MonitoredFile> monitoredProjectsField;
         
         public FileMonitor(ISolutionFilesService solutionFilesService, IGlobMatcher globMatcher, IFileChangeSubscriber fileChangeSubscriber, IOutputService outputService){
             this.solutionFilesService = solutionFilesService;
@@ -23,23 +23,29 @@
             this.fileChangeSubscriber = fileChangeSubscriber;
             this.outputService = outputService;
             this.monitoredFilesField = new ConcurrentDictionary<string, MonitoredFile>();
-            this.monitoredProjectsField = new List<MonitoredFile>();
+            this.monitoredProjectsField = new ConcurrentDictionary<string, MonitoredFile>();
         }
 
         public void MonitorProject(string path, string glob)
         {
+            if (string.IsNullOrWhiteSpace(path)) return;
+
+            var projectCandidatePath = path;
             var matchingFilesInProject = 
                 (from project in this.solutionFilesService.Projects
-                let projectPath = project.ProjectFilePath
-                where !string.IsNullOrWhiteSpace(projectPath) && path.Equals(projectPath)
-                from file in project.Files
-                where this.globMatcher.Matches(file.FilePath, glob)
-                select file).ToArray();
+                 let projectPath = project.ProjectFilePath
+                 where !string.IsNullOrWhiteSpace(projectPath) && projectCandidatePath.Equals(projectPath)
+                    from file in project.Files
+                    where this.globMatcher.Matches(file.FilePath, glob)
+                        select file).ToArray();
 
-            this.monitoredProjectsField.Add(this.fileChangeSubscriber.Subscribe(path, path));
+            
+            this.monitoredProjectsField.AddOrUpdate(path,
+                projectPath => this.fileChangeSubscriber.Subscribe(projectPath, projectPath),
+                (projectPath, existing) => existing);
             this.outputService.Debug<FileMonitor>("MonitorProject: project: " + path);
             foreach (var file in matchingFilesInProject)
-            {
+            {                
                 this.monitoredFilesField.AddOrUpdate(file.FilePath, 
                     filePath => this.fileChangeSubscriber.Subscribe(path, filePath), 
                     (filePath, existing) => existing);
@@ -58,24 +64,18 @@
 
         private void UnMonitorProject(IEnumerable<string> files)
         {
-            var matchingProjects = this.monitoredProjectsField.Where(project => files.Contains(project.FilePath));
-            var filesInProjects = this.monitoredFilesField.Where(file =>
+            foreach (var file in files)
             {
-                var projectFiles = matchingProjects.Select(project => project.FilePath);
-
-                return projectFiles.Contains(file.Value.ProjectPath);
-            }).ToArray();
-
-            if (filesInProjects.Any())
-            {
-                this.UnMonitorFile(filesInProjects.Select(file => file.Key));
-            }
-                        
-            foreach (var project in matchingProjects.ToArray())
-            {                
-                this.outputService.Debug<FileMonitor>("Unsubscring from project: " + project);
-                this.fileChangeSubscriber.UnSubscribe(project.MonitorCookie);
-                this.monitoredProjectsField.Remove(project);
+                MonitoredFile monitoredProject;
+                if (this.monitoredProjectsField.TryRemove(file, out monitoredProject))
+                {
+                    var filesInProject = this.monitoredFilesField
+                                             .Where(monitoredFile => monitoredFile.Value.ProjectPath.Equals(monitoredProject.ProjectPath))
+                                             .Select(monitoredFile => monitoredFile.Key);
+                    this.UnMonitorFile(filesInProject);
+                    this.outputService.Debug<FileMonitor>("Unsubscring from project: " + file);
+                    this.fileChangeSubscriber.UnSubscribe(monitoredProject.MonitorCookie);
+                }
             }
         }
 
@@ -95,7 +95,7 @@
 
         public bool IsMonitoredProject(string project)
         {
-            return this.monitoredProjectsField.Any(monitored => monitored.ProjectPath.Equals(project));
+            return this.monitoredProjectsField.ContainsKey(project);
         }
 
         public bool IsMonitoredFile(string file)
@@ -106,10 +106,9 @@
         public void Dispose()
         {
             var monitoredFiles = this.monitoredFilesField.Keys;
-            
-            var projects = this.monitoredProjectsField.Select(project => project.FilePath);
+            var monitoredProjects = this.monitoredProjectsField.Keys;
             this.UnMonitor(monitoredFiles);
-            this.UnMonitor(projects);
+            this.UnMonitor(monitoredProjects);
         }
     }
 }

@@ -27,13 +27,19 @@
         }
 
         [Test]
-        public void Should_not_explode_when_getting_a_null_project_path()
+        public void Should_not_explode_when_getting_a_null_project_path_when_fetching_projects_from_soltion()
         {
             var project = A.Fake<ISolutionProject>();
             A.CallTo(() => project.ProjectFilePath).Returns(null);
             A.CallTo(() => this.solutionFilesService.Projects).Returns(new [] { project });
 
             this.fileMonitor.MonitorProject(A.Dummy<string>(), A.Dummy<string>());            
+        }
+
+        [Test]
+        public void Should_not_explode_when_trying_to_monitor_a_null_path()
+        {
+            this.fileMonitor.MonitorProject(null, A.Dummy<string>());
         }
 
 
@@ -143,6 +149,18 @@
             this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
 
             A.CallTo(() => this.fileChangeSubscriber.Subscribe("project.csproj", "file")).MustHaveHappened(Repeated.Exactly.Once);
+        }
+
+        [Test]
+        public void Should_not_subscribe_to_an_already_monitored_project()
+        {
+            this.solution.HasProject("project.csproj").WithFiles("file");
+            this.solution.Construct();
+
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
+            this.fileMonitor.MonitorProject("project.csproj", A.Dummy<string>());
+
+            A.CallTo(() => this.fileChangeSubscriber.Subscribe("project.csproj", "project.csproj")).MustHaveHappened(Repeated.Exactly.Once);
         }
     }
 }
