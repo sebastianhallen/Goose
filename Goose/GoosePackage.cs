@@ -16,10 +16,9 @@
     using Microsoft.VisualStudio.Shell.Interop;
 
     [PackageRegistration(UseManagedResourcesOnly = true)]
-	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
-	[Guid(GuidList.guidRunCommandOnSavePkgString)]
-	//[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string)]
+	[InstalledProductRegistration("#110", "#112", "1.4.4", IconResourceID = 400)]
+	[Guid(GuidList.guidGoosePkgString)]
+	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string)]
 	public sealed class GoosePackage : Package
 	{
         private IList<FileEventListener> fileEventListeners;
