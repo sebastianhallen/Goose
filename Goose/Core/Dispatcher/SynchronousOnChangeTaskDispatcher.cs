@@ -2,6 +2,8 @@
 {
     using System.Collections.Concurrent;
     using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Action;
     using Debugging;
     using Output;
@@ -30,6 +32,10 @@
             {
                 this.outputService.Debug<SynchronousOnChangeTaskDispatcher>("adding to queue: " + action.StartMessage);
                 this.TriggerBuild();
+            }
+            else
+            {
+                this.outputService.Debug<SynchronousOnChangeTaskDispatcher>("already on queue or building, skipping");
             }
         }
 
@@ -61,19 +67,34 @@
         private void ActOnChange()
         {
             IGooseAction workItem;
-            while (this.currentBuildQueue.TryTake(out workItem))
+            if (this.currentBuildQueue.TryTake(out workItem))
             {
                 var work = workItem.Work;
-                var nextItem = work.ContinueWith(task =>
-                {
-                    this.currentJob = 0;
-                    this.isBuilding = false;
-                    
-                    if (this.mainQueue.Any())
+                var queueProcessing = work
+                    .ContinueWith(task =>
+                    {                               
+                        if (this.currentBuildQueue.Any())
+                        {
+                            this.outputService.Debug<SynchronousOnChangeTaskDispatcher>("items left in build queue, recursing");
+                            this.ActOnChange();
+                            return false;
+                        }                    
+                        return true;
+                    })
+                    .ContinueWith(task =>
                     {
-                        this.TriggerBuild();
-                    }
-                });
+                        var currentBuildQueueProcessed = task.Exception != null || task.Result;
+                        if (currentBuildQueueProcessed)
+                        {
+                            this.currentJob = 0;
+                            this.isBuilding = false;
+                            if (this.mainQueue.Any())
+                            {
+                                this.TriggerBuild();
+                                return;
+                            }
+                        }                                                
+                    });
 
                 this.outputService.Handle(new CommandOutput("goose", string.Format("running action: {0}", workItem.StartMessage), "", CommandOutputItemType.Message));
                 work.Start();
