@@ -18,19 +18,4 @@
 			<Version>1.4.4</Version>
 		</Vsix>
 	</entry>
-	<entry>
-		<id>Goose.ae74cfb8-8aa8-4c87-b2f2-e54a7977739f</id>
-		<title type="text">Goose</title>
-		<summary type="text">Goose allows you to specify shell commands to be run when saving files in Visual Studio.</summary>
-		<published>2013-01-29T10:30:22+01:00</published>
-		<updated>2013-02-11T12:30:22+01:00</updated>
-		<author>
-			<name>Sebastian Hallén</name>
-		</author>
-		<content type="octet/stream" src="installer/Goose-v1.4.3.vsix" />
-		<Vsix xmlns="http://schemas.microsoft.com/developer/vsx-syndication-schema/2010">
-			<Id>ae74cfb8-8aa8-4c87-b2f2-e54a7977739f</Id>
-			<Version>1.4.3</Version>
-		</Vsix>
-	</entry>
 </feed>
