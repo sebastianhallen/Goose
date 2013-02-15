@@ -16,7 +16,7 @@
     using Microsoft.VisualStudio.Shell.Interop;
 
     [PackageRegistration(UseManagedResourcesOnly = true)]
-	[InstalledProductRegistration("#110", "#112", "1.4.4", IconResourceID = 400)]
+	[InstalledProductRegistration("#110", "#112", "1.4.5", IconResourceID = 400)]
 	[Guid(GuidList.guidGoosePkgString)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string)]
 	public sealed class GoosePackage : Package
@@ -50,8 +50,7 @@
 			this.fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
             this.solutionFilesService = new SolutionFilesService(this, this.outputService);
 		    this.globMatcher = new RegexGlobMatcher();
-            
-			//this.onChangeTaskDispatcher = new BufferedOnChangeTaskDispatcher();
+            			
             this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);            
 		    this.logParser = new JsonCommandLogParser();
 		    this.powerShellTaskFactory = new PowerShellTaskFactory(this.outputService, this.logParser);
