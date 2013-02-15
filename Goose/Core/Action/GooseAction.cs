@@ -16,6 +16,7 @@
         private readonly string rootPath;
         private readonly string workingDirectory;
         private readonly string command;
+        private readonly object taskCreationLock = new object();
 
         public PowerShellGooseAction(IPowerShellTaskFactory powershellTaskFactory, string rootPath, string workingDirectory, string command)
         {
@@ -43,7 +44,17 @@
         private Task workField;
         public Task Work 
         {
-            get { return this.workField ?? (this.workField = this.powershellTaskFactory.Create(this.Command)); }
+            get
+            {
+                lock (this.taskCreationLock)
+                {
+                    if (this.workField == null || !TaskStatus.Created.Equals(this.workField.Status))
+                    {
+                        this.workField = this.powershellTaskFactory.Create(this.Command);
+                    }
+                    return this.workField;   
+                }
+            }
         }
 
         protected bool Equals(PowerShellGooseAction other)
