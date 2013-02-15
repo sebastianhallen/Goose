@@ -175,6 +175,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="source.extension.vsixmanifest.release">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="goose.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
@@ -191,6 +194,10 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="version.msbuild" />
+    <None Include="source.extension.vsixmanifest.debug">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <PropertyGroup>
@@ -200,9 +207,11 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
+  -->
   <Target Name="BeforeBuild">
+    <Message Text="updating vsix manifest: source.extension.vsixmanifest.$(Configuration) -&gt; source.extension.vsixmanifest" />
+    <Copy SourceFiles="source.extension.vsixmanifest.$(Configuration)" DestinationFiles="source.extension.vsixmanifest" />
   </Target>
   <Target Name="AfterBuild">
   </Target>
-  -->
 </Project>

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Vsix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="1.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2010">
-  <Identifier Id="C4685C35-01D8-4ACD-8AF0-BD4601D16C1E">
+  <Identifier Id="ae74cfb8-8aa8-4c87-b2f2-e54a7977739f">
     <Name>Goose</Name>
     <Author>Sebastian Hallén, Glenn Jorde</Author>
     <Version>1.4.6</Version>
