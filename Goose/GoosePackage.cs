@@ -16,7 +16,7 @@
     using Microsoft.VisualStudio.Shell.Interop;
 
     [PackageRegistration(UseManagedResourcesOnly = true)]
-	[InstalledProductRegistration("#110", "#112", "1.4.5", IconResourceID = 400)]
+	[InstalledProductRegistration("#110", "#112", "1.4.6", IconResourceID = 400)]
 	[Guid(GuidList.guidGoosePkgString)]
 	[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string)]
 	public sealed class GoosePackage : Package
