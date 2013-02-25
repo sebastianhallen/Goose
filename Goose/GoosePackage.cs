@@ -3,6 +3,7 @@
     using System;
     using System.Runtime.InteropServices;
     using Core.Output;
+    using Core.Solution;
     using Core.Solution.EventHandling;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell;
@@ -37,11 +38,11 @@
 		{
             this.outputService = new OutputService(this);
 			this.fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
-
+            
             var solution = (IVsSolution) this.GetService(typeof (SVsSolution));
-
-            this.solutionEventListener = new SolutionEventListener(solution, this.fileChangeService, this.outputService);
+            var fileEventListenerFactory = new DefaultFileEventListenerFactory(solution, this.fileChangeService, this.outputService);
+            this.solutionEventListener = new SolutionEventListener(solution, fileEventListenerFactory, this.outputService);
             base.Initialize();
 		}
-	}
+	}    
 }

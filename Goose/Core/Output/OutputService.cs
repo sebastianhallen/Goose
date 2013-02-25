@@ -2,8 +2,7 @@
 {
 	using System;
 	using System.Collections.Concurrent;
-	using System.Collections.Generic;
-	using System.Linq;
+    using System.Linq;
 	using Debugging;
 	using Microsoft.VisualStudio.Shell.Interop;
 
@@ -23,7 +22,7 @@
 			if (output.Version == 1)
 			{                
 				var pane = GetPane(output.Name);
-			    if (pane == null) throw new Exception("no pane no log");
+			    if (pane == null) return;
 
                 if (clear) pane.Clear();
                 if (output.Time.HasValue) pane.OutputString("\nInvoked @ " + output.Time.Value.ToString("s") + ":\n");				

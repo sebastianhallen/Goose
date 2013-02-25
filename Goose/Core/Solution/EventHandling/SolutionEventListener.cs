@@ -3,45 +3,33 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using Action;
-    using Configuration;
     using Debugging;
-    using Dispatcher;
-    using EnvDTE;
     using Microsoft.VisualStudio;
     using Microsoft.VisualStudio.Shell.Interop;
     using Output;
+    using WatchItem = System.Tuple<FileEventListener, Configuration.ActionConfiguration>;
 
     public class SolutionEventListener
         : IVsSolutionEvents, IDisposable
     {
-        private readonly IVsFileChangeEx fileChangeService;
         private readonly IOutputService outputService;
         private readonly uint monitorCookie;
         private IVsSolution solution;
+        private readonly IFileEventListenerFactory fileEventListenerFactory;
 
-        private readonly LegacyFallbackActionConfigurationParser configParser;
-        private readonly ISolutionFilesService solutionFilesService;
-        private readonly IGlobMatcher globMatcher;
-        private readonly IOnChangeTaskDispatcher onChangeTaskDispatcher;
-        private readonly IGooseActionFactory actionFactory;
-        private readonly ConcurrentDictionary<string, List<FileEventListener>> fileEventListeners;
+        private readonly IConfigReader configReader = new DefaultConfigReader();  
+        private readonly ConcurrentDictionary<string, List<WatchItem>> fileEventListeners;
         private volatile bool disposing = false;
 
-        public SolutionEventListener(IVsSolution solution, IVsFileChangeEx fileChangeService, IOutputService outputService)
+        public SolutionEventListener(IVsSolution solution, IFileEventListenerFactory fileEventListenerFactory, IOutputService outputService)
         {
             this.solution = solution;
-            this.fileChangeService = fileChangeService;
+            this.fileEventListenerFactory = fileEventListenerFactory;            
             this.outputService = outputService;
 
-            this.configParser = new LegacyFallbackActionConfigurationParser();
-            this.solutionFilesService = new SolutionFilesService(this.solution, this.outputService);
-            this.globMatcher = new RegexGlobMatcher();
-            this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);            
-            this.actionFactory = new GooseActionFactory(new PowerShellTaskFactory(this.outputService, new JsonCommandLogParser()));
-            this.fileEventListeners = new ConcurrentDictionary<string, List<FileEventListener>>();
+
+            this.fileEventListeners = new ConcurrentDictionary<string, List<WatchItem>>();
 
             this.monitorCookie = 0;
             if (this.solution != null)
@@ -52,22 +40,23 @@
 
         private void UnhookGoose(string projectPath)
         {
-            List<FileEventListener> eventListeners;
+            List<WatchItem> eventListeners;
             if (this.fileEventListeners.TryRemove(projectPath, out eventListeners))
             {
                 this.outputService.Debug<SolutionEventListener>("disconnecting from " + projectPath);
                 foreach (var eventListener in eventListeners)
                 {
-                    eventListener.Dispose();   
-                }                
+                    eventListener.Item1.Dispose();   
+                }
             }
         }
 
         private void HookupGoose(IVsProject projectHierarchy)
         {
             try
-            {                
-                this.ConnectProjectEventListeners(new SolutionProject(projectHierarchy, this.outputService));
+            {
+                var solutionProject = new SolutionProject(projectHierarchy, this.outputService);
+                this.ConnectProjectEventListeners(solutionProject);
             }
             catch (Exception ex)
             {
@@ -77,37 +66,29 @@
 
         private void ConnectProjectEventListeners(ISolutionProject project)
         {
-            var projectRoot = Path.GetDirectoryName(project.ProjectFilePath);
-            var configPath = Path.Combine(projectRoot, "goose.config");
-            if (!File.Exists(configPath)) return;
-
-
-            this.outputService.Debug<SolutionEventListener>("Connecting to: " + project.ProjectFilePath);
-            var actionConfigurations = this.configParser.Parse(projectRoot, File.OpenRead(configPath));
+            var actionConfigurations = this.configReader.GetActionConfigurations(project);
+                            
             foreach (var action in actionConfigurations)
             {
-                var gooseAction = action;                
+                this.outputService.Debug<SolutionEventListener>("Connecting to: " + project.ProjectFilePath);
+                var actionConfiguration = action;
                 this.fileEventListeners.AddOrUpdate(
                     project.ProjectFilePath,
-                    new List<FileEventListener>{ this.CreateFileEventListener(project, gooseAction) },
+                    new List<WatchItem>
+                    {
+                        new WatchItem(this.fileEventListenerFactory.Create(project, actionConfiguration), actionConfiguration)
+                    },
                     (key, existingListener) =>
                     {
-                        existingListener.Add(this.CreateFileEventListener(project, gooseAction));
+                        if (!existingListener.Any(watchItem => watchItem.Item2.Equals(actionConfiguration)))
+                        {
+                            var listener = this.fileEventListenerFactory.Create(project, actionConfiguration);
+                            existingListener.Add(new WatchItem(listener, actionConfiguration));
+                        }
                         return existingListener;
                     });
-            }
+            }            
         }
-
-        private FileEventListener CreateFileEventListener(ISolutionProject project, ActionConfiguration action)
-        {
-            var fileChangeSubscriber = new FileChangeSubscriber(this.fileChangeService);
-            var fileMonitor = new FileMonitor(this.solutionFilesService, this.globMatcher, fileChangeSubscriber, this.outputService);                
-
-            var eventListener = new FileEventListener(fileMonitor, this.onChangeTaskDispatcher, this.actionFactory, fileChangeSubscriber);
-            eventListener.Initialize(project, action);
-            return eventListener;
-        }
-
 
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
@@ -116,7 +97,6 @@
             {
                 this.HookupGoose(projectHierarchy);
             }
-                      
 
             return VSConstants.S_OK;
         }
@@ -179,12 +159,12 @@
                 this.disposing = true;
                 foreach (var monitoredProject in this.fileEventListeners.Keys.ToArray())
                 {
-                    List<FileEventListener> listeners;
+                    List<WatchItem> listeners;
                     if (this.fileEventListeners.TryRemove(monitoredProject, out listeners))
                     {
                         foreach (var listener in listeners)
                         {
-                            listener.Dispose();   
+                            listener.Item1.Dispose();
                         }                        
                     }
                 }

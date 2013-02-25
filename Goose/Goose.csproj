@@ -144,6 +144,8 @@
     <Compile Include="Core\Solution\EventHandling\IGlobMatcher.cs" />
     <Compile Include="Core\Solution\EventHandling\RegexGlobMatcher.cs" />
     <Compile Include="Core\Solution\EventHandling\SolutionEventListener.cs" />
+    <Compile Include="Core\Solution\IConfigReader.cs" />
+    <Compile Include="Core\Solution\IFileEventListenerFactory.cs" />
     <Compile Include="Core\Solution\ISolutionFilesService.cs" />
     <Compile Include="Core\Solution\ISolutionProject.cs" />
     <Compile Include="Debugging\IOutputServiceExtensions.cs" />
