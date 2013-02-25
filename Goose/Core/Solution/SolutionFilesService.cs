@@ -10,20 +10,13 @@
     public class SolutionFilesService 
         : ISolutionFilesService
     {
-        private readonly IServiceProvider serviceProvider;
         private readonly IOutputService outputService;
+        private readonly IVsSolution solution;
 
-        private IVsSolution Solution
-        {
-            get
-            {
-                return this.serviceProvider.GetService(typeof(SVsSolution)) as IVsSolution;
-            }
-        }
 
-        public SolutionFilesService(IServiceProvider serviceProvider, IOutputService outputService)
+        public SolutionFilesService(IVsSolution solution, IOutputService outputService)
         {
-            this.serviceProvider = serviceProvider;
+            this.solution = solution;
             this.outputService = outputService;
         }
 
@@ -40,7 +33,7 @@
         {
             IEnumHierarchies enumerator;
             var guid = Guid.Empty;
-            this.Solution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_ALLPROJECTS, ref guid, out enumerator);
+            this.solution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_ALLPROJECTS, ref guid, out enumerator);
 
             var hierarchy = new IVsHierarchy[] { null };
             uint fetched;
