@@ -39,7 +39,16 @@
             uint fetched;
             for (enumerator.Reset(); enumerator.Next(1, hierarchy, out fetched) == VSConstants.S_OK && fetched == 1; )
             {
-                yield return (IVsProject)hierarchy[0];
+                IVsProject project = null;
+                try
+                {
+                    project = (IVsProject)hierarchy[0];                    
+                }
+                catch (Exception e)
+                {
+                    continue;
+                }
+                yield return project;
             }
         }
     }
