@@ -48,7 +48,7 @@
                 {
                     eventListener.Item1.Dispose();   
                 }
-            }
+            }            
         }
 
         private void HookupGoose(IVsProject projectHierarchy)
@@ -138,7 +138,7 @@
         }
 
         public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
-        {
+        {          
             return VSConstants.S_OK;
         }
 
@@ -149,6 +149,7 @@
 
         public int OnAfterCloseSolution(object pUnkReserved)
         {
+            this.outputService.RemovePanels();
             return VSConstants.S_OK;
         }
 
@@ -157,16 +158,10 @@
             if (!this.disposing)
             {
                 this.disposing = true;
-                foreach (var monitoredProject in this.fileEventListeners.Keys.ToArray())
-                {
-                    List<WatchItem> listeners;
-                    if (this.fileEventListeners.TryRemove(monitoredProject, out listeners))
-                    {
-                        foreach (var listener in listeners)
-                        {
-                            listener.Item1.Dispose();
-                        }                        
-                    }
+                var monitoredProjects = this.fileEventListeners.Keys.ToArray();
+                foreach (var project in monitoredProjects)
+                {                  
+                    this.UnhookGoose(project);
                 }
                 if (this.monitorCookie != 0)
                 {

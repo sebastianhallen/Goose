@@ -8,8 +8,8 @@
         {
 #if DEBUG
             var typedMessage = string.Format("{0}: {1}", typeof(T), message);
-            var output = new CommandOutput("goose.debug", typedMessage, "", CommandOutputItemType.Message);
-            outputService.Handle(output, false);
+            var output = new CommandOutput("goose", typedMessage, "", CommandOutputItemType.Message);
+            outputService.Handle(output);
 #endif
    
         }

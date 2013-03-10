@@ -2,55 +2,80 @@
 {
 	using System;
 	using System.Collections.Concurrent;
-    using System.Linq;
-	using Debugging;
+	using System.Collections.Generic;
+	using System.Linq;
 	using Microsoft.VisualStudio.Shell.Interop;
 
 	public class OutputService
 		: IOutputService
 	{
 		private readonly IVsOutputWindow outputWindow;
-        private ConcurrentDictionary<string, IVsOutputWindowPane> panes = new ConcurrentDictionary<string, IVsOutputWindowPane>();
+        private readonly ConcurrentDictionary<string, Guid> panes = new ConcurrentDictionary<string, Guid>();
 
 		public OutputService(IServiceProvider serviceProvider)
 		{
 			this.outputWindow = serviceProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
 		}
 
-		public void Handle(CommandOutput output, bool clear = true)
+		public void Handle(CommandOutput output)
 		{
 			if (output.Version == 1)
-			{                
-				var pane = GetPane(output.Name);
-			    if (pane == null) return;
-
-                if (clear) pane.Clear();
-                if (output.Time.HasValue) pane.OutputString("\nInvoked @ " + output.Time.Value.ToString("s") + ":\n");				
-
-				foreach (var item in output.Results)
-				{
-					if (item.Type == CommandOutputItemType.Error)
-					{
-						var outputText = CreateErrorOutput(item);
-						pane.OutputTaskItemString(outputText + Environment.NewLine, VSTASKPRIORITY.TP_NORMAL, VSTASKCATEGORY.CAT_CODESENSE, "", 0, item.FullPath ?? item.FileName ?? "", item.Line, string.Format("{0}: {1}", item.Message, outputText));
-					}
-					if (item.Type == CommandOutputItemType.Message)
-					{
-						pane.OutputString(item.Message + Environment.NewLine);
-					}
-				}
-
-				pane.FlushToTaskList();
-
-
-                if (!"goose.debug".Equals(output.Name))
-                {
-                    this.Debug<OutputService>(string.Join(Environment.NewLine, output.Results));
-                }
+			{
+                this.HandleErrors(output.Name, output.Results.Where(result => CommandOutputItemType.Error.Equals(result.Type)));
+                this.HandleMessages(output.Name, output.Results.Where(result => CommandOutputItemType.Message.Equals(result.Type)));
 			}
 		}
 
-		private static string CreateErrorOutput(CommandOutputItem item)
+        public void RemovePanels()
+        {
+            var panelKeys = this.panes.Keys.ToArray();
+            foreach (var panelKey in panelKeys)
+            {
+                Guid paneId;
+                if (this.panes.TryRemove(panelKey, out paneId))
+                {
+                    this.outputWindow.DeletePane(paneId);
+                }
+            }
+        }
+
+	    private void HandleMessages(string panel, IEnumerable<CommandOutputItem> messages)
+	    {
+            var messagePane = this.GetOrAddPane(panel, OutputWindowType.Message);
+            if (messagePane == null) return;
+
+	        foreach (var message in messages)
+	        {
+                messagePane.OutputString(message.Message + Environment.NewLine);
+
+	        }
+	    }
+
+	    private void HandleErrors(string panel, IEnumerable<CommandOutputItem> errors)
+	    {
+            var errorPane = this.GetOrAddPane(panel, OutputWindowType.Error);
+	        if (errorPane == null) return;
+
+	        errorPane.Clear();
+	        foreach (var error in errors)
+	        {
+	            var outputText = CreateErrorOutput(error);
+	            errorPane.OutputTaskItemString(
+	                outputText + Environment.NewLine, 
+	                VSTASKPRIORITY.TP_NORMAL, 
+	                VSTASKCATEGORY.CAT_CODESENSE, 
+	                "", 
+	                0,
+	                error.FullPath ?? error.FileName ?? "",
+	                error.Line, 
+	                string.Format("{0}: {1}", error.Message, outputText)
+	                );
+			
+	        }
+	        errorPane.FlushToTaskList();
+	    }	    
+
+	    private static string CreateErrorOutput(CommandOutputItem item)
 		{
 			var outputText = String.Format("{0} #{1}: {2}", item.FileName, item.Line, item.Message);
 			if (!String.IsNullOrWhiteSpace(item.Excerpt))
@@ -63,23 +88,27 @@
 			return outputText;
 		}
 
-		private IVsOutputWindowPane GetPane(string name)
+		private IVsOutputWindowPane GetOrAddPane(string name, OutputWindowType type)
 		{
-		    IVsOutputWindowPane pane;
-		    if (this.panes.TryGetValue(name, out pane))
+		    var paneKey = string.Format("{0}-{1}", name, type);
+		    var paneId = this.panes.GetOrAdd(paneKey, paneName =>
 		    {
-		        return pane;
-		    }
+		        var paneid = Guid.NewGuid();
+		        var paneVisibility = type == OutputWindowType.Message ? 1 : 0;
+                this.outputWindow.CreatePane(ref paneid, name, paneVisibility, 1);
 
-		    this.panes.AddOrUpdate(name, addKey =>
-		    {
-		        var paneId = Guid.NewGuid();
-                outputWindow.CreatePane(paneId, addKey, 1, 1);
-		        outputWindow.GetPane(paneId, out pane);
-		        return pane;
-		    }, (updateKey, existing) => existing ?? pane);
-		    
-			return pane;
+		        return paneid;
+		    });
+
+            IVsOutputWindowPane pane;
+            this.outputWindow.GetPane(ref paneId, out pane);
+            return pane;
 		}
+
+	    private enum OutputWindowType
+	    {
+            Message,
+            Error
+	    }
 	}
 }

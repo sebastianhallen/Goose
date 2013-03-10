@@ -36,12 +36,12 @@
 
         protected override void Initialize()
 		{
-            this.outputService = new OutputService(this);
-			this.fileChangeService = (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
+            this.outputService = this.outputService ?? new OutputService(this);
+			this.fileChangeService = this.fileChangeService ?? (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
             
             var solution = (IVsSolution) this.GetService(typeof (SVsSolution));
             var fileEventListenerFactory = new DefaultFileEventListenerFactory(solution, this.fileChangeService, this.outputService);
-            this.solutionEventListener = new SolutionEventListener(solution, fileEventListenerFactory, this.outputService);
+            this.solutionEventListener = this.solutionEventListener ?? new SolutionEventListener(solution, fileEventListenerFactory, this.outputService);
             base.Initialize();
 		}
 	}    

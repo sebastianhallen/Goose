@@ -2,6 +2,7 @@
 {
     public interface IOutputService
     {
-        void Handle(CommandOutput output, bool clear = true);
+        void Handle(CommandOutput output);
+        void RemovePanels();
     }
 }
