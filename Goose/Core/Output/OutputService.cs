@@ -41,25 +41,29 @@
 
 	    private void HandleMessages(string panel, IEnumerable<CommandOutputItem> messages)
 	    {
-            var messagePane = this.GetOrAddPane(panel, OutputWindowType.Message);
+            var messagePane = this.GetOrAddPane(panel);
             if (messagePane == null) return;
 
 	        foreach (var message in messages)
-	        {
-                messagePane.OutputString(message.Message + Environment.NewLine);
-
+	        {                
+                messagePane.OutputStringThreadSafe(message.Message + Environment.NewLine);
 	        }
 	    }
 
 	    private void HandleErrors(string panel, IEnumerable<CommandOutputItem> errors)
 	    {
-            var errorPane = this.GetOrAddPane(panel, OutputWindowType.Error);
+            var errorPane = this.GetOrAddPane(panel);
 	        if (errorPane == null) return;
 
-	        errorPane.Clear();
-	        foreach (var error in errors)
+            var currentErrors = errors.ToArray();
+            if (currentErrors.Any())
+            {
+                errorPane.Clear();
+            }
+
+            foreach (var error in currentErrors)
 	        {
-	            var outputText = CreateErrorOutput(error);
+	            var outputText = CreateErrorOutput(error);                
 	            errorPane.OutputTaskItemString(
 	                outputText + Environment.NewLine, 
 	                VSTASKPRIORITY.TP_NORMAL, 
@@ -88,13 +92,13 @@
 			return outputText;
 		}
 
-		private IVsOutputWindowPane GetOrAddPane(string name, OutputWindowType type)
-		{
-		    var paneKey = string.Format("{0}-{1}", name, type);
+		private IVsOutputWindowPane GetOrAddPane(string name)
+		{            		    
+            var paneKey = name;
 		    var paneId = this.panes.GetOrAdd(paneKey, paneName =>
 		    {
 		        var paneid = Guid.NewGuid();
-		        var paneVisibility = type == OutputWindowType.Message ? 1 : 0;
+                var paneVisibility = 1;
                 this.outputWindow.CreatePane(ref paneid, name, paneVisibility, 1);
 
 		        return paneid;
