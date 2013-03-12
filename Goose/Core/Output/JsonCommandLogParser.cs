@@ -27,7 +27,7 @@
             }
             catch (Exception ex)
             {
-                result = new CommandOutput("goose", "unable to make sense of build log", ex.ToString(), CommandOutputItemType.Error);
+                result = new CommandOutput("goose", string.Format("unable to make sense of build log: {0}{1}", Environment.NewLine, buildLog), ex.ToString(), CommandOutputItemType.Error);
             }
 
             return result;

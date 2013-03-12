@@ -72,8 +72,7 @@
 	                0,
 	                error.FullPath ?? error.FileName ?? "",
 	                error.Line, 
-	                string.Format("{0}: {1}", error.Message, outputText)
-	                );
+	                outputText);
 			
 	        }
 	        errorPane.FlushToTaskList();
