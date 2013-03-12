@@ -12,6 +12,14 @@ Goose
 
 Run arbitrary commands when saving a file that matches a specified glob.
 
+v1.4.8 - beta
+Support for solution reloads.
+
+Note: From this relase there will be two versions of Goose - an experimental/beta/nightly/whenever-something-happens version and a more stable version.
+The two versions will have different package ids so if you already have a version of Goose installed, uninstall it if you want to use the non-stable version. If you don't, you will have double installs and both will trigger your actions.
+The stable version will be linked as soon as the unstable has been field tested.
+<a href="installer/Goose-v1.4.8-beta.vsix">Download unstable</a>
+
 v1.4.5
 Minor fix in power shell task creation.
 Built in with debug configuration due to <a href="https://github.com/sebastianhallen/Goose/issues/14">#14</a>
@@ -38,9 +46,13 @@ To get automatic updates, follow these steps
 
 1. In Visual Studio > Tools > Options  
 2. Environment > Extensions and Updates
-3. Click "add" and enter the URL       
+3. Click "add" and enter the URL for either the stable or latest version.
 
+stable:
 <a href="http://sebastianhallen.github.com/Goose/version.xml">http://sebastianhallen.github.com/Goose/version.xml</a>
+latest:
+<a href="http://sebastianhallen.github.com/Goose/version.xml">http://sebastianhallen.github.com/Goose/version-experimental.xml</a>
+
 </pre>
 <pre id="fork"><a href="https://github.com/sebastianhallen/Goose">\     \     
 \  G  \    
