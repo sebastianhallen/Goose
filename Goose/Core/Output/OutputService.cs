@@ -20,9 +20,9 @@
 		public void Handle(CommandOutput output)
 		{
 			if (output.Version == 1)
-			{
+			{                
                 this.HandleErrors(output.Name, output.Results.Where(result => CommandOutputItemType.Error.Equals(result.Type)));
-                this.HandleMessages(output.Name, output.Results.Where(result => CommandOutputItemType.Message.Equals(result.Type)));
+                this.HandleMessages(output.Name, output.Time, output.Results.Where(result => CommandOutputItemType.Message.Equals(result.Type)));
 			}
 		}
 
@@ -39,11 +39,15 @@
             }
         }
 
-	    private void HandleMessages(string panel, IEnumerable<CommandOutputItem> messages)
+	    private void HandleMessages(string panel, DateTime? invokationTime, IEnumerable<CommandOutputItem> messages)
 	    {
             var messagePane = this.GetOrAddPane(panel);
             if (messagePane == null) return;
 
+	        if (invokationTime.HasValue)
+	        {
+	            messagePane.OutputString(string.Format(@"{0}Invoked @{1}:{0}", Environment.NewLine, invokationTime.Value.ToString("s")));
+	        }
 	        foreach (var message in messages)
 	        {                
                 messagePane.OutputStringThreadSafe(message.Message + Environment.NewLine);
