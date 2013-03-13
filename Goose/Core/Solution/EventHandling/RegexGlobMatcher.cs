@@ -14,7 +14,8 @@
 
             var regexGlob = string.Format("^{0}$", glob
                                                        .Replace("*", ".*")
-                                                       .Replace("?", "."));
+                                                       .Replace("?", "."))
+                                                       .Replace(@"\", @"\\");
 
             return Regex.IsMatch(fileName, regexGlob);
         }

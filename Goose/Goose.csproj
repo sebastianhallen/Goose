@@ -178,6 +178,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="versionbump.txt" />
     <None Include="source.extension.vsixmanifest.release">
       <SubType>Designer</SubType>
     </None>

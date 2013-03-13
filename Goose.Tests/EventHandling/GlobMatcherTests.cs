@@ -16,6 +16,7 @@
 
         [TestCase("*.less", "file.less", true)]
         [TestCase("file.less", "file.less", true)]
+        [TestCase("*\\file.less", "some\\path\\to\\file.less", true)]
         [TestCase("exact.less", "file.less", false)]
         [TestCase(".less", "file.less", false)]
         [TestCase(null, "file.less", false)]
