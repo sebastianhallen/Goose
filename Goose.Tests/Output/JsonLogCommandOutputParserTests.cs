@@ -1,4 +1,6 @@
-﻿namespace Goose.Tests.Output
+﻿using System;
+
+namespace Goose.Tests.Output
 {
     using System.Linq;
     using Goose.Core.Output;
@@ -60,7 +62,7 @@
 
             var result = this.logParser.Parse(log);
 
-            Assert.That(result.Results.Last().Message, Is.EqualTo("unable to make sense of build log"));
+            Assert.That(result.Results.Last().Message, Is.EqualTo(string.Format("unable to make sense of build log: {0}{1}", Environment.NewLine, log)));
         }     
     }
 }
