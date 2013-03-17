@@ -7,7 +7,7 @@
 
     public class ConfigurationParser
     {
-        private readonly ActionConfigurationParser actionConfigurationParser10 = new ActionConfigurationParserVersion10();
+        private readonly ActionConfigurationParser actionConfigurationParser10 = new MultipleActionsConfigurationParser();
         private readonly LegacyConfigurationParser legacyConfigurationParser = new LegacyConfigurationParser();
 
         public IEnumerable<ActionConfiguration> Parse(string projectRoot, Stream configStream)

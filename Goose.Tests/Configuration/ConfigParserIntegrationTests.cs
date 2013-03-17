@@ -22,7 +22,7 @@
             </action>
         </goose>";
 
-            var parser = new ActionConfigurationParserVersion10();
+            var parser = new MultipleActionsConfigurationParser();
             var configs = parser.Parse("root", input);
 
             var config = configs.First();

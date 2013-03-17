@@ -147,8 +147,7 @@
     <Compile Include="Core\Action\PowerShellTaskFactory.cs" />
     <Compile Include="Core\Configuration\ActionConfigurationParser.cs" />
     <Compile Include="Core\Configuration\ActionConfiguration.cs" />
-    <Compile Include="Core\Configuration\ActionConfigurationParserVersion10.cs" />
-    <Compile Include="Core\Configuration\ActionConfigurationParserVersion11.cs" />
+    <Compile Include="Core\Configuration\MultipleActionsConfigurationParser.cs" />
     <Compile Include="Core\Configuration\CommandScope.cs" />
     <Compile Include="Core\Configuration\ConfigurationParser.cs" />
     <Compile Include="Core\Configuration\LegacyConfigurationParser.cs" />

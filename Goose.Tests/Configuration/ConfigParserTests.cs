@@ -8,10 +8,13 @@
     using Goose.Core.Configuration;
     using NUnit.Framework;
 
-    public abstract class ConfigParserTests
-    {
-        protected abstract string Version { get; }
-        protected abstract ActionConfigurationParser Parser { get;  }
+    [TestFixture]
+    public class ConfigParserTests
+    {        
+        protected ActionConfigurationParser Parser 
+        {
+            get { return new MultipleActionsConfigurationParser(); }
+        }
 
         [Test]
         public void Should_create_invalid_command_configuration_when_an_empty_action_tag_is_encountered()
@@ -150,11 +153,46 @@
             Assert.That(configuration.Glob, Is.EqualTo("*.ext"));
         }
 
+        [TestCase("file", CommandScope.File)]
+        [TestCase("project", CommandScope.Project)]
+        public void Should_be_able_to_parse_valid_command_scope(string configValue, CommandScope parsedValue)
+        {
+            var input = this.CreateConfig(config =>
+                config.WithAction(action =>
+                    action.WithScope(configValue)));
+
+            var configuration = this.Parser.Parse("", input).Single();
+
+            Assert.That(configuration.Scope, Is.EqualTo(parsedValue));
+        }
+
+        [Test]
+        public void Should_default_to_project_scope_when_unable_to_parse_scope()
+        {
+            var input = this.CreateConfig(config =>
+                config.WithAction(action =>
+                    action.WithScope("invalid scope")));
+
+            var configuration = this.Parser.Parse("", input).Single();
+
+            Assert.That(configuration.Scope, Is.EqualTo(CommandScope.Project));
+        }
+
+        [Test]
+        public void Should_default_scope_to_per_project_when_not_specified()
+        {
+            var input = this.CreateConfig(config => config.WithAction(_ => { }));
+
+            var configuration = this.Parser.Parse("", input).Single();
+
+            Assert.That(configuration.Scope, Is.EqualTo(CommandScope.Project));
+        }
+
         
         protected string CreateConfig(Action<GooseConfigRootBuilder> configure)
         {
             var configBuilder = new GooseTestConfigBuilder();
-            var configurator = configBuilder.Version(this.Version);
+            var configurator = configBuilder.Version("ignored");
 
             configure(configurator);
 

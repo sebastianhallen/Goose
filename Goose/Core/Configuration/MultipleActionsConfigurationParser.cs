@@ -4,7 +4,7 @@
     using System.Linq;
     using System.Xml.Linq;
 
-    public class ActionConfigurationParserVersion11
+    public class MultipleActionsConfigurationParser
         : ActionConfigurationParser
     {
         protected override IEnumerable<ActionConfiguration> Parse(XElement gooseConfigRootNode)
