@@ -1,5 +1,6 @@
 ﻿namespace Goose.Tests.EventHandling
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Core.Action;
@@ -93,6 +94,7 @@
         public void Should_queue_on_save_task_when_a_monitored_file_is_triggered_by_save()
         {
             A.CallTo(() => this.fileMonitor.IsMonitoredProject("project.csproj")).Returns(true);
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._)).Returns(new[] { A.Dummy<IGooseAction>() });
             this.eventListener.Initialize(A.Dummy<ISolutionProject>(), new ActionConfiguration(""));
 
             this.eventListener.ActOn(new [] { "project.csproj"}, Trigger.Save);
@@ -104,6 +106,8 @@
         public void Should_queue_configured_action_when_a_monitored_non_project_file_is_deleted()
         {
             A.CallTo(() => this.fileMonitor.IsMonitoredFile("file.less")).Returns(true);
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._))
+             .Returns(new[] {A.Dummy<IGooseAction>()});
 
             this.eventListener.ActOn(new[] { "file.less" }, Trigger.Delete);
 
@@ -125,6 +129,7 @@
         {
             var file = new[] { "file" };
             A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._)).Returns(new[] { A.Dummy<IGooseAction>() });
 
             this.eventListener.FilesChanged(1, file, new [] { (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del });
 
@@ -148,10 +153,10 @@
         {
             var file = new[] {"file"};
             A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
-
+            
             this.eventListener.FilesChanged(1, file, new [] { (uint)changeFlag });
 
-            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._)).MustHaveHappened();
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._)).MustHaveHappened();
         }
 
         [Test]

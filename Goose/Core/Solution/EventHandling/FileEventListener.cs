@@ -56,8 +56,8 @@
 
                 if (Trigger.Save.Equals(trigger) || Trigger.Delete.Equals(trigger))
                 {
-                    var action = this.actionFactory.Create(this.configuration);
-                    this.taskDispatcher.QueueOnChangeTask(action);
+                    var actions = this.actionFactory.Create(this.configuration, Enumerable.Empty<string>());
+                    this.taskDispatcher.QueueOnChangeTask(actions.FirstOrDefault());
                 }
             }
         }

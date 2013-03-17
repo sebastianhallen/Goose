@@ -7,6 +7,13 @@
         public string WorkingDirectory { get; private set; }
         public string Command { get; private set; }
         public string ProjectRoot { get; private set; }
+        public string Glob { get; private set; }
+        public CommandScope Scope { get; private set; }
+
+        public Shell Shell
+        {
+            get { return Shell.PowerShell; }
+        }        
 
         public ActionConfiguration(string projectPath)
         {
@@ -37,13 +44,5 @@
 
             }
         }
-
-        public Shell Shell
-        {
-            get { return Shell.PowerShell; }
-        }
-
-        public string Glob { get; private set; }
-        public CommandScope Scope { get; private set; }
     }
 }

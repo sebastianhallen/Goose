@@ -1,5 +1,7 @@
 ﻿namespace Goose.Core.Action
 {
+    using System;
+    using System.Collections.Generic;
     using Configuration;
 
     public class GooseActionFactory
@@ -12,18 +14,20 @@
             this.powerShellTaskFactory = powerShellTaskFactory;
         }
 
-        public IGooseAction Create(ActionConfiguration configuration)
+        public IEnumerable<IGooseAction> Create(ActionConfiguration configuration, IEnumerable<string> files)
         {
             if (configuration.IsValid)
             {
-                return new PowerShellGooseAction(
-                    this.powerShellTaskFactory,
-                    configuration.ProjectRoot,
-                    configuration.WorkingDirectory,
-                    configuration.Command);
+                return new [] {
+                    new PowerShellGooseAction(
+                        this.powerShellTaskFactory,
+                        configuration.ProjectRoot,
+                        configuration.WorkingDirectory,
+                        configuration.Command)
+                };
             }
 
-            return new VoidGooseAction();
+            return new[] {new VoidGooseAction()};
         }
     }
 }
