@@ -1,14 +1,14 @@
-﻿namespace Goose.Core.Action
+﻿namespace Goose.Core.Action.PowerShell
 {
-    using Configuration;
+    using Goose.Core.Configuration;
     using System.Collections.Generic;
 
-    public class GooseActionFactory
+    public class PowerShellGooseActionFactory
         : IGooseActionFactory
     {
         private readonly IPowerShellTaskFactory powerShellTaskFactory;
 
-        public GooseActionFactory(IPowerShellTaskFactory powerShellTaskFactory)
+        public PowerShellGooseActionFactory(IPowerShellTaskFactory powerShellTaskFactory)
         {
             this.powerShellTaskFactory = powerShellTaskFactory;
         }

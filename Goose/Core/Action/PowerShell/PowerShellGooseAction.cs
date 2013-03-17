@@ -1,14 +1,8 @@
-﻿namespace Goose.Core.Action
+﻿namespace Goose.Core.Action.PowerShell
 {
     using System.IO;
     using System.Threading.Tasks;
     using Goose.Core.Configuration;
-
-    public interface IGooseAction
-    {
-        string StartMessage { get; }
-        Task Work { get; }
-    }
 
     public class PowerShellGooseAction
         : IGooseAction

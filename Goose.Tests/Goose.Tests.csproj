@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action\ActionFactoryTests.cs" />
+    <Compile Include="Action\PowerShellCommandBuilderTests.cs" />
     <Compile Include="Configuration\ActionConfigurationTests.cs" />
     <Compile Include="Configuration\ConfigParserIntegrationTests.cs" />
     <Compile Include="Configuration\LegacyFallbackActionConfigurationParserTests.cs" />

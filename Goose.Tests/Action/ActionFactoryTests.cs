@@ -4,12 +4,13 @@
     using Core.Action;
     using Core.Configuration;
     using FakeItEasy;
+    using Goose.Core.Action.PowerShell;
     using NUnit.Framework;
 
     [TestFixture]
     public class ActionFactoryTests
     {
-        [UnderTest] private GooseActionFactory actionFactory;
+        [UnderTest] private PowerShellGooseActionFactory actionFactory;
 
         [SetUp]
         public void Before()

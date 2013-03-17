@@ -6,6 +6,7 @@
     using Configuration;
     using Dispatcher;
     using EventHandling;
+    using Goose.Core.Action.PowerShell;
     using Microsoft.VisualStudio.Shell.Interop;
     using Output;
 
@@ -35,7 +36,7 @@
             this.solutionFilesService = new SolutionFilesService(this.solution, this.outputService);
             this.globMatcher = new RegexGlobMatcher();
             this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);
-            this.actionFactory = new GooseActionFactory(new PowerShellTaskFactory(this.outputService, new JsonCommandLogParser()));
+            this.actionFactory = new PowerShellGooseActionFactory(new PowerShellTaskFactory(this.outputService, new JsonCommandLogParser()));
         }
 
         public FileEventListener Create(ISolutionProject project, ActionConfiguration actionConfiguration)

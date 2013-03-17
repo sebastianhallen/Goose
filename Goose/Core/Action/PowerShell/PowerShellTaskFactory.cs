@@ -1,13 +1,12 @@
-﻿namespace Goose.Core.Action
+﻿namespace Goose.Core.Action.PowerShell
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Management.Automation.Runspaces;
     using System.Text;
     using System.Threading.Tasks;
-    using Output;
-    using System.Linq;
+    using Goose.Core.Output;
+
     public class PowerShellTaskFactory
         : IPowerShellTaskFactory
     {
@@ -42,6 +41,7 @@
                     
                     runspace.Open();                    
                     var pipeline = runspace.CreatePipeline();
+                    
                     pipeline.Commands.Add(command);
                     pipeline.Commands.Add("Out-String");
                     

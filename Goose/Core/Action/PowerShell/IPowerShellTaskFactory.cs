@@ -1,4 +1,4 @@
-﻿namespace Goose.Core.Action
+﻿namespace Goose.Core.Action.PowerShell
 {
     using System.Threading.Tasks;
 
