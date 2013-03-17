@@ -83,16 +83,4 @@
             }
         }
     }
-
-    public class VoidGooseAction
-        : IGooseAction
-    {
-        public string StartMessage { get { return "nothing to do"; } }
-        public Task Work { get { return new Task(() => { });} }
-
-        public override int GetHashCode()
-        {
-            return 0;
-        }
-    }
 }

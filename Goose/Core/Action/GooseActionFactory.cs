@@ -1,8 +1,7 @@
 ﻿namespace Goose.Core.Action
 {
-    using System;
-    using System.Collections.Generic;
     using Configuration;
+    using System.Collections.Generic;
 
     public class GooseActionFactory
         : IGooseActionFactory
@@ -18,16 +17,20 @@
         {
             if (configuration.IsValid)
             {
-                return new [] {
-                    new PowerShellGooseAction(
+                foreach (var file in files)
+                {
+                    yield return new PowerShellGooseAction(
                         this.powerShellTaskFactory,
                         configuration.ProjectRoot,
                         configuration.WorkingDirectory,
-                        configuration.Command)
-                };
-            }
+                        configuration.Command);
 
-            return new[] {new VoidGooseAction()};
+                    if (!CommandScope.File.Equals(configuration.Scope))
+                    {
+                        yield break;
+                    }
+                }                
+            }            
         }
     }
 }

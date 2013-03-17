@@ -18,11 +18,11 @@
         }
 
         [Test]
-        public void Should_return_void_action_when_configuration_is_not_valid()
+        public void Should_not_return_any_actions_when_configuration_is_not_valid()
         {
-            var action = this.actionFactory.Create(new ActionConfiguration("root"), Enumerable.Empty<string>()).Single();
+            var actions = this.actionFactory.Create(new ActionConfiguration("root"), new[] { "first-file" });
 
-            Assert.That(action is VoidGooseAction);
+            Assert.That(actions.Any(), Is.False);
         }
 
         [Test]
@@ -30,7 +30,7 @@
         {
             var config = new ActionConfiguration(Trigger.Save, "glob", "", "ls", "root-directory", CommandScope.Project);
 
-            var action = this.actionFactory.Create(config, Enumerable.Empty<string>()).Single();
+            var action = this.actionFactory.Create(config, new []{ "first-file" }).Single();
 
             Assert.That(action is PowerShellGooseAction);
         }
@@ -43,6 +43,16 @@
             var actions = this.actionFactory.Create(config, new []{ "first-file", "second-file"});
 
             Assert.That(actions.Count(), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void Should_return_one_action_per_input_file_when_scope_is_per_file()
+        {
+            var config = new ActionConfiguration(Trigger.Save, "glob", "", "ls", "root-directory", CommandScope.File);
+
+            var actions = this.actionFactory.Create(config, new[] { "first-file", "second-file" });
+
+            Assert.That(actions.Count(), Is.EqualTo(2));
         }
     }
 }
