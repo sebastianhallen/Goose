@@ -54,8 +54,8 @@
                 this.UpdateMonitors(filesToActOn, trigger);
 
                 if (Trigger.Save.Equals(trigger) || Trigger.Delete.Equals(trigger))
-                {
-                    var filteredFiles = this.FilterFilesByScope(matchingProjects, mathcingFiles, this.configuration.Scope);
+                {                    
+                    var filteredFiles = this.FilterFilesByScope(matchingProjects, mathcingFiles, this.configuration);
                     var actions = this.actionFactory.Create(this.configuration, filteredFiles);
                     foreach (var action in actions)
                     {
@@ -65,16 +65,16 @@
             }
         }
 
-        private IEnumerable<string> FilterFilesByScope(IEnumerable<string> projectFiles, IEnumerable<string> inProjectFiles, CommandScope scope)
+        private IEnumerable<string> FilterFilesByScope(IEnumerable<string> projectFiles, IEnumerable<string> inProjectFiles, ActionConfiguration configuration)
         {
-            if (CommandScope.File.Equals(scope))
+            if (CommandScope.File.Equals(configuration.Scope))
             {
-                return inProjectFiles;
+                return projectFiles.Concat(inProjectFiles);
             }
 
-            if (CommandScope.Project.Equals(scope))
+            if (CommandScope.Project.Equals(configuration.Scope))
             {
-                return projectFiles;
+                return new [] { configuration.ProjectRoot };
             }
 
             return Enumerable.Empty<string>();
