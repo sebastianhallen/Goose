@@ -1,5 +1,6 @@
 ﻿namespace Goose.Core.Action.PowerShell
 {
+    using System.IO;
     using Goose.Core.Configuration;
     using System.Collections.Generic;
 
@@ -21,15 +22,12 @@
             {
                 foreach (var file in files)
                 {
-                    yield return new PowerShellGooseAction(
-                        this.powerShellTaskFactory,
-                        this.commandBuilder,
-                        configuration.ProjectRoot,
-                        file,
-                        configuration.WorkingDirectory,
-                        configuration.Command,
-                        configuration.Scope);
+                    var workingDirectory = Path.Combine(configuration.ProjectRoot, configuration.WorkingDirectory);
+                    var environmentVariables = new CommandEvironmentVariables {FilePath = file};
+                    var command = this.commandBuilder.Build(workingDirectory, configuration.Command, environmentVariables);
 
+                    yield return new PowerShellGooseAction(this.powerShellTaskFactory, command);
+                    
                     if (!CommandScope.File.Equals(configuration.Scope))
                     {
                         yield break;
