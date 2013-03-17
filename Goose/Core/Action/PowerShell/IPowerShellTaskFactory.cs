@@ -3,7 +3,7 @@
     using System.Threading.Tasks;
 
     public interface IPowerShellTaskFactory
-    {
-        Task Create(string command);
+    {        
+        Task Create(ShellCommand command);
     }
 }

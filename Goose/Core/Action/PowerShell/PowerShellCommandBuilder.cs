@@ -3,9 +3,12 @@ namespace Goose.Core.Action.PowerShell
     public class PowerShellCommandBuilder
         : IShellCommandBuilder
     {
-        public ShellCommand Build(string workingDirectory, string command, CommandEvironmentVariables evironmentVariables)
+        public ShellCommand Build(string workingDirectory, string command, CommandEvironmentVariables environmentVariables)
         {
-            return new ShellCommand(workingDirectory, command);
+            var payload = command.Replace("{file-path}", environmentVariables.FilePath);
+            
+            return new ShellCommand(workingDirectory, payload);
+
         }
     }
 }

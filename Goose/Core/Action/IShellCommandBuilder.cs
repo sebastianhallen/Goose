@@ -2,12 +2,12 @@
 {
     public interface IShellCommandBuilder
     {
-        ShellCommand Build(string workingDirectory, string command, CommandEvironmentVariables evironmentVariables);
+        ShellCommand Build(string workingDirectory, string command, CommandEvironmentVariables environmentVariables);
     }
 
 
     public class CommandEvironmentVariables
     {
-
+        public string FilePath { get; set; }
     }
 }

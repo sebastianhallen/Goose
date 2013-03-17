@@ -8,6 +8,7 @@
         : IGooseAction
     {
         private readonly IPowerShellTaskFactory powershellTaskFactory;
+        private readonly IShellCommandBuilder commandBuilder;
         private readonly string rootPath;
         private readonly string filePath;
         private readonly string workingDirectory;
@@ -15,9 +16,10 @@
         private readonly CommandScope scope;
         private readonly object taskCreationLock = new object();
 
-        public PowerShellGooseAction(IPowerShellTaskFactory powershellTaskFactory, string rootPath, string filePath, string workingDirectory, string command, CommandScope scope)
+        public PowerShellGooseAction(IPowerShellTaskFactory powershellTaskFactory, IShellCommandBuilder commandBuilder, string rootPath, string filePath, string workingDirectory, string command, CommandScope scope)
         {
             this.powershellTaskFactory = powershellTaskFactory;
+            this.commandBuilder = commandBuilder;
             this.rootPath = rootPath;
             this.filePath = filePath;
             this.workingDirectory = workingDirectory;
@@ -25,19 +27,24 @@
             this.scope = scope;
         }
 
-        private string Command
+        //private string Command
+        //{
+        //    get
+        //    {
+        //        var workingDirectoryAbsolutePath = Path.Combine(this.rootPath, this.workingDirectory);
+        //        var powerShellCommand = string.Format(@"cd ""{0}"" ; {1}", workingDirectoryAbsolutePath, this.command);
+        //        return powerShellCommand;
+        //    }
+        //}
+
+        private string WorkingDirectoryAbsolutePath
         {
-            get
-            {
-                var workingDirectoryAbsolutePath = Path.Combine(this.rootPath, this.workingDirectory);
-                var powerShellCommand = string.Format(@"cd ""{0}"" ; {1}", workingDirectoryAbsolutePath, this.command);
-                return powerShellCommand;
-            }
+            get { return Path.Combine(this.rootPath, this.workingDirectory); }
         }
 
         public string StartMessage
         {
-            get { return this.Command; }
+            get { return "running command: " + this.command; }
         }
 
         private Task workField;
@@ -49,7 +56,12 @@
                 {
                     if (this.workField == null || !TaskStatus.Created.Equals(this.workField.Status))
                     {
-                        this.workField = this.powershellTaskFactory.Create(this.Command);
+                        var shellCommand = this.commandBuilder.Build(this.WorkingDirectoryAbsolutePath, this.command,
+                                                                     new CommandEvironmentVariables
+                                                                         {
+                                                                             FilePath = this.filePath
+                                                                         });
+                        this.workField = this.powershellTaskFactory.Create(shellCommand);
                     }
                     return this.workField;   
                 }

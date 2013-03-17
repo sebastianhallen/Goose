@@ -36,7 +36,7 @@
             this.solutionFilesService = new SolutionFilesService(this.solution, this.outputService);
             this.globMatcher = new RegexGlobMatcher();
             this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);
-            this.actionFactory = new PowerShellGooseActionFactory(new PowerShellTaskFactory(this.outputService, new JsonCommandLogParser()));
+            this.actionFactory = new PowerShellGooseActionFactory(new PowerShellTaskFactory(this.outputService, new JsonCommandLogParser()), new PowerShellCommandBuilder());
         }
 
         public FileEventListener Create(ISolutionProject project, ActionConfiguration actionConfiguration)
