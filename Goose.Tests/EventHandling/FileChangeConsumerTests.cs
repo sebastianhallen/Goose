@@ -13,7 +13,7 @@
     [TestFixture]
     public class FileChangeConsumerTests
     {
-        [UnderTest] private FileEventListener eventListener;        
+        [UnderTest] private FileEventListener changeConsumer;        
         [Fake] private IFileMonitor fileMonitor;
         [Fake] private IGooseActionFactory actionFactory;
         [Fake] private IOnChangeTaskDispatcher taskDispatcher;        
@@ -29,9 +29,9 @@
         {
             var project = new[] { "project.csproj" };
             A.CallTo(() => this.fileMonitor.IsMonitoredProject(project[0])).Returns(true);
-            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), A.Dummy<ActionConfiguration>());
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), A.Dummy<ActionConfiguration>());
 
-            this.eventListener.ActOn(project, Trigger.Save);
+            this.changeConsumer.ActOn(project, Trigger.Save);
 
             A.CallTo(() => this.fileMonitor.UnMonitor(A<string[]>._)).MustHaveHappened();
             A.CallTo(() => this.fileMonitor.MonitorProject(project[0], A<string>._)).MustHaveHappened();
@@ -42,9 +42,9 @@
         {
             var config = new ActionConfiguration("");
             A.CallTo(() => this.fileMonitor.IsMonitoredProject(A<string>._)).Returns(true);
-            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), config);
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), config);
 
-            this.eventListener.ActOn(new[] { "project.csproj" }, Trigger.Save);
+            this.changeConsumer.ActOn(new[] { "project.csproj" }, Trigger.Save);
 
             A.CallTo(() => this.fileMonitor.MonitorProject(A<string>._, config.Glob)).MustHaveHappened();
         }
@@ -54,21 +54,51 @@
         {
             A.CallTo(() => this.fileMonitor.IsMonitoredProject("project.csproj")).Returns(true);
             A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._)).Returns(new[] { A.Dummy<IGooseAction>() });
-            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), new ActionConfiguration(""));
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), new ActionConfiguration(""));
 
-            this.eventListener.ActOn(new[] { "project.csproj" }, Trigger.Save);
+            this.changeConsumer.ActOn(new[] { "project.csproj" }, Trigger.Save);
 
             A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_only_use_project_files_to_create_actions_when_scope_is_per_project()
+        {
+            A.CallTo(() => this.fileMonitor.IsMonitoredProject("project.csproj")).Returns(true);
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("monitored0.file")).Returns(true);
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("monitored1.file")).Returns(true);
+            var config = new ActionConfiguration(Trigger.Unknown, "", "", "", "", CommandScope.Project);
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), config);
+
+            this.changeConsumer.ActOn(new[] { "project.csproj", "monitored0.file", "monitored1.file", "unmonitored.file" }, Trigger.Save);
+
+            A.CallTo(() =>this.actionFactory.Create(config, A<IEnumerable<string>>.That.Matches(files => 
+                files.SingleOrDefault() == "project.csproj"))).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_only_use_non_project_files_to_create_actions_when_scope_is_per_file()
+        {
+            A.CallTo(() => this.fileMonitor.IsMonitoredProject("project.csproj")).Returns(true);
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("monitored0.file")).Returns(true);
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("monitored1.file")).Returns(true);
+            var config = new ActionConfiguration(Trigger.Unknown, "", "", "", "", CommandScope.File);
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), config);
+
+            this.changeConsumer.ActOn(new[] { "project.csproj", "monitored0.file", "monitored1.file", "unmonitored.file" }, Trigger.Save);
+
+            A.CallTo(() => this.actionFactory.Create(config, A<IEnumerable<string>>.That.Matches(files =>
+                files.SequenceEqual(new [] { "monitored0.file", "monitored1.file" })))).MustHaveHappened();
         }
 
         [Test]
         public void Should_queue_configured_action_when_a_monitored_non_project_file_is_deleted()
         {
             A.CallTo(() => this.fileMonitor.IsMonitoredFile("file.less")).Returns(true);
-            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._))
-             .Returns(new[] { A.Dummy<IGooseAction>() });
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._)).Returns(new[] { A.Dummy<IGooseAction>() });
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), A.Dummy<ActionConfiguration>());
 
-            this.eventListener.ActOn(new[] { "file.less" }, Trigger.Delete);
+            this.changeConsumer.ActOn(new[] { "file.less" }, Trigger.Delete);
 
             A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustHaveHappened();
         }
@@ -78,7 +108,7 @@
         {
             A.CallTo(() => this.fileMonitor.IsMonitoredFile("project")).Returns(false);
 
-            this.eventListener.ActOn(new[] { "project" }, Trigger.Delete);
+            this.changeConsumer.ActOn(new[] { "project" }, Trigger.Delete);
 
             A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustNotHaveHappened();
         }
@@ -88,11 +118,12 @@
         {
             var files = new[] { "file" };
             A.CallTo(() => this.fileMonitor.IsMonitoredFile(A<string>._)).Returns(true);
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), A.Dummy<ActionConfiguration>());
 
-            this.eventListener.ActOn(files, Trigger.Delete);
+            this.changeConsumer.ActOn(files, Trigger.Delete);
 
             A.CallTo(() => this.fileMonitor.UnMonitor(A<IEnumerable<string>>.That.Matches(actual => actual.Single().Equals("file"))))
                 .MustHaveHappened();
-        }
+        }        
     }
 }

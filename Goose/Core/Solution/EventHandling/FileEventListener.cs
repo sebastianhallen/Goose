@@ -46,20 +46,34 @@
 
         public void ActOn(IEnumerable<string> files, Trigger trigger)
         {
-            var filesToActOn = files.ToArray();
-            var isFileUpdate = filesToActOn.Any(this.fileMonitor.IsMonitoredFile);
-            var isProjectUpdate = filesToActOn.Any(this.fileMonitor.IsMonitoredProject);
-
-            if (isFileUpdate || isProjectUpdate)
+            var filesToActOn = files.ToArray();            
+            var matchingProjects = filesToActOn.Where(this.fileMonitor.IsMonitoredProject).ToArray();
+            var mathcingFiles = filesToActOn.Where(this.fileMonitor.IsMonitoredFile).ToArray();
+            if (mathcingFiles.Any() || matchingProjects.Any())
             {
                 this.UpdateMonitors(filesToActOn, trigger);
 
                 if (Trigger.Save.Equals(trigger) || Trigger.Delete.Equals(trigger))
                 {
-                    var actions = this.actionFactory.Create(this.configuration, Enumerable.Empty<string>());
+                    var actions = this.actionFactory.Create(this.configuration, this.FilterFilesByScope(matchingProjects, mathcingFiles, this.configuration.Scope));
                     this.taskDispatcher.QueueOnChangeTask(actions.FirstOrDefault());
                 }
             }
+        }
+
+        private IEnumerable<string> FilterFilesByScope(IEnumerable<string> projectFiles, IEnumerable<string> inProjectFiles, CommandScope scope)
+        {
+            if (CommandScope.File.Equals(scope))
+            {
+                return inProjectFiles;
+            }
+
+            if (CommandScope.Project.Equals(scope))
+            {
+                return projectFiles;
+            }
+
+            return Enumerable.Empty<string>();
         }
 
         private void UpdateMonitors(string[] files, Trigger trigger)

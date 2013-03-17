@@ -59,6 +59,7 @@
             var file = new[] { "file" };
             A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
             A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._)).Returns(new[] { A.Dummy<IGooseAction>() });
+            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), A.Dummy<ActionConfiguration>());
 
             this.eventListener.FilesChanged(1, file, new [] { (uint)_VSFILECHANGEFLAGS.VSFILECHG_Del });
 
@@ -82,6 +83,7 @@
         {
             var file = new[] {"file"};
             A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
+            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), A.Dummy<ActionConfiguration>());
             
             this.eventListener.FilesChanged(1, file, new [] { (uint)changeFlag });
 
