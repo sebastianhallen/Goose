@@ -65,6 +65,7 @@
     <Compile Include="EventHandling\ActionConfigurationDummy.cs" />
     <Compile Include="EventHandling\FakeProjectContext.cs" />
     <Compile Include="EventHandling\FakeSolutionTestContext.cs" />
+    <Compile Include="EventHandling\FileChangeConsumerTests.cs" />
     <Compile Include="EventHandling\FileEventListenerTests.cs" />
     <Compile Include="EventHandling\FileMonitorTests.cs" />
     <Compile Include="EventHandling\GlobMatcherTests.cs" />

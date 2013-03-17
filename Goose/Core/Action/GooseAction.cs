@@ -2,6 +2,7 @@
 {
     using System.IO;
     using System.Threading.Tasks;
+    using Goose.Core.Configuration;
 
     public interface IGooseAction
     {
@@ -14,16 +15,20 @@
     {
         private readonly IPowerShellTaskFactory powershellTaskFactory;
         private readonly string rootPath;
+        private readonly string filePath;
         private readonly string workingDirectory;
         private readonly string command;
+        private readonly CommandScope scope;
         private readonly object taskCreationLock = new object();
 
-        public PowerShellGooseAction(IPowerShellTaskFactory powershellTaskFactory, string rootPath, string workingDirectory, string command)
+        public PowerShellGooseAction(IPowerShellTaskFactory powershellTaskFactory, string rootPath, string filePath, string workingDirectory, string command, CommandScope scope)
         {
             this.powershellTaskFactory = powershellTaskFactory;
             this.rootPath = rootPath;
+            this.filePath = filePath;
             this.workingDirectory = workingDirectory;
-            this.command = command;                        
+            this.command = command;
+            this.scope = scope;
         }
 
         private string Command

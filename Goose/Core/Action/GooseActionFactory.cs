@@ -22,8 +22,10 @@
                     yield return new PowerShellGooseAction(
                         this.powerShellTaskFactory,
                         configuration.ProjectRoot,
+                        file,
                         configuration.WorkingDirectory,
-                        configuration.Command);
+                        configuration.Command,
+                        configuration.Scope);
 
                     if (!CommandScope.File.Equals(configuration.Scope))
                     {
