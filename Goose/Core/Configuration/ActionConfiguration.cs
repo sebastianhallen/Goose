@@ -15,13 +15,14 @@
             this.Glob = "*.less";
         }
 
-        public ActionConfiguration(Trigger trigger, string glob, string workingDirectory, string command, string projectRoot)
+        public ActionConfiguration(Trigger trigger, string glob, string workingDirectory, string command, string projectRoot, CommandScope scope)
         {
             this.Trigger = trigger;
             this.Glob = glob;
             this.WorkingDirectory = workingDirectory;
             this.Command = command;
             this.ProjectRoot = projectRoot;
+            this.Scope = scope;
         }
 
         public bool IsValid
@@ -43,5 +44,6 @@
         }
 
         public string Glob { get; private set; }
+        public CommandScope Scope { get; private set; }
     }
 }

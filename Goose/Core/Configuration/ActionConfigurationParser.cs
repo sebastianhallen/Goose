@@ -3,11 +3,13 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Xml.Linq;
 
-    public class ActionConfigurationParser
+    public abstract class ActionConfigurationParser
     {
+        private string projectRoot;
+        protected abstract IEnumerable<ActionConfiguration> Parse(XElement gooseConfigRootNode);
+
         public IEnumerable<ActionConfiguration> Parse(string projectRoot, Stream configStream)
         {
             try
@@ -21,40 +23,38 @@
             {
                 return new[] { new ActionConfiguration(projectRoot) };
             }
-        }
+        }        
 
-        public virtual IEnumerable<ActionConfiguration> Parse(string projectRoot, string configContent)
+        public IEnumerable<ActionConfiguration> Parse(string projectRoot, string configContent)
         {
+            this.projectRoot = projectRoot;
             try
             {
                 var xml = XDocument.Parse(configContent);
-                return (from action in xml.Element("goose").Elements("action")
-                        let trigger = action.Attribute("on")
-                        let glob = action.Attribute("glob")
-                        let workingDirectory = action.Descendants("working-directory").SingleOrDefault()
-                        let command = action.Descendants("command").SingleOrDefault()
-                        select this.CreateCommandConfiguration(
-                            projectRoot,
-                            trigger == null ? null : trigger.Value,
-                            glob == null ? null : glob.Value,
-                            workingDirectory == null ? null : workingDirectory.Value,
-                            command == null ? null : command.Value));
+                var rootNode = xml.Element("goose");
+                rootNode = rootNode ?? xml.Element("compile-less");
+                return this.Parse(rootNode);
             }
             catch (Exception)
-            {
-                return new[] { new ActionConfiguration(projectRoot) };
-            }
+            { }
+
+            return new[] { new ActionConfiguration(projectRoot) };
         }
 
-        protected ActionConfiguration CreateCommandConfiguration(string projectRoot, string triggerRaw, string glob, string workingDirectory, string command)
+        protected ActionConfiguration CreateCommandConfiguration(string trigger, string glob, string workingDirectory, string command, string scope = null)
         {
-            Trigger trigger;
-            if (!Enum.TryParse(triggerRaw, true, out trigger))
+            Trigger triggerValue;
+            if (!Enum.TryParse(trigger, true, out triggerValue))
             {
-                trigger = Trigger.Unknown;
+                triggerValue = Trigger.Unknown;
+            }
+            CommandScope scopeValue;
+            if (!Enum.TryParse(scope, true, out scopeValue))
+            {
+                scopeValue = CommandScope.Project;
             }
 
-            return new ActionConfiguration(trigger, glob, workingDirectory, command, projectRoot);
+            return new ActionConfiguration(triggerValue, glob, workingDirectory, command, this.projectRoot, scopeValue);
         }
     }
 }

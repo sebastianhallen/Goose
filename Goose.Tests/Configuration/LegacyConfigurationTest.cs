@@ -32,6 +32,7 @@
             Assert.That(config.ProjectRoot, Is.EqualTo("root"));
             Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
+            Assert.That(config.Scope, Is.EqualTo(CommandScope.Project));
             Assert.That(config.WorkingDirectory, Is.EqualTo("Build"));
         }
     }

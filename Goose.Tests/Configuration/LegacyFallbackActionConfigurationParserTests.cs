@@ -7,12 +7,12 @@
     [TestFixture]
     public class LegacyFallbackActionConfigurationParserTests
     {
-        private LegacyFallbackActionConfigurationParser parser;
+        private ConfigurationParser parser;
 
         [SetUp]
         public void Before()
         {
-            this.parser = new LegacyFallbackActionConfigurationParser();
+            this.parser = new ConfigurationParser();
         }
 
         [Test]

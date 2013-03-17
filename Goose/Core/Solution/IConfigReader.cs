@@ -13,11 +13,11 @@
     public class DefaultConfigReader
         : IConfigReader
     {
-        private LegacyFallbackActionConfigurationParser configParser;
+        private ConfigurationParser configParser;
 
         public DefaultConfigReader()
         {
-            this.configParser = new LegacyFallbackActionConfigurationParser();
+            this.configParser = new ConfigurationParser();
         }
 
         public IEnumerable<ActionConfiguration> GetActionConfigurations(ISolutionProject project)

@@ -22,8 +22,8 @@
             </action>
         </goose>";
 
-            var parser = new ActionConfigurationParser();
-            var configs = parser.Parse("", input);
+            var parser = new ActionConfigurationParserVersion10();
+            var configs = parser.Parse("root", input);
 
             var config = configs.First();
             Assert.That(config.IsValid);
