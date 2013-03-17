@@ -1,5 +1,6 @@
 ﻿namespace Goose.Tests.EventHandling
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using FakeItEasy;
@@ -124,6 +125,35 @@
 
             A.CallTo(() => this.fileMonitor.UnMonitor(A<IEnumerable<string>>.That.Matches(actual => actual.Single().Equals("file"))))
                 .MustHaveHappened();
-        }        
+        }
+
+        [Test]
+        public void Should_not_have_to_update_a_project_file_to_trigger_project_scoped_actions()
+        {
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("another file")).Returns(true);
+            var config = new ActionConfiguration(Trigger.Unknown, "", "", "", "", CommandScope.File);
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), config);
+
+            this.changeConsumer.ActOn(new [] {"file", "another file", "unmonitored files"}, Trigger.Save);
+
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>.That.Matches(files =>
+                files.SequenceEqual(new []{"file", "another file"})))).MustHaveHappened();
+        }
+
+        [Test]
+        public void Should_queue_one_action_for_each_monitored_file_that_changed_when_using_file_scope()
+        {
+            A.CallTo(() => this.fileMonitor.IsMonitoredFile("file")).Returns(true);
+            A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>._))
+                .Returns(new[] {A.Dummy<IGooseAction>(), A.Dummy<IGooseAction>()});
+            var config = new ActionConfiguration(Trigger.Unknown, "", "", "", "", CommandScope.File);
+            this.changeConsumer.Initialize(A.Dummy<ISolutionProject>(), config);
+            
+
+            this.changeConsumer.ActOn(new[] { "file" }, Trigger.Save);
+
+            A.CallTo(() => this.taskDispatcher.QueueOnChangeTask(A<IGooseAction>._)).MustHaveHappened(Repeated.Exactly.Twice);
+        }
     }
 }

@@ -55,8 +55,12 @@
 
                 if (Trigger.Save.Equals(trigger) || Trigger.Delete.Equals(trigger))
                 {
-                    var actions = this.actionFactory.Create(this.configuration, this.FilterFilesByScope(matchingProjects, mathcingFiles, this.configuration.Scope));
-                    this.taskDispatcher.QueueOnChangeTask(actions.FirstOrDefault());
+                    var filteredFiles = this.FilterFilesByScope(matchingProjects, mathcingFiles, this.configuration.Scope);
+                    var actions = this.actionFactory.Create(this.configuration, filteredFiles);
+                    foreach (var action in actions)
+                    {
+                        this.taskDispatcher.QueueOnChangeTask(action);   
+                    }                    
                 }
             }
         }
