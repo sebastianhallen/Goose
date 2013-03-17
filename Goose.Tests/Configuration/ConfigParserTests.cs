@@ -1,177 +1,128 @@
 ﻿namespace Goose.Tests.Configuration
 {
+    using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using Goose.Core.Configuration;
-    using NUnit.Framework;
+    using System.Xml.Linq;
 
-    [TestFixture]
-    public class ConfigParserTests
+    public abstract class ConfigParserTests
     {
-        private ActionConfigurationParser parser;
-
-        [SetUp]
-        public void Before()
+        protected abstract string Version { get; }
+        
+        protected string CreateConfig(Action<GooseConfigRootBuilder> configure)
         {
-            this.parser = new ActionConfigurationParser();
+            var configBuilder = new GooseTestConfigBuilder();
+            var configurator = configBuilder.Version(this.Version);
+
+            configure(configurator);
+
+            return configBuilder.Build();
         }
 
-        [Test]
-        public void Should_create_invalid_command_configuration_when_an_empty_action_tag_is_encountered()
+        protected class GooseTestConfigBuilder
         {
-            var input = @"<goose version=""1.0""><action></action></goose>";
+            private GooseConfigRootBuilder root;
 
-            var config = this.Parse(input).Single();
+            public string Build()
+            {
+                if (this.root == null)
+                {
+                    throw new InvalidOperationException("You need to configure the config first.");
+                }
 
-            Assert.That(config.IsValid, Is.False);
+                return (this.root as IGooseConfigRootBuilderInternals).CreateSnapshot().ToString();
+            }
+
+            public GooseConfigRootBuilder Version(string version) 
+            {
+                this.root = new GooseConfigRootBuilder(version);
+                return this.root;
+            }   
         }
 
-        [TestCase(null)]
-        [TestCase("     ")]
-        public void Should_not_explode_when_unable_to_read_config(string input)
+        internal interface IGooseConfigActionBuilderInternals
         {
-            this.parser.Parse("", input);
+            XElement Build();
         }
 
-        [Test]
-        public void Should_not_explode_when_unable_to_read_config_stream()
+        public class GooseConfigActionBuilder
+            : IGooseConfigActionBuilderInternals
         {
-            Stream stream = null;
+            private string trigger;
+            private string glob;
+            private string workingDirectory;
+            private string command;
 
-            this.parser.Parse("", stream);
+            public GooseConfigActionBuilder TriggersOn(string trigger)
+            {
+                this.trigger = trigger;
+                return this;
+            }
+
+            public GooseConfigActionBuilder ForFilesMatching(string glob)
+            {
+                this.glob = glob;
+                return this;
+            }
+
+            public GooseConfigActionBuilder WithWorkingDirectory(string workingDirectory)
+            {
+                this.workingDirectory = workingDirectory;
+                return this;
+            }
+
+            public GooseConfigActionBuilder WithCommand(string command)
+            {
+                this.command = command;
+                return this;
+            }
+
+            XElement IGooseConfigActionBuilderInternals.Build()
+            {
+                var actionXml = new XElement("action");
+                if (this.trigger != null) actionXml.SetAttributeValue("on", this.trigger);
+                if (this.glob != null) actionXml.SetAttributeValue("glob", this.glob);
+                if (this.workingDirectory != null) actionXml.Add(new XElement("working-directory", this.workingDirectory));
+                if (this.command != null) actionXml.Add(new XElement("command", this.command));
+
+                return actionXml;
+            }
         }
 
-        [Test]
-        public void Should_set_working_directory_when_a_working_directory_tag_is_present()
+        internal interface IGooseConfigRootBuilderInternals
         {
-            var input = @"<goose version=""1.0""><action><working-directory>Build</working-directory></action></goose>";
-
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.WorkingDirectory, Is.EqualTo("Build"));
+            XElement CreateSnapshot();
         }
 
-        [Test]
-        public void Action_config_with_only_build_directory_is_not_value()
+        public class GooseConfigRootBuilder
+            : IGooseConfigRootBuilderInternals
         {
-            var input = @"<goose version=""1.0""><action><working-directory>Build</working-directory></action></goose>";
+            private readonly string version;
+            private readonly IList<XElement> actions;
+            public GooseConfigRootBuilder(string version)
+            {
+                this.version = version;
+                this.actions = new List<XElement>();
+            }
 
-            var config = this.Parse(input).Single();
+            public GooseConfigRootBuilder WithAction(Action<GooseConfigActionBuilder> configuration)
+            {
+                var action = new GooseConfigActionBuilder();
+                configuration(action);
+                this.actions.Add((action as IGooseConfigActionBuilderInternals).Build());
 
-            Assert.That(config.IsValid, Is.False);
-        }
+                return this;
+            }
 
-        [Test]
-        public void Command_should_be_set_when_a_command_node_is_present()
-        {
-            var input = @"<goose version=""1.0""><action><command>some command</command></action></goose>";
+            XElement IGooseConfigRootBuilderInternals.CreateSnapshot()
+            {
+                var root = new XElement("goose", new XAttribute("version", this.version));
+                foreach (var action in this.actions)
+                {
+                    root.Add(action);
+                }
 
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.Command, Is.EqualTo("some command"));
-        }
-
-        [Test]
-        public void action_config_with_only_command_should_not_be_valid()
-        {
-            var input = @"<goose version=""1.0""><action><command>some command</command></action></goose>";
-
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.IsValid, Is.False);
-        }
-
-        [Test]
-        public void Shell_should_be_powershell()
-        {
-            var input = @"<goose version=""1.0""><action><command>some command</command></action></goose>";
-
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
-        }
-
-        [Test]
-        public void Should_set_action_trigger_attribute()
-        {
-            var input = @"<goose version=""1.0""><action on=""save""></action></goose>";
-
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
-        }
-
-        [Test]
-        public void Should_set_trigger_to_unknown_when_not_specified()
-        {
-            var input = @"<goose version=""1.0""><action></action></goose>";
-
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.Trigger, Is.EqualTo(Trigger.Unknown));
-        }
-
-        [Test]
-        public void Should_set_trigger_to_unknown_when_unsupported_type_is_specified()
-        {
-            var input = @"<goose version=""1.0""><action on=""never""></action></goose>";
-
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.Trigger, Is.EqualTo(Trigger.Unknown));
-        }
-
-        [Test]
-        public void Should_set_glob_to_default_value_when_no_glob_is_present()
-        {
-            var input = @"<goose version=""1.0""><action glob=""*.ext""></action></goose>";
-
-            var config = this.Parse(input).Single();
-
-            Assert.That(config.Glob, Is.EqualTo("*.ext"));
-        }
-
-        [Test]
-        public void Should_be_able_to_parse_a_complete_action_configuration()
-        {
-            var input = @"
-<goose version=""1.0"">
-    <action on=""save"" glob=""*.ext"">
-        <working-directory>BuildLess</working-directory>
-        <command>$now = Get-Date ; Add-Content build.log ""Last ext build: $now""</command> 
-    </action>
-    <action on=""save"" glob=""*.css"">
-        <working-directory>MinifyCss</working-directory>
-        <command>$now = Get-Date ; Add-Content build.log ""Last css build: $now""</command> 
-    </action>
-</goose>";
-
-            var configs = this.Parse(input);
-
-            var config = configs.First();
-            Assert.That(config.IsValid);
-            Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
-            Assert.That(config.Glob, Is.EqualTo("*.ext"));
-            Assert.That(config.WorkingDirectory, Is.EqualTo("BuildLess"));
-            Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last ext build: $now"""));
-            Assert.That(config.ProjectRoot, Is.EqualTo("root"));
-            Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
-
-            config = configs.Last();
-            Assert.That(config.IsValid);
-            Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
-            Assert.That(config.Glob, Is.EqualTo("*.css"));
-            Assert.That(config.WorkingDirectory, Is.EqualTo("MinifyCss"));
-            Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last css build: $now"""));
-            Assert.That(config.ProjectRoot, Is.EqualTo("root"));
-            Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
-        }
-
-        private IEnumerable<ActionConfiguration> Parse(string input)
-        {
-            return this.parser.Parse("root", new MemoryStream(Encoding.UTF8.GetBytes(input)));
+                return root;
+            }
         }
     }
 }

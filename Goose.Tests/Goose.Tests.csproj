@@ -58,6 +58,8 @@
   <ItemGroup>
     <Compile Include="Action\ActionFactoryTests.cs" />
     <Compile Include="Configuration\ActionConfigurationTests.cs" />
+    <Compile Include="Configuration\ConfigParser1Point0Tests.cs" />
+    <Compile Include="Configuration\ConfigParserIntegrationTests.cs" />
     <Compile Include="Configuration\LegacyFallbackActionConfigurationParserTests.cs" />
     <Compile Include="Configuration\ConfigParserTests.cs" />
     <Compile Include="Configuration\LegacyConfigurationTest.cs" />
