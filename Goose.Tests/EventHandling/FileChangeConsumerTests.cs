@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
     using FakeItEasy;
     using Goose.Core.Action;
     using Goose.Core.Configuration;
@@ -139,7 +140,7 @@
             this.changeConsumer.ActOn(new[] { "project.csproj", "monitored0.file", "monitored1.file", "unmonitored.file" }, Trigger.Save);
 
             A.CallTo(() => this.actionFactory.Create(A<ActionConfiguration>._, A<IEnumerable<string>>.That.Matches(files =>
-                files.SequenceEqual(new [] { "monitored0.file", "monitored1.file" })))).MustHaveHappened();
+                files.SequenceEqual(new[] { "monitored0.file", "monitored1.file" })))).MustHaveHappened();
         }
 
         [Test]

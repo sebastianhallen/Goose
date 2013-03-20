@@ -51,30 +51,33 @@
             var mathcingFiles = filesToActOn.Where(this.fileMonitor.IsMonitoredFile).ToArray();
             if (mathcingFiles.Any() || matchingProjects.Any())
             {
-                this.UpdateMonitors(filesToActOn, trigger);
-
-                if (Trigger.Save.Equals(trigger) || Trigger.Delete.Equals(trigger))
-                {                    
-                    var filteredFiles = this.FilterFilesByScope(matchingProjects, mathcingFiles, this.configuration);
-                    var actions = this.actionFactory.Create(this.configuration, filteredFiles);
-                    foreach (var action in actions)
-                    {
-                        this.taskDispatcher.QueueOnChangeTask(action);   
-                    }                    
-                }
+                this.UpdateMonitors(filesToActOn, trigger);                   
+                var filteredFiles = this.FilterFilesByScope(matchingProjects, mathcingFiles, this.configuration, trigger);
+                var actions = this.actionFactory.Create(this.configuration, filteredFiles);
+                foreach (var action in actions)
+                {
+                    this.taskDispatcher.QueueOnChangeTask(action);   
+                }                    
+                
             }
         }
 
-        private IEnumerable<string> FilterFilesByScope(IEnumerable<string> projectFiles, IEnumerable<string> inProjectFiles, ActionConfiguration configuration)
+        private IEnumerable<string> FilterFilesByScope(IEnumerable<string> projectFiles, IEnumerable<string> inProjectFiles, ActionConfiguration configuration, Trigger trigger)
         {
             if (CommandScope.File.Equals(configuration.Scope))
             {
-                return projectFiles.Concat(inProjectFiles);
+                return Trigger.Save.Equals(trigger) && inProjectFiles.Any()
+                           ? inProjectFiles
+                           : Enumerable.Empty<string>();
             }
-
+            
             if (CommandScope.Project.Equals(configuration.Scope))
             {
-                return new [] { configuration.ProjectRoot };
+                var isSaveTrigger = Trigger.Save.Equals(trigger) && (projectFiles.Any() || inProjectFiles.Any());
+                var isDeleteTrigger = Trigger.Delete.Equals(trigger) && inProjectFiles.Any();
+                return isSaveTrigger || isDeleteTrigger
+                           ? new[] {configuration.ProjectRoot}
+                           : Enumerable.Empty<string>();
             }
 
             return Enumerable.Empty<string>();
