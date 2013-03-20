@@ -1,14 +1,29 @@
 namespace Goose.Core.Action.PowerShell
 {
+    using System.IO;
+    using Goose.Core.Configuration;
+
     public class PowerShellCommandBuilder
         : IShellCommandBuilder
     {
-        public ShellCommand Build(string workingDirectory, string command, CommandEvironmentVariables environmentVariables)
+        public ShellCommand Build(ActionConfiguration configuration, CommandEvironmentVariables environmentVariables)
         {
-            var payload = command.Replace("{file-path}", environmentVariables.FilePath);
-            
-            return new ShellCommand(workingDirectory, payload);
+            var projectRoot = configuration.ProjectRoot;
+            var relativeWorkingDirectory = configuration.RelativeWorkingDirectory;
+            var absoluteWorkingDirectory = Path.Combine(projectRoot, relativeWorkingDirectory);
+            var absoluteFilePath = environmentVariables.FilePath;
+            var relativeFilePath = string.IsNullOrEmpty(projectRoot)
+                                       ? absoluteFilePath
+                                       : absoluteFilePath.Replace(projectRoot, "").TrimStart('\\', '/');
 
+            
+            var payload = configuration.Command
+                                       .Replace("{absolute-file-path}", absoluteFilePath)
+                                       .Replace("{relative-file-path}", relativeFilePath)
+                                       .Replace("{project-root}", projectRoot)
+                                       .Replace("{working-directory}", absoluteWorkingDirectory);
+
+            return new ShellCommand(absoluteWorkingDirectory, payload);
         }
     }
 }

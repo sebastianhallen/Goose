@@ -29,7 +29,7 @@
             Assert.That(config.IsValid);
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
             Assert.That(config.Glob, Is.EqualTo("*.ext"));
-            Assert.That(config.WorkingDirectory, Is.EqualTo("BuildLess"));
+            Assert.That(config.RelativeWorkingDirectory, Is.EqualTo("BuildLess"));
             Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last ext build: $now"""));
             Assert.That(config.ProjectRoot, Is.EqualTo("root"));
             Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
@@ -38,7 +38,7 @@
             Assert.That(config.IsValid);
             Assert.That(config.Trigger, Is.EqualTo(Trigger.Save));
             Assert.That(config.Glob, Is.EqualTo("*.css"));
-            Assert.That(config.WorkingDirectory, Is.EqualTo("MinifyCss"));
+            Assert.That(config.RelativeWorkingDirectory, Is.EqualTo("MinifyCss"));
             Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last css build: $now"""));
             Assert.That(config.ProjectRoot, Is.EqualTo("root"));
             Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));

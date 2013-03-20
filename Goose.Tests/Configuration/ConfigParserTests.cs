@@ -51,7 +51,7 @@
 
             var configuration = this.Parser.Parse("", input).Single();
 
-            Assert.That(configuration.WorkingDirectory, Is.EqualTo("Build"));
+            Assert.That(configuration.RelativeWorkingDirectory, Is.EqualTo("Build"));
         }
 
         [Test]

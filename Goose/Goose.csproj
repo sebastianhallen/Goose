@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Core\Action\CommandEvironmentVariables.cs" />
     <Compile Include="Core\Action\PowerShell\PowerShellCommandBuilder.cs" />
     <Compile Include="Core\Action\PowerShell\PowerShellGooseActionFactory.cs" />
     <Compile Include="Core\Action\IShellCommandBuilder.cs" />

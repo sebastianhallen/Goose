@@ -1,13 +1,9 @@
 ﻿namespace Goose.Core.Action
 {
+    using Goose.Core.Configuration;
+
     public interface IShellCommandBuilder
     {
-        ShellCommand Build(string workingDirectory, string command, CommandEvironmentVariables environmentVariables);
-    }
-
-
-    public class CommandEvironmentVariables
-    {
-        public string FilePath { get; set; }
+        ShellCommand Build(ActionConfiguration configuration, CommandEvironmentVariables environmentVariables);
     }
 }

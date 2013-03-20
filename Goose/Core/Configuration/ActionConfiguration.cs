@@ -4,7 +4,7 @@
     {
 
         public Trigger Trigger { get; private set; }
-        public string WorkingDirectory { get; private set; }
+        public string RelativeWorkingDirectory { get; private set; }
         public string Command { get; private set; }
         public string ProjectRoot { get; private set; }
         public string Glob { get; private set; }
@@ -26,7 +26,7 @@
         {
             this.Trigger = trigger;
             this.Glob = glob;
-            this.WorkingDirectory = workingDirectory;
+            this.RelativeWorkingDirectory = workingDirectory;
             this.Command = command;
             this.ProjectRoot = projectRoot;
             this.Scope = scope;
@@ -39,7 +39,7 @@
                 return 
                     this.Trigger == Trigger.Save 
                     && !string.IsNullOrWhiteSpace(this.Glob)
-                    && this.WorkingDirectory != null
+                    && this.RelativeWorkingDirectory != null
                     && !string.IsNullOrWhiteSpace(this.Command);
 
             }

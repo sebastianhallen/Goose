@@ -22,9 +22,9 @@
             {
                 foreach (var file in files)
                 {
-                    var workingDirectory = Path.Combine(configuration.ProjectRoot, configuration.WorkingDirectory);
-                    var environmentVariables = new CommandEvironmentVariables {FilePath = file};
-                    var command = this.commandBuilder.Build(workingDirectory, configuration.Command, environmentVariables);
+                    var workingDirectory = Path.Combine(configuration.ProjectRoot, configuration.RelativeWorkingDirectory);
+                    var environmentVariables = new CommandEvironmentVariables(file);
+                    var command = this.commandBuilder.Build(configuration, environmentVariables);
 
                     yield return new PowerShellGooseAction(this.powerShellTaskFactory, command);
                     
