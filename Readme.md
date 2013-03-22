@@ -4,7 +4,7 @@ Goose
 Goose is a visual studio extension that automatically runs a powershell script any time a file matching a specified glob is saved. If your script outputs data in a way <a href="https://github.com/sebastianhallen/Goose/wiki/Script-output">goose can understand</a> you will be able to write to Visual Studios error list or the regular message output window. In case Goose does not understand the output, you will always get the script output in the message window.
 
 ##Usage
-<a href="http://sebastianhallen.github.com/Goose/">Download</a> and install the plugin and place a goose.config file in the project folder. The goose.config does not have to be included in the project.
+<a href="http://sebastianhallen.github.com/Goose/">Download</a> and install the plugin, place a goose.config file in the project folder. The goose.config does not have to be included in the project.
 Each project should have it's own goose.config. 
 
 Note that the extension will run anything you put in compile-command with the same priviliges as visual studio. You have been warned.
