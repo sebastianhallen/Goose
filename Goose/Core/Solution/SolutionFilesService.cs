@@ -24,7 +24,7 @@
         {
             get
             {
-                return ExtractProjectsFromSolution().Select(project => new SolutionProject(project, this.outputService)).ToArray();
+                return ExtractProjectsFromSolution().Select(project => new SolutionProject(this.solution, project, this.outputService)).ToArray();
             }            
             
         }

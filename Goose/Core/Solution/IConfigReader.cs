@@ -26,10 +26,10 @@
             if (this.TryGetConfigPath(project, out configPath))
             {
                 var projectRoot = Path.GetDirectoryName(project.ProjectFilePath);
-
+                var solutionRoot = Path.GetDirectoryName(project.SolutionFilePath);
                 using (var fileStream = File.OpenRead(configPath))
                 {
-                    return this.configParser.Parse(projectRoot, fileStream);
+                    return this.configParser.Parse(solutionRoot, projectRoot, fileStream);
                 }
             }
 

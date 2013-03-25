@@ -18,13 +18,23 @@ namespace Goose.Tests.Configuration
         public void Should_set_project_path()
         {
             var config = this.configBuilder
-               .On(Trigger.Save).FilesMatching("glob")
-               .Run("some command").In("working-directory").ForProjectIn(@"project-root\path")
-               .WithScope(CommandScope.Project)
+               .ForProjectIn(@"project-root\path")
                .Build();
         
             Assert.That(config.ProjectRoot, Is.EqualTo(@"project-root\path"));
         }
+
+        [Test]
+        public void Should_set_solution_path()
+        {
+            var config = this.configBuilder
+               .ProjectInSolution(@"solution-root\path")
+               .Build();
+
+            Assert.That(config.SolutionRoot, Is.EqualTo(@"solution-root\path"));
+        }
+
+
 
         [Test]
         public void Save_configuration_with_non_empty_command_should_be_valid()

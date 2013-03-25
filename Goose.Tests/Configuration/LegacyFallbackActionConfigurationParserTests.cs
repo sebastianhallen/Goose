@@ -24,7 +24,7 @@
   <compile-command>$now = Get-Date ; Add-Content build.log ""Last build: $now""</compile-command> 
 </compile-less>";
 
-            var config = this.parser.Parse("", input).Single();
+            var config = this.parser.Parse("", "", input).Single();
 
             Assert.That(config.IsValid);
         }
@@ -40,7 +40,7 @@
     </action>
 </goose>";
 
-            var config = this.parser.Parse("", input).Single();
+            var config = this.parser.Parse("", "", input).Single();
 
             Assert.That(config.IsValid);
         }
@@ -55,7 +55,7 @@
     </action>
 </goose>";
 
-            var config = this.parser.Parse("", input).Single();
+            var config = this.parser.Parse("", "", input).Single();
 
             Assert.That(config.Command, Is.EqualTo("command"));
         }

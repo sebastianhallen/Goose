@@ -5,10 +5,11 @@
         private Trigger trigger;
         private string workingDirectory;
         private string command;
+        private string solutionRoot;
         private string projectRoot;
         private string glob;
         private CommandScope scope;
-
+        
         public ActionConfigurationBuilder On(Trigger trigger)
         {
             this.trigger = trigger;
@@ -45,6 +46,12 @@
             return this;
         }
 
+        public ActionConfigurationBuilder ProjectInSolution(string solutionRoot)
+        {
+            this.solutionRoot = solutionRoot;
+            return this;
+        }
+
         public ActionConfiguration Build()
         {
             return new ActionConfiguration(
@@ -52,6 +59,7 @@
                 this.glob,
                 this.workingDirectory,
                 this.command,
+                this.solutionRoot,
                 this.projectRoot,
                 this.scope);
         }

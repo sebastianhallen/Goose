@@ -92,6 +92,20 @@
         }
 
         [Test]
+        public void Should_be_able_to_parameterize_solution_root_path()
+        {
+            var configuration = this.configurationBuilder
+                   .ForProjectIn(@"project-root\path").ProjectInSolution(@"solution-root\path").On(Trigger.Save).FilesMatching("glob")
+                   .Run("command with {solution-root} substitution").In("working-directory")
+                   .WithScope(CommandScope.Project)
+                   .Build();
+
+            var command = this.commandBuilder.Build(configuration, new CommandEvironmentVariables(""));
+
+            Assert.That(command.Command, Is.EqualTo(@"command with solution-root\path substitution"));
+        }
+
+        [Test]
         public void Should_be_able_to_parameterize_absolute_working_directory_path()
         {
             var configuration = this.configurationBuilder

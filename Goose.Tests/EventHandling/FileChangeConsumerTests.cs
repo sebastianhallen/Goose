@@ -83,12 +83,12 @@
 
             public void WithPerFileConfiguration(string glob = "")
             {
-                this.WithConfiguration(new ActionConfiguration(Trigger.Save, glob, "", "", "", CommandScope.File));
+                this.WithConfiguration(new ActionConfiguration(Trigger.Save, glob, "", "", "", "", CommandScope.File));
             }
 
             public void WithPerProjectScopedConfiguration(string glob = "")
             {
-                this.WithConfiguration(new ActionConfiguration(Trigger.Save, glob, "", "", "", CommandScope.Project));
+                this.WithConfiguration(new ActionConfiguration(Trigger.Save, glob, "", "", "", "", CommandScope.Project));
             }
         }
 

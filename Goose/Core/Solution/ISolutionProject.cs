@@ -4,6 +4,7 @@
 
     public interface ISolutionProject
     {
+        string SolutionFilePath { get; }
         string ProjectFilePath { get; }
         IEnumerable<FileInProject> Files { get; }
     }

@@ -12,8 +12,22 @@
     public class SolutionProject 
         : ISolutionProject
     {
+        private IVsSolution vsSolution;
         private readonly IVsProject vsProject;
         private readonly IOutputService outputService;
+
+        public string SolutionFilePath
+        {
+            get
+            {
+                string solutionDirectory;
+                string solutionFile;
+                string userOptionsFile;
+                this.vsSolution.GetSolutionInfo(out solutionDirectory, out solutionFile, out userOptionsFile);
+
+                return solutionFile;
+            }
+        }
 
         public string ProjectFilePath
         {
@@ -52,8 +66,9 @@
             }
         }
 
-        public SolutionProject(IVsProject vsProject, IOutputService outputService)
+        public SolutionProject(IVsSolution vsSolution, IVsProject vsProject, IOutputService outputService)
         {
+            this.vsSolution = vsSolution;
             this.vsProject = vsProject;
             this.outputService = outputService;
         }

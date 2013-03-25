@@ -3,31 +3,34 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Xml.Linq;
 
     public abstract class ActionConfigurationParser
     {
         private string projectRoot;
+        private string solutionRoot;
         protected abstract IEnumerable<ActionConfiguration> Parse(XElement gooseConfigRootNode);
 
-        public IEnumerable<ActionConfiguration> Parse(string projectRoot, Stream configStream)
+        public IEnumerable<ActionConfiguration> Parse(string solutionRoot, string projectRoot, Stream configStream)
         {
             try
             {
                 using (var reader = new StreamReader(configStream))
                 {
-                    return this.Parse(projectRoot, reader.ReadToEnd());
+                    return this.Parse(solutionRoot, projectRoot, reader.ReadToEnd());
                 }
             }
             catch (Exception)
             {
-                return new[] { new ActionConfiguration(projectRoot) };
+                return Enumerable.Empty<ActionConfiguration>();
             }
         }        
 
-        public IEnumerable<ActionConfiguration> Parse(string projectRoot, string configContent)
+        public IEnumerable<ActionConfiguration> Parse(string solutionRoot, string projectRoot, string configContent)
         {
             this.projectRoot = projectRoot;
+            this.solutionRoot = solutionRoot;
             try
             {
                 var xml = XDocument.Parse(configContent);
@@ -38,7 +41,8 @@
             catch (Exception)
             { }
 
-            return new[] { new ActionConfiguration(projectRoot) };
+
+            return Enumerable.Empty<ActionConfiguration>();
         }
 
         protected ActionConfiguration CreateCommandConfiguration(string trigger, string glob, string workingDirectory, string command, string scope = null)
@@ -55,7 +59,7 @@
             }
 
             return new ActionConfigurationBuilder()
-                .ForProjectIn(this.projectRoot)
+                .ForProjectIn(this.projectRoot).ProjectInSolution(this.solutionRoot)
                 .On(triggerValue).FilesMatching(glob).Run(command).WithScope(scopeValue)
                 .In(workingDirectory)
             .Build();           

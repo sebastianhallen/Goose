@@ -8,6 +8,7 @@ namespace Goose.Core.Action.PowerShell
     {
         public ShellCommand Build(ActionConfiguration configuration, CommandEvironmentVariables environmentVariables)
         {
+            var solutionRoot = configuration.SolutionRoot;
             var projectRoot = configuration.ProjectRoot;
             var relativeWorkingDirectory = configuration.RelativeWorkingDirectory;
             var absoluteWorkingDirectory = Path.Combine(projectRoot, relativeWorkingDirectory);
@@ -20,6 +21,7 @@ namespace Goose.Core.Action.PowerShell
             var payload = configuration.Command
                                        .Replace("{absolute-file-path}", absoluteFilePath)
                                        .Replace("{relative-file-path}", relativeFilePath)
+                                       .Replace("{solution-root}", solutionRoot)
                                        .Replace("{project-root}", projectRoot)
                                        .Replace("{working-directory}", absoluteWorkingDirectory);
 

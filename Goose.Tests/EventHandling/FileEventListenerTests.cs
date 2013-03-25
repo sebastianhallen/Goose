@@ -48,7 +48,7 @@
         [Test]
         public void Should_not_monitor_files_when_configuration_is_not_valid()
         {
-            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), new ActionConfiguration(""));
+            this.eventListener.Initialize(A.Dummy<ISolutionProject>(), new ActionConfigurationBuilder().Build());
 
             A.CallTo(() => this.solutionFilesService.Projects).MustNotHaveHappened();
         }

@@ -23,7 +23,7 @@
         </goose>";
 
             var parser = new MultipleActionsConfigurationParser();
-            var configs = parser.Parse("root", input);
+            var configs = parser.Parse("solution-root", "project-root", input);
 
             var config = configs.First();
             Assert.That(config.IsValid);
@@ -31,7 +31,8 @@
             Assert.That(config.Glob, Is.EqualTo("*.ext"));
             Assert.That(config.RelativeWorkingDirectory, Is.EqualTo("BuildLess"));
             Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last ext build: $now"""));
-            Assert.That(config.ProjectRoot, Is.EqualTo("root"));
+            Assert.That(config.SolutionRoot, Is.EqualTo("solution-root"));
+            Assert.That(config.ProjectRoot, Is.EqualTo("project-root"));
             Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
 
             config = configs.Last();
@@ -40,7 +41,8 @@
             Assert.That(config.Glob, Is.EqualTo("*.css"));
             Assert.That(config.RelativeWorkingDirectory, Is.EqualTo("MinifyCss"));
             Assert.That(config.Command, Is.EqualTo(@"$now = Get-Date ; Add-Content build.log ""Last css build: $now"""));
-            Assert.That(config.ProjectRoot, Is.EqualTo("root"));
+            Assert.That(config.SolutionRoot, Is.EqualTo("solution-root"));
+            Assert.That(config.ProjectRoot, Is.EqualTo("project-root")); 
             Assert.That(config.Shell, Is.EqualTo(Shell.PowerShell));
         }
     }

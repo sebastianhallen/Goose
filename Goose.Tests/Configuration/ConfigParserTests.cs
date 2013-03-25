@@ -22,7 +22,7 @@
             var input = this.CreateConfig(config =>
                 config.WithAction(_ => { }));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.IsValid, Is.False);
         }
@@ -31,7 +31,7 @@
         [TestCase("     ")]
         public void Should_not_explode_when_unable_to_read_config(string input)
         {
-            this.Parser.Parse("", input);
+            this.Parser.Parse("", "", input);
         }
 
         [Test]
@@ -39,7 +39,7 @@
         {
             Stream stream = null;
 
-            this.Parser.Parse("", stream);
+            this.Parser.Parse("", "", stream);
         }
 
         [Test]
@@ -49,7 +49,7 @@
                 config.WithAction(action =>
                     action.WithWorkingDirectory("Build")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.RelativeWorkingDirectory, Is.EqualTo("Build"));
         }
@@ -61,7 +61,7 @@
                 config.WithAction(action =>
                     action.WithWorkingDirectory("Build")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.IsValid, Is.False);
         }
@@ -73,7 +73,7 @@
                 config.WithAction(action =>
                     action.WithCommand("some command")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.Command, Is.EqualTo("some command"));
         }
@@ -85,7 +85,7 @@
                             config.WithAction(action =>
                                 action.WithCommand("some command")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.IsValid, Is.False);
         }
@@ -97,7 +97,7 @@
                 config.WithAction(action =>
                     action.WithCommand("some command")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.Shell, Is.EqualTo(Shell.PowerShell));
         }
@@ -109,8 +109,7 @@
                 config.WithAction(action =>
                     action.TriggersOn("save")));
 
-            var configuration = this.Parser.Parse("", input).Single();
-
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.Trigger, Is.EqualTo(Trigger.Save));
         }
@@ -122,7 +121,7 @@
                 config.WithAction(action =>
                 { }));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
 
             Assert.That(configuration.Trigger, Is.EqualTo(Trigger.Unknown));
@@ -135,7 +134,7 @@
                 config.WithAction(action =>
                     action.TriggersOn("never")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
 
             Assert.That(configuration.Trigger, Is.EqualTo(Trigger.Unknown));
@@ -148,7 +147,7 @@
                 config.WithAction(action =>
                     action.ForFilesMatching("*.ext")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.Glob, Is.EqualTo("*.ext"));
         }
@@ -161,7 +160,7 @@
                 config.WithAction(action =>
                     action.WithScope(configValue)));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.Scope, Is.EqualTo(parsedValue));
         }
@@ -173,7 +172,7 @@
                 config.WithAction(action =>
                     action.WithScope("invalid scope")));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.Scope, Is.EqualTo(CommandScope.Project));
         }
@@ -183,7 +182,7 @@
         {
             var input = this.CreateConfig(config => config.WithAction(_ => { }));
 
-            var configuration = this.Parser.Parse("", input).Single();
+            var configuration = this.Parser.Parse("", "", input).Single();
 
             Assert.That(configuration.Scope, Is.EqualTo(CommandScope.Project));
         }

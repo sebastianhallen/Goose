@@ -7,27 +7,22 @@
         public string RelativeWorkingDirectory { get; private set; }
         public string Command { get; private set; }
         public string ProjectRoot { get; private set; }
+        public string SolutionRoot { get; private set; }
         public string Glob { get; private set; }
         public CommandScope Scope { get; private set; }
 
         public Shell Shell
         {
             get { return Shell.PowerShell; }
-        }        
-
-        public ActionConfiguration(string projectPath)
-        {
-            this.ProjectRoot = projectPath;
-            this.Trigger = Trigger.Unknown;
-            this.Glob = "*.less";
         }
 
-        public ActionConfiguration(Trigger trigger, string glob, string workingDirectory, string command, string projectRoot, CommandScope scope)
+        public ActionConfiguration(Trigger trigger, string glob, string workingDirectory, string command, string solutionRoot, string projectRoot, CommandScope scope)
         {
             this.Trigger = trigger;
             this.Glob = glob;
             this.RelativeWorkingDirectory = workingDirectory;
             this.Command = command;
+            this.SolutionRoot = solutionRoot;
             this.ProjectRoot = projectRoot;
             this.Scope = scope;
         }
