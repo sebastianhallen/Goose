@@ -150,6 +150,7 @@
     <Compile Include="Core\Action\PowerShell\PowerShellGooseAction.cs" />
     <Compile Include="Core\Action\PowerShell\PowerShellTaskFactory.cs" />
     <Compile Include="Core\Action\ShellCommand.cs" />
+    <Compile Include="Core\Configuration\ActionConfigurationBuilder.cs" />
     <Compile Include="Core\Configuration\ActionConfigurationParser.cs" />
     <Compile Include="Core\Configuration\ActionConfiguration.cs" />
     <Compile Include="Core\Configuration\MultipleActionsConfigurationParser.cs" />

@@ -54,7 +54,11 @@
                 scopeValue = CommandScope.Project;
             }
 
-            return new ActionConfiguration(triggerValue, glob, workingDirectory, command, this.projectRoot, scopeValue);
+            return new ActionConfigurationBuilder()
+                .ForProjectIn(this.projectRoot)
+                .On(triggerValue).FilesMatching(glob).Run(command).WithScope(scopeValue)
+                .In(workingDirectory)
+            .Build();           
         }
     }
 }
