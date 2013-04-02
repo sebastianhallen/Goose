@@ -4,25 +4,74 @@
 	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 	using System.Linq;
+	using Microsoft.VisualStudio.Shell;
 	using Microsoft.VisualStudio.Shell.Interop;
 
-	public class OutputService
+    public class GooseErrorListProvider
+        : ErrorListProvider
+    {
+        public GooseErrorListProvider(IServiceProvider provider)
+            : base(provider)
+        {
+        }
+
+        public void ShowErrors(IEnumerable<CommandOutputItem> errors)
+        {
+            //this.ClearExisting();
+            foreach (var error in errors)
+            {
+                this.Tasks.Add(
+                    new GooseErrorTask(
+                        error.Message,
+                        error.FullPath ?? error.FileName ?? "", 
+                        (int) error.Line)
+                );
+            }
+        }
+
+        private void ClearExisting()
+        {
+            var gooseErrors = this.Tasks.OfType<GooseErrorTask>().ToArray();
+
+            foreach (var gooseError in gooseErrors)
+            {
+                this.Tasks.Remove(gooseError);
+            }
+        }
+
+        private class GooseErrorTask
+            : ErrorTask
+        {
+            public GooseErrorTask(string message, string file, int line)
+            {
+                this.ErrorCategory = TaskErrorCategory.Error;
+                this.Text = message;
+                this.Document = file;
+                this.Line = line;
+            }
+
+        }
+    }
+
+    public class OutputService
 		: IOutputService
 	{
 		private readonly IVsOutputWindow outputWindow;
         private readonly ConcurrentDictionary<string, Guid> panes = new ConcurrentDictionary<string, Guid>();
+        private GooseErrorListProvider errorTaskProvider;
 
-		public OutputService(IServiceProvider serviceProvider)
+        public OutputService(IServiceProvider serviceProvider)
 		{
 			this.outputWindow = serviceProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
+		    this.errorTaskProvider = new GooseErrorListProvider(serviceProvider);
 		}
 
 		public void Handle(CommandOutput output)
 		{
 			if (output.Version == 1)
 			{                
-                this.HandleErrors(output.Name, output.Results.Where(result => CommandOutputItemType.Error.Equals(result.Type)));
-                this.HandleMessages(output.Name, output.Time, output.Results.Where(result => CommandOutputItemType.Message.Equals(result.Type)));
+                this.HandleErrors(output.Name, output.Results.Where(result => CommandOutputItemType.Error.Equals(result.Type)));    
+                this.HandleMessages(output.Name, output.Time, output.Results.Where(result => CommandOutputItemType.Message.Equals(result.Type)));			  
 			}
 		}
 
@@ -56,6 +105,10 @@
 
 	    private void HandleErrors(string panel, IEnumerable<CommandOutputItem> errors)
 	    {
+            this.errorTaskProvider.ShowErrors(errors);
+            return;
+	        
+
             var errorPane = this.GetOrAddPane(panel);
 	        if (errorPane == null) return;
 
