@@ -24,7 +24,7 @@
 
             var output = this.commandRunner.RunCommand(command);
 
-            Assert.That(output.Contains("Goose.dll"));
+            Assert.That(output.Result.Contains("Goose.dll"));
         }
 
         [Test]
@@ -34,7 +34,7 @@
 
             var output = this.commandRunner.RunCommand(command);
 
-            Assert.That(output, Is.EqualTo("some output"));
+            Assert.That(output.Output, Is.EqualTo("some output"));
         }
 
         private ShellCommand CreateCommand(string command)

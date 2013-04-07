@@ -2,6 +2,6 @@
 {
     public interface IShellCommandRunner
     {
-        string RunCommand(ShellCommand command);
+        CommandResult RunCommand(ShellCommand command);
     }
 }

@@ -9,8 +9,8 @@
 
     public class PowerShellCommandRunner
         : IShellCommandRunner
-    {       
-        public string RunCommand(ShellCommand command)
+    {
+        public CommandResult RunCommand(ShellCommand command)
         {
             var host = new GoosePSHost();
             var results = new List<string>();
@@ -38,25 +38,12 @@
             return BuildOutput(results, host);
         }
 
-        private static string BuildOutput(IEnumerable<string> results, GoosePSHost host)
+        private static CommandResult BuildOutput(IEnumerable<string> results, GoosePSHost host)
         {
-            var output = string.Join(Environment.NewLine, results);
-            if (string.IsNullOrWhiteSpace(output))
-            {
-                output = string.Join(Environment.NewLine, host.Output);
-            }
-
-            if (string.IsNullOrWhiteSpace(output))
-            {
-                output = string.Join(Environment.NewLine, host.Error);
-            }
-
-            if (string.IsNullOrWhiteSpace(output))
-            {
-                output = string.Join(Environment.NewLine, host.Other);
-            }
-
-            return output.Trim();
+            var result = string.Join(Environment.NewLine, results).Trim();
+            var output = string.Join(Environment.NewLine, host.Output).Trim();
+            var errors = string.Join(Environment.NewLine, host.Error).Trim();
+            return new CommandResult(result, output, errors);           
         }
 
         private static string FormatCommandResult(PSObject psObject)

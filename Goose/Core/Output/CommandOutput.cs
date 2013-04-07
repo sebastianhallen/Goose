@@ -30,7 +30,7 @@
 
         public float Version { get; set; }
         public DateTime? Time { get; set; }
-        public IList<CommandOutputItem> Results = new List<CommandOutputItem>();        
+        public List<CommandOutputItem> Results = new List<CommandOutputItem>();        
 
         public CommandOutput()
         {

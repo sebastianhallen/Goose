@@ -1,6 +1,7 @@
 ﻿namespace Goose.Core.Action.PowerShell
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using Goose.Core.Output;
 
@@ -27,19 +28,31 @@
         {
             return new Task(() =>
                 {
-                    CommandOutput output;
+                    CommandOutput commandOutput;
                     try
                     {
                         var rawOutput = this.commandRunner.RunCommand(command);
-                        output = this.logParser.Parse(rawOutput);
+                        var result = this.logParser.Parse(rawOutput.Result);
+                        var output = this.logParser.Parse(rawOutput.Output);
+                        var errors = this.logParser.Parse(rawOutput.Error);
+
+                        commandOutput = result;
+                        commandOutput.Results.AddRange(output.Results);
+                        commandOutput.Results.AddRange(errors.Results.Select(error =>
+                            {
+                                error.Type = CommandOutputItemType.Error;
+                                return error;
+                            }));
+
                     }
                     catch (Exception ex)
                     {
-                        output = new CommandOutput("goose", "Failed to run command: " + command.Command, ex.ToString(), CommandOutputItemType.Error, ex);
+                        commandOutput = new CommandOutput("goose", "Failed to run command: " + command.Command, ex.ToString(), CommandOutputItemType.Error, ex);
                     }
-                                        
-                    this.outputService.Handle(output);    
+
+                    this.outputService.Handle(commandOutput);    
                 });
         }        
     }
+
 }

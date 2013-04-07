@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
-    using System.Management.Automation;
     using System.Management.Automation.Host;
 
     internal class GoosePSHost
@@ -84,26 +83,6 @@
         public override CultureInfo CurrentUICulture
         {
             get { return this.uiCulture; }
-        }
-    }
-
-    internal class PowerShellResult
-    {
-        public IEnumerable<string> Output { get; private set; }
-        public IEnumerable<string> Error { get; private set; }
-        public IEnumerable<string> Other { get; private set; }
-
-        public PowerShellResult(IEnumerable<string> output, IEnumerable<string> error, IEnumerable<string> other)
-        {
-            this.Output = output;
-            this.Error = error;
-            this.Other = other;
-
-        }
-
-        public override string ToString()
-        {
-            return string.Join(Environment.NewLine, this.Output);
         }
     }
 }

@@ -143,6 +143,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Core\Action\CommandEvironmentVariables.cs" />
+    <Compile Include="Core\Action\PowerShell\CommandResult.cs" />
     <Compile Include="Core\Action\PowerShell\Host\GoosePSHost.cs" />
     <Compile Include="Core\Action\PowerShell\Host\GoosePSHostRawUserInterface.cs" />
     <Compile Include="Core\Action\PowerShell\Host\GoosePSHostUserInterface.cs" />
