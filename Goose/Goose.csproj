@@ -143,11 +143,16 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Core\Action\CommandEvironmentVariables.cs" />
+    <Compile Include="Core\Action\PowerShell\Host\GoosePSHost.cs" />
+    <Compile Include="Core\Action\PowerShell\Host\GoosePSHostRawUserInterface.cs" />
+    <Compile Include="Core\Action\PowerShell\Host\GoosePSHostUserInterface.cs" />
+    <Compile Include="Core\Action\PowerShell\IShellCommandRunner.cs" />
     <Compile Include="Core\Action\PowerShell\PowerShellCommandBuilder.cs" />
     <Compile Include="Core\Action\PowerShell\PowerShellGooseActionFactory.cs" />
     <Compile Include="Core\Action\IShellCommandBuilder.cs" />
     <Compile Include="Core\Action\PowerShell\IPowerShellTaskFactory.cs" />
     <Compile Include="Core\Action\PowerShell\PowerShellGooseAction.cs" />
+    <Compile Include="Core\Action\PowerShell\PowerShellCommandRunner.cs" />
     <Compile Include="Core\Action\PowerShell\PowerShellTaskFactory.cs" />
     <Compile Include="Core\Action\ShellCommand.cs" />
     <Compile Include="Core\Configuration\ActionConfigurationBuilder.cs" />

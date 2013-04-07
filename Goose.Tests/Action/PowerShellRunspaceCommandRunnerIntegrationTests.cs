@@ -6,36 +6,15 @@
     using System.IO;
     using System.Reflection;
 
-    [TestFixture, Explicit]
-    public class PowerShellRunspaceCommandRunnerIntegrationTests
-        : ShellCommandRunnerIntegrationTests
-    {
-        protected override IShellCommandRunner CreateCommandRunner()
-        {
-            return new PowerShellRunspaceCommandRunner();
-        }
-    }
-
-    [TestFixture, Ignore]
-    public class PowerShellPSCommandRunnerIntegrationTests
-        : ShellCommandRunnerIntegrationTests
-    {
-        protected override IShellCommandRunner CreateCommandRunner()
-        {
-            return new PowerShellPSCommandRunner();
-        }
-    }
-
     [TestFixture]
-    public abstract class ShellCommandRunnerIntegrationTests
-    {
-        protected abstract IShellCommandRunner CreateCommandRunner();
+    public class PowerShellRunspaceCommandRunnerIntegrationTests
+    {        
         private IShellCommandRunner commandRunner;
 
         [SetUp]
         public void Before()
         {
-            this.commandRunner = this.CreateCommandRunner();
+            this.commandRunner = new PowerShellCommandRunner();
         }
 
         [Test]
@@ -45,7 +24,17 @@
 
             var output = this.commandRunner.RunCommand(command);
 
-            Assert.That(string.IsNullOrWhiteSpace(output), Is.False);
+            Assert.That(output.Contains("Goose.dll"));
+        }
+
+        [Test]
+        public void Should_be_able_to_run_commands_that_require_a_host()
+        {
+            var command = this.CreateCommand(@"write-host ""some output""");
+
+            var output = this.commandRunner.RunCommand(command);
+
+            Assert.That(output, Is.EqualTo("some output"));
         }
 
         private ShellCommand CreateCommand(string command)

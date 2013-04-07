@@ -30,14 +30,14 @@
 
         public float Version { get; set; }
         public DateTime? Time { get; set; }
-        public IList<CommandOutputItem> Results = new List<CommandOutputItem>();
+        public IList<CommandOutputItem> Results = new List<CommandOutputItem>();        
 
         public CommandOutput()
         {
 
         }
 
-        public CommandOutput(string name, string message, string excerpt, CommandOutputItemType type)
+        public CommandOutput(string name, string message, string excerpt, CommandOutputItemType type, Exception exception = null)
         {
             this.Name = name;
             this.Results = new List<CommandOutputItem>
@@ -46,11 +46,12 @@
                                {
                                    Message = message,
                                    Excerpt = excerpt,
-                                   Type = type
+                                   Type = type,
+                                   Exception = exception
                                }
                            };
             this.Version = 1;
-            this.Time = DateTime.Now;        
+            this.Time = DateTime.Now;            
         }
     }
 }

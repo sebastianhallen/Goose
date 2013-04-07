@@ -29,7 +29,12 @@
             this.ClearExisting();
             foreach (var error in errors)
             {
-                var taskError = this.errorTaskFactory.Create(error.Message, error.FullPath ?? error.FileName ?? "", (int)error.Line, 0);
+                var taskError = this.errorTaskFactory.Create(
+                    error.Message, 
+                    error.FullPath ?? error.FileName ?? "", 
+                    (int)error.Line, 
+                    0,
+                    error.Exception);
                 this.Tasks.Add(taskError);                                    
             }
         }
@@ -65,16 +70,16 @@
             this.errorListProvider = errorListProvider;
         }
 
-        public ErrorTask Create(string message, string file, int line, int column)
+        public ErrorTask Create(string message, string file, int line, int column, Exception exception)
         {            
-            var error = new ErrorTask
+            var error = new ErrorTask(exception)
             {
                 CanDelete = true,
                 Column = column - 1,
                 Line = line - 1,
                 Document = file,
                 HierarchyItem = this.FindHierarchyItem(file),
-                Text = message
+                Text = message,
             };
 
             error.Navigate += (s, a) =>

@@ -1,6 +1,8 @@
 ﻿namespace Goose.Core.Output
 {
-	public class CommandOutputItem
+    using System;
+
+    public class CommandOutputItem
 	{
 		public CommandOutputItemType Type = CommandOutputItemType.None;
 		public string Message = null;
@@ -8,6 +10,7 @@
 		public string FullPath = null;
 		public uint Line = 0;
 		public string Excerpt = null;
+	    public Exception Exception = null;
 
         public override string ToString()
         {
