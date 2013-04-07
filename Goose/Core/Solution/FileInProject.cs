@@ -7,7 +7,7 @@
         public uint ItemId { get; private set; }
 
         public FileInProject(string projectPath, string filePath, uint itemId)
-        {
+        {            
             this.ProjectPath = projectPath;
             this.FilePath = filePath;
             this.ItemId = itemId;

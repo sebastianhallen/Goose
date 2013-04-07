@@ -4,52 +4,76 @@
 	using System.Collections.Concurrent;
 	using System.Collections.Generic;
 	using System.Linq;
+	using Goose.Core.Solution;
 	using Microsoft.VisualStudio.Shell;
 	using Microsoft.VisualStudio.Shell.Interop;
 
     public class GooseErrorListProvider
         : ErrorListProvider
     {
-        public GooseErrorListProvider(IServiceProvider provider)
+        private readonly ErrorTaskFactory errorTaskFactory;
+        
+        public GooseErrorListProvider(IServiceProvider provider, ErrorTaskFactory errorTaskFactory)
             : base(provider)
         {
+            this.errorTaskFactory = errorTaskFactory;
+            this.ProviderGuid = Guid.Parse("823860A6-2143-4262-93FE-70FB764F035A");
         }
 
         public void ShowErrors(IEnumerable<CommandOutputItem> errors)
-        {
+        {            
             //this.ClearExisting();
             foreach (var error in errors)
             {
-                this.Tasks.Add(
-                    new GooseErrorTask(
-                        error.Message,
-                        error.FullPath ?? error.FileName ?? "", 
-                        (int) error.Line)
-                );
+                var taskError = this.errorTaskFactory.Create(error.Message, error.FullPath ?? error.FileName ?? "", (int)error.Line, 0);
+                this.Tasks.Add(taskError);                                    
             }
         }
 
         private void ClearExisting()
         {
-            var gooseErrors = this.Tasks.OfType<GooseErrorTask>().ToArray();
+            var errors = this.Tasks.OfType<ErrorTask>().ToArray();
 
-            foreach (var gooseError in gooseErrors)
+            foreach (var error in errors)
             {
-                this.Tasks.Remove(gooseError);
+                this.Tasks.Remove(error);
             }
+        }                
+    }
+
+    public class ErrorTaskFactory
+    {
+        private readonly ISolutionFilesService solutionFiles;
+
+        public ErrorTaskFactory(ISolutionFilesService solutionFiles)
+        {
+            this.solutionFiles = solutionFiles;
         }
 
-        private class GooseErrorTask
-            : ErrorTask
+        public ErrorTask Create(string message, string file, int line, int column)
         {
-            public GooseErrorTask(string message, string file, int line)
+            return new ErrorTask
             {
-                this.ErrorCategory = TaskErrorCategory.Error;
-                this.Text = message;
-                this.Document = file;
-                this.Line = line;
-            }
+                CanDelete = true,
+                Column = column - 1,
+                Line = line - 1,
+                Document = file,
+                HierarchyItem = this.FindHierarchyItem(file),
+                Text = message
+            };
+        }
 
+        private IVsHierarchy FindHierarchyItem(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath)) return null;
+
+            var project = this.solutionFiles.Projects
+                                .FirstOrDefault(prj => prj.Files
+                                    .Any(file => file.FilePath.Equals(filePath)));
+
+            return project == null
+                       ? null
+                       : project.Hierarchy;
         }
     }
 
@@ -60,10 +84,10 @@
         private readonly ConcurrentDictionary<string, Guid> panes = new ConcurrentDictionary<string, Guid>();
         private GooseErrorListProvider errorTaskProvider;
 
-        public OutputService(IServiceProvider serviceProvider)
+        public OutputService(IServiceProvider serviceProvider, ISolutionFilesService solutionFilesService)
 		{
 			this.outputWindow = serviceProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-		    this.errorTaskProvider = new GooseErrorListProvider(serviceProvider);
+		    this.errorTaskProvider = new GooseErrorListProvider(serviceProvider, new ErrorTaskFactory(solutionFilesService));
 		}
 
 		public void Handle(CommandOutput output)

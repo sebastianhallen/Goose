@@ -1,20 +1,22 @@
 ﻿namespace Goose.Core.Solution
 {
+    using Microsoft.VisualStudio;
+    using Microsoft.VisualStudio.Shell.Interop;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Debugging;
-    using Microsoft.VisualStudio;
-    using Microsoft.VisualStudio.Shell.Interop;
-    using Output;
 
     public class SolutionProject 
         : ISolutionProject
     {
         private IVsSolution vsSolution;
         private readonly IVsProject vsProject;
-        private readonly IOutputService outputService;
+
+        public IVsHierarchy Hierarchy
+        {
+            get { return this.vsProject as IVsHierarchy; }
+        }
 
         public string SolutionFilePath
         {
@@ -45,15 +47,14 @@
             {
                 var projectPath = this.ProjectFilePath;
                 if ( string.IsNullOrWhiteSpace( projectPath ) )
-                {
-                    this.outputService.Debug<SolutionProject>("project path empty in Files { get; }");
+                {                    
                     return Enumerable.Empty<FileInProject>();
                 }
-                var hierarchy = this.vsProject as IVsHierarchy;
-
-                return hierarchy.GetItemIds().Select(itemId =>
+                
+                return this.Hierarchy.GetItemIds().Select(itemId =>
                     {
                         string filePath = null;
+                        
                         this.vsProject.GetMkDocument(itemId, out filePath);
                         if (!String.IsNullOrEmpty(filePath) && !Path.IsPathRooted(filePath))
                         {
@@ -61,16 +62,16 @@
                         }
                         return new FileInProject(projectPath, filePath, itemId);
                     })
-                                .Where(file => !String.IsNullOrEmpty(file.ProjectPath))
-                                .Where(file => File.Exists(file.FilePath));
+                    .Where(file => !String.IsNullOrEmpty(file.FilePath))
+                    .Where(file => !String.IsNullOrEmpty(file.ProjectPath))
+                    .Where(file => File.Exists(file.FilePath));
             }
         }
 
-        public SolutionProject(IVsSolution vsSolution, IVsProject vsProject, IOutputService outputService)
+        public SolutionProject(IVsSolution vsSolution, IVsProject vsProject)
         {
             this.vsSolution = vsSolution;
-            this.vsProject = vsProject;
-            this.outputService = outputService;
+            this.vsProject = vsProject;            
         }
     }
 }

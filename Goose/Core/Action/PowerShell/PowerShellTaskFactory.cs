@@ -117,45 +117,7 @@
                                         
                     this.outputService.Handle(output);    
                 });
-        }
-
-        private CommandOutput RunPowerShellCommand(ShellCommand command)
-        {
-            var output = new StringBuilder();
-            var errors = new List<Object>();
-            try
-            {                
-                using (var runspace = RunspaceFactory.CreateRunspace(/*new GoosePSHost()*/))
-                {
-                    var setWorkingDirectory = new Command("set-location");
-                    setWorkingDirectory.Parameters.Add("path", command.WorkingDirectory);
-                    
-                    var payloadCommand = new Command(command.Command, isScript: true);
-                    var redirectOutput = new Command("out-string");
-                    
-                    runspace.Open();
-                    var pipeline = runspace.CreatePipeline();
-                    pipeline.Commands.Add(setWorkingDirectory);
-                    pipeline.Commands.Add(payloadCommand);
-                    pipeline.Commands.Add(redirectOutput);
-
-                    foreach (var result in pipeline.Invoke())
-                    {
-                        errors.AddRange(pipeline.Error.ReadToEnd());
-                        output.AppendFormat("{0}", result);
-                        System.Diagnostics.Debug.WriteLine(result);
-                    }
-
-                    runspace.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                return new CommandOutput("goose", "Failed to run compile command", ex.ToString(), CommandOutputItemType.Error);
-            }
-
-            return this.logParser.Parse(output.ToString());
-        }
+        }        
     }
 
     internal class GoosePSHost

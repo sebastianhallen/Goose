@@ -1,6 +1,5 @@
 ﻿namespace Goose
-{
-    using System;
+{    
     using System.Runtime.InteropServices;
     using Core.Output;
     using Core.Solution;
@@ -16,6 +15,7 @@
 	public sealed class GoosePackage
         : Package
     {
+        private ISolutionFilesService solutionFilesService;
         private IVsFileChangeEx fileChangeService;
         private IOutputService outputService;
         private SolutionEventListener solutionEventListener;
@@ -36,11 +36,13 @@
 
         protected override void Initialize()
 		{
-            this.outputService = this.outputService ?? new OutputService(this);
+            var solution = (IVsSolution)this.GetService(typeof(SVsSolution));
+
+            this.solutionFilesService = new SolutionFilesService(solution);
+            this.outputService = this.outputService ?? new OutputService(this, this.solutionFilesService);
 			this.fileChangeService = this.fileChangeService ?? (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
-            
-            var solution = (IVsSolution) this.GetService(typeof (SVsSolution));
-            var fileEventListenerFactory = new DefaultFileEventListenerFactory(solution, this.fileChangeService, this.outputService);
+
+            var fileEventListenerFactory = new DefaultFileEventListenerFactory(solutionFilesService, this.fileChangeService, this.outputService);
             this.solutionEventListener = this.solutionEventListener ?? new SolutionEventListener(solution, fileEventListenerFactory, this.outputService);
             base.Initialize();
 		}

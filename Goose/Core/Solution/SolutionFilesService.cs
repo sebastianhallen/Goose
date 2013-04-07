@@ -9,22 +9,20 @@
 
     public class SolutionFilesService 
         : ISolutionFilesService
-    {
-        private readonly IOutputService outputService;
+    {        
         private readonly IVsSolution solution;
 
 
-        public SolutionFilesService(IVsSolution solution, IOutputService outputService)
+        public SolutionFilesService(IVsSolution solution)
         {
             this.solution = solution;
-            this.outputService = outputService;
         }
 
         public IEnumerable<ISolutionProject> Projects
         {
             get
             {
-                return ExtractProjectsFromSolution().Select(project => new SolutionProject(this.solution, project, this.outputService)).ToArray();
+                return ExtractProjectsFromSolution().Select(project => new SolutionProject(this.solution, project)).ToArray();
             }            
             
         }

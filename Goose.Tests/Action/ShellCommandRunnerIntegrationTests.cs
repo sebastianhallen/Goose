@@ -1,15 +1,10 @@
 ﻿namespace Goose.Tests.Action
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;
     using Goose.Core.Action;
     using Goose.Core.Action.PowerShell;
     using NUnit.Framework;
+    using System.IO;
+    using System.Reflection;
 
     [TestFixture, Explicit]
     public class PowerShellRunspaceCommandRunnerIntegrationTests

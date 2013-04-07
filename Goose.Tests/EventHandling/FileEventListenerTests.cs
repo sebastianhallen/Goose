@@ -1,16 +1,14 @@
 ﻿namespace Goose.Tests.EventHandling
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using Core.Action;
-    using Core.Dispatcher;
     using FakeItEasy;
     using Goose.Core.Configuration;
     using Goose.Core.Solution;
     using Goose.Core.Solution.EventHandling;
     using Microsoft.VisualStudio.Shell.Interop;
     using NUnit.Framework;
+    using System.Collections.Generic;
+    using System.Linq;
 
     [TestFixture]
     public class FileEventListenerTests
@@ -18,8 +16,7 @@
         [UnderTest] private FileEventListener eventListener;
         [Fake] private ISolutionFilesService solutionFilesService;
         [Fake] private IFileMonitor fileMonitor;
-        [Fake] private IGooseActionFactory actionFactory;
-        [Fake] private IOnChangeTaskDispatcher taskDispatcher;
+        [Fake] private IGooseActionFactory actionFactory;        
         [Fake] private IFileChangeSubscriber fileChangeSubscriber;        
         
         [SetUp]
