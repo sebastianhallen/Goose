@@ -10,19 +10,23 @@
 
     public class GooseErrorListProvider
         : ErrorListProvider
-    {
+    {        
         private readonly ErrorTaskFactory errorTaskFactory;
-        
-        public GooseErrorListProvider(IServiceProvider provider, ErrorTaskFactory errorTaskFactory)
+        private readonly TimeSpan clearInterval = TimeSpan.FromSeconds(15); // should probably be some kind of config setting
+        private DateTime lastCleared;
+
+        public GooseErrorListProvider(IServiceProvider provider, ISolutionFilesService solutionFilesService)
             : base(provider)
-        {
-            this.errorTaskFactory = errorTaskFactory;
+        {            
+            this.lastCleared = DateTime.MinValue;
+            this.errorTaskFactory = new ErrorTaskFactory(solutionFilesService, this);
             this.ProviderGuid = Guid.Parse("823860A6-2143-4262-93FE-70FB764F035A");
+            this.ProviderName = "Goose Error Provider";
         }
 
         public void ShowErrors(IEnumerable<CommandOutputItem> errors)
         {            
-            //this.ClearExisting();
+            this.ClearExisting();
             foreach (var error in errors)
             {
                 var taskError = this.errorTaskFactory.Create(error.Message, error.FullPath ?? error.FileName ?? "", (int)error.Line, 0);
@@ -32,27 +36,38 @@
 
         private void ClearExisting()
         {
-            var errors = this.Tasks.OfType<ErrorTask>().ToArray();
-
-            foreach (var error in errors)
+            if (this.ShouldClear())
             {
-                this.Tasks.Remove(error);
-            }
-        }                
+                var errors = this.Tasks.OfType<ErrorTask>().ToArray();
+                foreach (var error in errors)
+                {
+                    this.Tasks.Remove(error);
+                }
+
+                this.lastCleared = DateTime.UtcNow;
+            }                        
+        }
+
+        private bool ShouldClear()
+        {
+            return DateTime.UtcNow - this.lastCleared > this.clearInterval;
+        }
     }
 
     public class ErrorTaskFactory
     {
         private readonly ISolutionFilesService solutionFiles;
+        private readonly ErrorListProvider errorListProvider;
 
-        public ErrorTaskFactory(ISolutionFilesService solutionFiles)
+        public ErrorTaskFactory(ISolutionFilesService solutionFiles, ErrorListProvider errorListProvider)
         {
             this.solutionFiles = solutionFiles;
+            this.errorListProvider = errorListProvider;
         }
 
         public ErrorTask Create(string message, string file, int line, int column)
-        {
-            return new ErrorTask
+        {            
+            var error = new ErrorTask
             {
                 CanDelete = true,
                 Column = column - 1,
@@ -61,6 +76,13 @@
                 HierarchyItem = this.FindHierarchyItem(file),
                 Text = message
             };
+
+            error.Navigate += (s, a) =>
+                {
+                    var task = (ErrorTask) s;
+                    this.errorListProvider.Navigate(task, new Guid(EnvDTE.Constants.vsViewKindCode));
+                };
+            return error;
         }
 
         private IVsHierarchy FindHierarchyItem(string filePath)
@@ -87,7 +109,7 @@
         public OutputService(IServiceProvider serviceProvider, ISolutionFilesService solutionFilesService)
 		{
 			this.outputWindow = serviceProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-		    this.errorTaskProvider = new GooseErrorListProvider(serviceProvider, new ErrorTaskFactory(solutionFilesService));
+            this.errorTaskProvider = new GooseErrorListProvider(serviceProvider, solutionFilesService);
 		}
 
 		public void Handle(CommandOutput output)

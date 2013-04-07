@@ -302,8 +302,16 @@
             
         }
 
-        public override ConsoleColor ForegroundColor { get; set; }
-        public override ConsoleColor BackgroundColor { get; set; }
+        public override ConsoleColor ForegroundColor
+        {
+            get { return ConsoleColor.White; }
+            set { }
+        }
+        public override ConsoleColor BackgroundColor
+        {
+            get { return ConsoleColor.Black; }
+            set { }
+        }
         public override Coordinates CursorPosition { get; set; }
         public override Coordinates WindowPosition { get; set; }
         public override int CursorSize { get; set; }
