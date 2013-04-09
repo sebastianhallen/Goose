@@ -168,6 +168,7 @@
     <Compile Include="Core\Action\IGooseAction.cs" />
     <Compile Include="Core\Action\IGooseActionFactory.cs" />
     <Compile Include="Core\Dispatcher\SynchronousOnChangeTaskDispatcher.cs" />
+    <Compile Include="Core\Output\CommandErrorReporter.cs" />
     <Compile Include="Core\Output\IOutputService.cs" />
     <Compile Include="Core\Solution\EventHandling\FileEventListener.cs" />
     <Compile Include="Core\Output\ICommandLogParser.cs" />
