@@ -17,7 +17,7 @@
         {
             if (string.IsNullOrWhiteSpace(buildLog))
             {
-                return new CommandOutput("goose", "on save command completed without any output", "", CommandOutputItemType.Message);
+                return new CommandOutput();
             }
 
             CommandOutput result;

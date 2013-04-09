@@ -33,8 +33,7 @@
                     error.Message, 
                     error.FullPath ?? error.FileName ?? "", 
                     (int)error.Line, 
-                    0,
-                    error.Exception);
+                    0);
                 this.Tasks.Add(taskError);                                    
             }
         }
@@ -70,13 +69,13 @@
             this.errorListProvider = errorListProvider;
         }
 
-        public ErrorTask Create(string message, string file, int line, int column, Exception exception)
+        public ErrorTask Create(string message, string file, int line, int column)
         {            
-            var error = new ErrorTask(exception)
+            var error = new ErrorTask
             {
                 CanDelete = true,
-                Column = column - 1,
-                Line = line - 1,
+                Column = column,
+                Line = line,
                 Document = file,
                 HierarchyItem = this.FindHierarchyItem(file),
                 Text = message,

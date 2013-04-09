@@ -47,7 +47,7 @@
                     }
                     catch (Exception ex)
                     {
-                        commandOutput = new CommandOutput("goose", "Failed to run command: " + command.Command, ex.ToString(), CommandOutputItemType.Error, ex);
+                        commandOutput = new CommandOutput("goose", "Failed to run command: " + command.Command, ex.ToString(), CommandOutputItemType.Error);
                     }
 
                     this.outputService.Handle(commandOutput);    

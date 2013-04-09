@@ -37,7 +37,7 @@
 
         }
 
-        public CommandOutput(string name, string message, string excerpt, CommandOutputItemType type, Exception exception = null)
+        public CommandOutput(string name, string message, string excerpt, CommandOutputItemType type)
         {
             this.Name = name;
             this.Results = new List<CommandOutputItem>
@@ -46,8 +46,7 @@
                                {
                                    Message = message,
                                    Excerpt = excerpt,
-                                   Type = type,
-                                   Exception = exception
+                                   Type = type
                                }
                            };
             this.Version = 1;

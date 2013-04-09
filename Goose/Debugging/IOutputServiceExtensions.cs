@@ -5,11 +5,11 @@
 
     public static class OutputServiceExtensions
     {
-        public static void Debug<T>(this IOutputService outputService, string message, Exception exception = null)
+        public static void Debug<T>(this IOutputService outputService, string message)
         {
 #if DEBUG
             var typedMessage = string.Format("{0}: {1}", typeof(T), message);
-            var output = new CommandOutput("goose", typedMessage, "", CommandOutputItemType.Message, exception);
+            var output = new CommandOutput("goose", typedMessage, "", CommandOutputItemType.Message);
             outputService.Handle(output);
 #endif
    
