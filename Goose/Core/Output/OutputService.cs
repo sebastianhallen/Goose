@@ -120,7 +120,7 @@
 		{
 			if (output.Version == 1)
 			{                
-                this.HandleErrors(output.Name, output.Results.Where(result => CommandOutputItemType.Error.Equals(result.Type)));    
+                //this.HandleErrors(output.Name, output.Results.Where(result => CommandOutputItemType.Error.Equals(result.Type)));    
                 this.HandleMessages(output.Name, output.Time, output.Results.Where(result => CommandOutputItemType.Message.Equals(result.Type)));			  
 			}
 		}

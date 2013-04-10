@@ -18,6 +18,7 @@
         private ISolutionFilesService solutionFilesService;
         private IVsFileChangeEx fileChangeService;
         private IOutputService outputService;
+        private ICommandErrorReporter errorReporter;
         private SolutionEventListener solutionEventListener;
 
         protected override void Dispose(bool disposing)
@@ -41,8 +42,8 @@
             this.solutionFilesService = new SolutionFilesService(solution);
             this.outputService = this.outputService ?? new OutputService(this, this.solutionFilesService);
 			this.fileChangeService = this.fileChangeService ?? (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
-
-            var fileEventListenerFactory = new DefaultFileEventListenerFactory(solutionFilesService, this.fileChangeService, this.outputService);
+            this.errorReporter = new CommandErrorReporter(new GooseErrorTaskHandler(new GooseErrorListProviderFacade(this, this.solutionFilesService)), new JsonCommandLogParser());
+            var fileEventListenerFactory = new DefaultFileEventListenerFactory(solutionFilesService, this.fileChangeService, this.outputService, errorReporter);
             this.solutionEventListener = this.solutionEventListener ?? new SolutionEventListener(solution, fileEventListenerFactory, this.outputService);
             base.Initialize();
 		}

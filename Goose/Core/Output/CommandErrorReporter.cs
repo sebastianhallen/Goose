@@ -5,7 +5,7 @@
     using Goose.Core.Action;
     using Goose.Core.Action.PowerShell;
     using Microsoft.VisualStudio.Shell;
-    
+
     public class CommandErrorReporter : ICommandErrorReporter
     {
         private readonly IErrorTaskHandler errorTaskHandler;

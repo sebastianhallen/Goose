@@ -9,17 +9,19 @@
         : IPowerShellTaskFactory
     {
         private readonly IOutputService outputService;
+        private readonly ICommandErrorReporter errorReporter;
         private readonly ICommandLogParser logParser;
         private readonly IShellCommandRunner commandRunner;
 
-        public PowerShellTaskFactory(IOutputService outputService, ICommandLogParser logParser)
-            : this(outputService, logParser, new PowerShellCommandRunner())
+        public PowerShellTaskFactory(IOutputService outputService, ICommandErrorReporter errorReporter, ICommandLogParser logParser)
+            : this(outputService, errorReporter, logParser, new PowerShellCommandRunner())
         {
         }
 
-        public PowerShellTaskFactory(IOutputService outputService, ICommandLogParser logParser, IShellCommandRunner commandRunner)
+        public PowerShellTaskFactory(IOutputService outputService, ICommandErrorReporter errorReporter, ICommandLogParser logParser, IShellCommandRunner commandRunner)
         {
             this.outputService = outputService;
+            this.errorReporter = errorReporter;
             this.logParser = logParser;
             this.commandRunner = commandRunner;
         }
@@ -29,16 +31,17 @@
             return new Task(() =>
                 {
                     CommandOutput commandOutput;
+                    CommandResult output = null;
                     try
                     {
-                        var rawOutput = this.commandRunner.RunCommand(command);
-                        var result = this.logParser.Parse(rawOutput.Result);
-                        var output = this.logParser.Parse(rawOutput.Output);
-                        var errors = this.logParser.Parse(rawOutput.Error);
+                        output = this.commandRunner.RunCommand(command);
+                        var resultLog = this.logParser.Parse(output.Result);
+                        var outputLog = this.logParser.Parse(output.Output);
+                        var errorLog = this.logParser.Parse(output.Error);
 
-                        commandOutput = result;
-                        commandOutput.Results.AddRange(output.Results);
-                        commandOutput.Results.AddRange(errors.Results.Select(error =>
+                        commandOutput = resultLog;
+                        commandOutput.Results.AddRange(outputLog.Results);
+                        commandOutput.Results.AddRange(errorLog.Results.Select(error =>
                             {
                                 error.Type = CommandOutputItemType.Error;
                                 return error;
@@ -49,7 +52,11 @@
                     {
                         commandOutput = new CommandOutput("goose", "Failed to run command: " + command.Command, ex.ToString(), CommandOutputItemType.Error);
                     }
-
+                    if (output != null)
+                    {
+                        this.errorReporter.Report(command, output);
+                    }
+                    
                     this.outputService.Handle(commandOutput);    
                 });
         }        

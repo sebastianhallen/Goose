@@ -172,6 +172,7 @@
     <Compile Include="Core\Output\GooseErrorListProviderFacade.cs" />
     <Compile Include="Core\Output\GooseErrorTask.cs" />
     <Compile Include="Core\Output\GooseErrorTaskHandler.cs" />
+    <Compile Include="Core\Output\ICommandErrorReporter.cs" />
     <Compile Include="Core\Output\IErrorListProviderFacade.cs" />
     <Compile Include="Core\Output\IErrorTaskHandler.cs" />
     <Compile Include="Core\Output\IGooseErrorTask.cs" />

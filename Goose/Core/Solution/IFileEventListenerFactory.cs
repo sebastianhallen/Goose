@@ -24,7 +24,7 @@
         private readonly IOnChangeTaskDispatcher onChangeTaskDispatcher;
         private readonly IGooseActionFactory actionFactory;
 
-        public DefaultFileEventListenerFactory(ISolutionFilesService solutionFilesService, IVsFileChangeEx fileChangeService, IOutputService outputService)
+        public DefaultFileEventListenerFactory(ISolutionFilesService solutionFilesService, IVsFileChangeEx fileChangeService, IOutputService outputService, ICommandErrorReporter errorReporter)
         {
             this.solutionFilesService = solutionFilesService;
             this.fileChangeService = fileChangeService;
@@ -32,7 +32,7 @@
             
             this.globMatcher = new RegexGlobMatcher();
             this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);
-            this.actionFactory = new PowerShellGooseActionFactory(new PowerShellTaskFactory(this.outputService, new JsonCommandLogParser()), new PowerShellCommandBuilder());
+            this.actionFactory = new PowerShellGooseActionFactory(new PowerShellTaskFactory(this.outputService, errorReporter, new JsonCommandLogParser()), new PowerShellCommandBuilder());
         }
 
         public FileEventListener Create(ISolutionProject project, ActionConfiguration actionConfiguration)
