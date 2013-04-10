@@ -31,7 +31,7 @@
             return new Task(() =>
                 {
                     CommandOutput commandOutput;
-                    CommandResult output = null;
+                    CommandResult output = new CommandResult("", "", "");
                     try
                     {
                         output = this.commandRunner.RunCommand(command);
@@ -51,12 +51,10 @@
                     catch (Exception ex)
                     {
                         commandOutput = new CommandOutput("goose", "Failed to run command: " + command.Command, ex.ToString(), CommandOutputItemType.Error);
+                        output = new CommandResult(commandOutput.ToString(), "", "");
                     }
-                    if (output != null)
-                    {
-                        this.errorReporter.Report(command, output);
-                    }
-                    
+
+                    this.errorReporter.Report(command, output);
                     this.outputService.Handle(commandOutput);    
                 });
         }        

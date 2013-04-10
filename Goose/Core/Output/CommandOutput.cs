@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Web.Script.Serialization;
 
     /** EXAMPLE **/
 
@@ -51,6 +52,11 @@
                            };
             this.Version = 1;
             this.Time = DateTime.Now;            
+        }
+
+        public override string ToString()
+        {
+            return new JavaScriptSerializer().Serialize(this);
         }
     }
 }

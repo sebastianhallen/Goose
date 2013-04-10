@@ -1,5 +1,6 @@
 ﻿namespace Goose.Core.Output
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Goose.Core.Action;
@@ -39,7 +40,7 @@
                                          Column = 0,
                                          Line = (int) error.Line,
                                          Document = error.FullPath,
-                                         Text = error.Message
+                                         Text = string.Format("{0}{1}{2}", error.Message, Environment.NewLine, error.Excerpt)                                         
                                      };
                                  return new GooseErrorTask(command, errorTask);
                              });                             

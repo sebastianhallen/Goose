@@ -152,39 +152,7 @@
                 messagePane.OutputStringThreadSafe(message.Message + Environment.NewLine);
 	        }
 	    }
-
-	    private void HandleErrors(string panel, IEnumerable<CommandOutputItem> errors)
-	    {
-            this.errorTaskProvider.ShowErrors(errors);
-            return;
-	        
-
-            var errorPane = this.GetOrAddPane(panel);
-	        if (errorPane == null) return;
-
-            var currentErrors = errors.ToArray();
-            if (currentErrors.Any())
-            {
-                errorPane.Clear();
-            }
-
-            foreach (var error in currentErrors)
-	        {
-	            var outputText = CreateErrorOutput(error);                
-	            errorPane.OutputTaskItemString(
-	                outputText + Environment.NewLine, 
-	                VSTASKPRIORITY.TP_NORMAL, 
-	                VSTASKCATEGORY.CAT_CODESENSE, 
-	                "", 
-	                0,
-	                error.FullPath ?? error.FileName ?? "",
-	                error.Line, 
-	                outputText);
-			
-	        }
-	        errorPane.FlushToTaskList();
-	    }	    
-
+	    
 	    private static string CreateErrorOutput(CommandOutputItem item)
 		{
 			var outputText = String.Format("{0} #{1}: {2}", item.FileName, item.Line, item.Message);
@@ -209,9 +177,17 @@
 
 		        return paneid;
 		    });
-
+            
             IVsOutputWindowPane pane;
-            this.outputWindow.GetPane(ref paneId, out pane);
+		    try
+		    {
+                this.outputWindow.GetPane(ref paneId, out pane);
+		    }
+		    catch (Exception)
+		    {
+		        pane = null;
+		    }
+            
             return pane;
 		}
 
