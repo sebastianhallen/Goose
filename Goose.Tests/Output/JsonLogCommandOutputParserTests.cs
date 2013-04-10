@@ -24,7 +24,7 @@ namespace Goose.Tests.Output
         {
             var result = this.logParser.Parse(input);
 
-            Assert.That(result.Results.Single().Message, Is.EqualTo("on save command completed without any output"));
+            Assert.That(result.Results.Any(), Is.False);
         }
 
         [Test]

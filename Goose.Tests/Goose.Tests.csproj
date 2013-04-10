@@ -74,6 +74,7 @@
     <Compile Include="EventHandling\FileMonitorTests.cs" />
     <Compile Include="EventHandling\GlobMatcherTests.cs" />
     <Compile Include="Output\CommandErrorReporterTests.cs" />
+    <Compile Include="Output\GooseErrorTaskHandlerTests.cs" />
     <Compile Include="Output\JsonLogCommandOutputParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

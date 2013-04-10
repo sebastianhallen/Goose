@@ -169,6 +169,12 @@
     <Compile Include="Core\Action\IGooseActionFactory.cs" />
     <Compile Include="Core\Dispatcher\SynchronousOnChangeTaskDispatcher.cs" />
     <Compile Include="Core\Output\CommandErrorReporter.cs" />
+    <Compile Include="Core\Output\GooseErrorListProviderFacade.cs" />
+    <Compile Include="Core\Output\GooseErrorTask.cs" />
+    <Compile Include="Core\Output\GooseErrorTaskHandler.cs" />
+    <Compile Include="Core\Output\IErrorListProviderFacade.cs" />
+    <Compile Include="Core\Output\IErrorTaskHandler.cs" />
+    <Compile Include="Core\Output\IGooseErrorTask.cs" />
     <Compile Include="Core\Output\IOutputService.cs" />
     <Compile Include="Core\Solution\EventHandling\FileEventListener.cs" />
     <Compile Include="Core\Output\ICommandLogParser.cs" />
