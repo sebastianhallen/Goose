@@ -1,7 +1,6 @@
 ﻿namespace Goose.Core.Action.PowerShell
 {
     using System;
-    using System.Linq;
     using System.Threading.Tasks;
     using Goose.Core.Output;
 
@@ -41,11 +40,7 @@
 
                         commandOutput = resultLog;
                         commandOutput.Results.AddRange(outputLog.Results);
-                        commandOutput.Results.AddRange(errorLog.Results.Select(error =>
-                            {
-                                error.Type = CommandOutputItemType.Error;
-                                return error;
-                            }));
+                        commandOutput.Results.AddRange(errorLog.Results);
 
                     }
                     catch (Exception ex)
@@ -55,7 +50,7 @@
                     }
 
                     this.errorReporter.Report(command, output);
-                    this.outputService.Handle(commandOutput);    
+                    this.outputService.Handle(commandOutput);
                 });
         }        
     }

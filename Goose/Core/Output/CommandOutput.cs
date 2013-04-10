@@ -28,7 +28,6 @@
     public class CommandOutput
     {
         public string Name { get; set; }
-
         public float Version { get; set; }
         public DateTime? Time { get; set; }
         public List<CommandOutputItem> Results = new List<CommandOutputItem>();        

@@ -40,9 +40,13 @@
             var solution = (IVsSolution)this.GetService(typeof(SVsSolution));
 
             this.solutionFilesService = new SolutionFilesService(solution);
-            this.outputService = this.outputService ?? new OutputService(this, this.solutionFilesService);
+            this.outputService = this.outputService ?? new OutputService(this);
 			this.fileChangeService = this.fileChangeService ?? (IVsFileChangeEx)this.GetService(typeof(SVsFileChangeEx));
-            this.errorReporter = new CommandErrorReporter(new GooseErrorTaskHandler(new GooseErrorListProviderFacade(this, this.solutionFilesService)), new JsonCommandLogParser());
+            
+            var errorListProviderFacade = new GooseErrorListProviderFacade(this, this.solutionFilesService);
+            var errorTaskHandler = new GooseErrorTaskHandler(errorListProviderFacade);
+            this.errorReporter = new CommandErrorReporter(errorTaskHandler, new JsonCommandLogParser());
+            
             var fileEventListenerFactory = new DefaultFileEventListenerFactory(solutionFilesService, this.fileChangeService, this.outputService, errorReporter);
             this.solutionEventListener = this.solutionEventListener ?? new SolutionEventListener(solution, fileEventListenerFactory, this.outputService);
             base.Initialize();
