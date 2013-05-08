@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Web.Script.Serialization;
 
     /** EXAMPLE **/
 
@@ -27,10 +28,9 @@
     public class CommandOutput
     {
         public string Name { get; set; }
-
         public float Version { get; set; }
         public DateTime? Time { get; set; }
-        public IList<CommandOutputItem> Results = new List<CommandOutputItem>();
+        public List<CommandOutputItem> Results = new List<CommandOutputItem>();        
 
         public CommandOutput()
         {
@@ -50,7 +50,12 @@
                                }
                            };
             this.Version = 1;
-            this.Time = DateTime.Now;        
+            this.Time = DateTime.Now;            
+        }
+
+        public override string ToString()
+        {
+            return new JavaScriptSerializer().Serialize(this);
         }
     }
 }

@@ -55,7 +55,7 @@
         {
             try
             {
-                var solutionProject = new SolutionProject(projectHierarchy, this.outputService);
+                var solutionProject = new SolutionProject(this.solution, projectHierarchy);
                 this.ConnectProjectEventListeners(solutionProject);
             }
             catch (Exception ex)

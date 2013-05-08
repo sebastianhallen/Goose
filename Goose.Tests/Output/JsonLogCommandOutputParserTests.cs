@@ -24,7 +24,7 @@ namespace Goose.Tests.Output
         {
             var result = this.logParser.Parse(input);
 
-            Assert.That(result.Results.Single().Message, Is.EqualTo("on save command completed without any output"));
+            Assert.That(result.Results.Any(), Is.False);
         }
 
         [Test]
@@ -56,13 +56,13 @@ namespace Goose.Tests.Output
         }
 
         [Test]
-        public void Should_produce_error_message_when_unable_to_handle_log_input()
+        public void Should_log_to_message_log_when_unable_to_parse_log_input()
         {
             var log = "JOIADFNJOisfogäpjädfghoöpsdifågj'åkdfåp¨)R#Y)€(#";
 
             var result = this.logParser.Parse(log);
 
-            Assert.That(result.Results.Last().Message, Is.EqualTo(string.Format("unable to make sense of build log: {0}{1}", Environment.NewLine, log)));
+            Assert.That(result.Results.Last().Message, Is.EqualTo(log));
         }     
     }
 }

@@ -5,24 +5,23 @@
 	using System.Collections.Generic;
 	using System.Linq;
 	using Microsoft.VisualStudio.Shell.Interop;
-
-	public class OutputService
+    
+    public class OutputService
 		: IOutputService
 	{
 		private readonly IVsOutputWindow outputWindow;
         private readonly ConcurrentDictionary<string, Guid> panes = new ConcurrentDictionary<string, Guid>();
-
-		public OutputService(IServiceProvider serviceProvider)
+        
+        public OutputService(IServiceProvider serviceProvider)
 		{
 			this.outputWindow = serviceProvider.GetService(typeof(SVsOutputWindow)) as IVsOutputWindow;
-		}
+        }
 
 		public void Handle(CommandOutput output)
 		{
 			if (output.Version == 1)
 			{                
-                this.HandleErrors(output.Name, output.Results.Where(result => CommandOutputItemType.Error.Equals(result.Type)));
-                this.HandleMessages(output.Name, output.Time, output.Results.Where(result => CommandOutputItemType.Message.Equals(result.Type)));
+                this.HandleMessages(output.Name, output.Time, output.Results);			  
 			}
 		}
 
@@ -53,48 +52,7 @@
                 messagePane.OutputStringThreadSafe(message.Message + Environment.NewLine);
 	        }
 	    }
-
-	    private void HandleErrors(string panel, IEnumerable<CommandOutputItem> errors)
-	    {
-            var errorPane = this.GetOrAddPane(panel);
-	        if (errorPane == null) return;
-
-            var currentErrors = errors.ToArray();
-            if (currentErrors.Any())
-            {
-                errorPane.Clear();
-            }
-
-            foreach (var error in currentErrors)
-	        {
-	            var outputText = CreateErrorOutput(error);                
-	            errorPane.OutputTaskItemString(
-	                outputText + Environment.NewLine, 
-	                VSTASKPRIORITY.TP_NORMAL, 
-	                VSTASKCATEGORY.CAT_CODESENSE, 
-	                "", 
-	                0,
-	                error.FullPath ?? error.FileName ?? "",
-	                error.Line, 
-	                outputText);
-			
-	        }
-	        errorPane.FlushToTaskList();
-	    }	    
-
-	    private static string CreateErrorOutput(CommandOutputItem item)
-		{
-			var outputText = String.Format("{0} #{1}: {2}", item.FileName, item.Line, item.Message);
-			if (!String.IsNullOrWhiteSpace(item.Excerpt))
-			{
-				var excerpt = from line in item.Excerpt.Split('\n')
-							  select "  " + line.Trim();
-
-				outputText += ":" + Environment.NewLine + String.Join("\n", excerpt);
-			}
-			return outputText;
-		}
-
+	    
 		private IVsOutputWindowPane GetOrAddPane(string name)
 		{            		    
             var paneKey = name;
@@ -106,16 +64,18 @@
 
 		        return paneid;
 		    });
-
+            
             IVsOutputWindowPane pane;
-            this.outputWindow.GetPane(ref paneId, out pane);
+		    try
+		    {
+                this.outputWindow.GetPane(ref paneId, out pane);
+		    }
+		    catch (Exception)
+		    {
+		        pane = null;
+		    }
+            
             return pane;
 		}
-
-	    private enum OutputWindowType
-	    {
-            Message,
-            Error
-	    }
 	}
 }

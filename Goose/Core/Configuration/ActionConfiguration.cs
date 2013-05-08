@@ -4,24 +4,27 @@
     {
 
         public Trigger Trigger { get; private set; }
-        public string WorkingDirectory { get; private set; }
+        public string RelativeWorkingDirectory { get; private set; }
         public string Command { get; private set; }
         public string ProjectRoot { get; private set; }
+        public string SolutionRoot { get; private set; }
+        public string Glob { get; private set; }
+        public CommandScope Scope { get; private set; }
 
-        public ActionConfiguration(string projectPath)
+        public Shell Shell
         {
-            this.ProjectRoot = projectPath;
-            this.Trigger = Trigger.Unknown;
-            this.Glob = "*.less";
+            get { return Shell.PowerShell; }
         }
 
-        public ActionConfiguration(Trigger trigger, string glob, string workingDirectory, string command, string projectRoot)
+        public ActionConfiguration(Trigger trigger, string glob, string workingDirectory, string command, string solutionRoot, string projectRoot, CommandScope scope)
         {
             this.Trigger = trigger;
             this.Glob = glob;
-            this.WorkingDirectory = workingDirectory;
+            this.RelativeWorkingDirectory = workingDirectory;
             this.Command = command;
+            this.SolutionRoot = solutionRoot;
             this.ProjectRoot = projectRoot;
+            this.Scope = scope;
         }
 
         public bool IsValid
@@ -31,17 +34,10 @@
                 return 
                     this.Trigger == Trigger.Save 
                     && !string.IsNullOrWhiteSpace(this.Glob)
-                    && this.WorkingDirectory != null
+                    && this.RelativeWorkingDirectory != null
                     && !string.IsNullOrWhiteSpace(this.Command);
 
             }
         }
-
-        public Shell Shell
-        {
-            get { return Shell.PowerShell; }
-        }
-
-        public string Glob { get; private set; }
     }
 }

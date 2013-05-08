@@ -8,7 +8,11 @@
     {
         protected override ActionConfiguration CreateDummy()
         {
-            return new ActionConfiguration(Trigger.Save, "*.less", "", "command", "root");
+            return new ActionConfigurationBuilder()
+                .ForProjectIn("project-root").ProjectInSolution("solution-root")
+                .On(Trigger.Save).FilesMatching("*.less").Run("command").WithScope(CommandScope.Project)
+                .In("")
+            .Build();
         }
     }
 }

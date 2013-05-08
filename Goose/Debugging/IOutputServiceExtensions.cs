@@ -1,5 +1,6 @@
 ﻿namespace Goose.Debugging
-{    
+{
+    using System;
     using Core.Output;
 
     public static class OutputServiceExtensions

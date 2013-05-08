@@ -17,7 +17,7 @@
         {
             if (string.IsNullOrWhiteSpace(buildLog))
             {
-                return new CommandOutput("goose", "on save command completed without any output", "", CommandOutputItemType.Message);
+                return new CommandOutput();
             }
 
             CommandOutput result;
@@ -27,7 +27,7 @@
             }
             catch (Exception ex)
             {
-                result = new CommandOutput("goose", string.Format("unable to make sense of build log: {0}{1}", Environment.NewLine, buildLog), ex.ToString(), CommandOutputItemType.Error);
+                result = new CommandOutput("goose", buildLog, "", CommandOutputItemType.Message);
             }
 
             return result;

@@ -42,7 +42,9 @@
     <Reference Include="FakeItEasy">
       <HintPath>..\packages\FakeItEasy.1.7.4626.65\lib\NET40\FakeItEasy.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.10.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
@@ -57,16 +59,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Action\ActionFactoryTests.cs" />
+    <Compile Include="Action\PowerShellCommandBuilderTests.cs" />
+    <Compile Include="Action\PowerShellRunspaceCommandRunnerIntegrationTests.cs" />
     <Compile Include="Configuration\ActionConfigurationTests.cs" />
+    <Compile Include="Configuration\ConfigParserIntegrationTests.cs" />
     <Compile Include="Configuration\LegacyFallbackActionConfigurationParserTests.cs" />
     <Compile Include="Configuration\ConfigParserTests.cs" />
     <Compile Include="Configuration\LegacyConfigurationTest.cs" />
     <Compile Include="EventHandling\ActionConfigurationDummy.cs" />
     <Compile Include="EventHandling\FakeProjectContext.cs" />
     <Compile Include="EventHandling\FakeSolutionTestContext.cs" />
+    <Compile Include="EventHandling\FileChangeConsumerTests.cs" />
     <Compile Include="EventHandling\FileEventListenerTests.cs" />
     <Compile Include="EventHandling\FileMonitorTests.cs" />
     <Compile Include="EventHandling\GlobMatcherTests.cs" />
+    <Compile Include="Output\CommandErrorReporterTests.cs" />
+    <Compile Include="Output\GooseErrorTaskHandlerTests.cs" />
     <Compile Include="Output\JsonLogCommandOutputParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

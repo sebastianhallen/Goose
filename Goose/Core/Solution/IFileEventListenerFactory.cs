@@ -1,11 +1,10 @@
 ﻿namespace Goose.Core.Solution
 {
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
     using Action;
     using Configuration;
     using Dispatcher;
     using EventHandling;
+    using Goose.Core.Action.PowerShell;
     using Microsoft.VisualStudio.Shell.Interop;
     using Output;
 
@@ -16,8 +15,7 @@
 
     public class DefaultFileEventListenerFactory
         : IFileEventListenerFactory
-    {
-        private readonly IVsSolution solution;
+    {        
         private readonly IVsFileChangeEx fileChangeService;
         private readonly IOutputService outputService;
 
@@ -26,16 +24,15 @@
         private readonly IOnChangeTaskDispatcher onChangeTaskDispatcher;
         private readonly IGooseActionFactory actionFactory;
 
-        public DefaultFileEventListenerFactory(IVsSolution solution, IVsFileChangeEx fileChangeService, IOutputService outputService)
+        public DefaultFileEventListenerFactory(ISolutionFilesService solutionFilesService, IVsFileChangeEx fileChangeService, IOutputService outputService, ICommandErrorReporter errorReporter)
         {
-            this.solution = solution;
+            this.solutionFilesService = solutionFilesService;
             this.fileChangeService = fileChangeService;
             this.outputService = outputService;
-
-            this.solutionFilesService = new SolutionFilesService(this.solution, this.outputService);
+            
             this.globMatcher = new RegexGlobMatcher();
             this.onChangeTaskDispatcher = new SynchronousOnChangeTaskDispatcher(this.outputService);
-            this.actionFactory = new GooseActionFactory(new PowerShellTaskFactory(this.outputService, new JsonCommandLogParser()));
+            this.actionFactory = new PowerShellGooseActionFactory(new PowerShellTaskFactory(this.outputService, errorReporter, new JsonCommandLogParser()), new PowerShellCommandBuilder());
         }
 
         public FileEventListener Create(ISolutionProject project, ActionConfiguration actionConfiguration)

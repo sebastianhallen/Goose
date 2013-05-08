@@ -1,9 +1,10 @@
 ﻿namespace Goose.Core.Action
 {
+    using System.Collections.Generic;
     using Goose.Core.Configuration;
 
     public interface IGooseActionFactory
     {
-        IGooseAction Create(ActionConfiguration configuration);
+        IEnumerable<IGooseAction> Create(ActionConfiguration configuration, IEnumerable<string> files);
     }
 }
