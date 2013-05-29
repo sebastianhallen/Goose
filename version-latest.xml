@@ -2,8 +2,25 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 	<title type="text">Goose gallery</title>
 	<id>uuid:goose-gallery:2e36da3e-ce2f-4f72-968a-2baaa6ed255a</id>
-	<updated>2013-03-12T21:31:09Z</updated>
-	<entry>
+	<updated>2013-05-29T22:31:09Z</updated>
+
+  <entry>
+    <id>Goose.C4685C35-01D8-4ACD-8AF0-BD4601D16C1E</id>
+    <title type="text">Goose</title>
+    <summary type="text">Goose allows you to specify shell commands to be run when saving files in Visual Studio.</summary>
+    <published>2013-05-29T22:31:09Z</published>
+    <updated>2013-05-29T22:31:09Z</updated>
+    <author>
+      <name>Sebastian Hallén, Glenn Jorde</name>
+    </author>
+    <content type="octet/stream" src="installer/Goose-v1.4.9-debug.vsix" />
+    <Vsix xmlns="http://schemas.microsoft.com/developer/vsx-syndication-schema/2010">
+      <Id>C4685C35-01D8-4ACD-8AF0-BD4601D16C1E</Id>
+      <Version>1.4.9</Version>
+    </Vsix>
+  </entry>
+
+  <entry>
 		<id>Goose.C4685C35-01D8-4ACD-8AF0-BD4601D16C1E</id>
 		<title type="text">Goose</title>
 		<summary type="text">Goose allows you to specify shell commands to be run when saving files in Visual Studio.</summary>
